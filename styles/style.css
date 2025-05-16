@@ -43,29 +43,29 @@
     width: 120px;
     height: 200px;
     border: 2px solid BLACK;
-    border-radius: 0; 
+    border-radius: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #acb1b3; 
+    background-color: #acb1b3;
 }
 .register-handler {
     width: 170px;
     height: 270px;
-    background-color: #acb1b3; 
+    background-color: #acb1b3;
     border: 2px solid BLACK;
 }
 .ellipse {
     width: 70px;
     height: 100px;
-    background-color: #acb1b3; 
+    background-color: #acb1b3;
     border-radius: 50%;
     border: 2px solid BLACK;
 }
 .mux {
     width: 30px;
     height: 90px;
-    background-color: #acb1b3; 
+    background-color: #acb1b3;
     border: 2px solid BLACK;
     border-radius: 9999px; /* Makes the top and bottom perfectly round */
     display: flex;
@@ -78,7 +78,7 @@
     width: 150px;
     height: 200px;
     background-color: #acb1b3;
-    border: 2px solid BLACK; 
+    border: 2px solid BLACK;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -90,12 +90,12 @@
     /* Vertical size (minor axis) */
     border-radius: 50%;
     /* This makes the div rounded */
-    background-color: #acb1b3; 
+    background-color: #acb1b3;
 
     border: 2px solid black;
     margin: 20px auto;
 }
-.Small_Ellipse p{
+.Small_Ellipse p {
     font-weight: bold;
     color: BLACK;
     text-align: center;
@@ -108,42 +108,40 @@
     height: 200px;
     /* Vertical size (minor axis) */
     border-radius: 50%;
-    background-color: #acb1b3; 
+    background-color: #acb1b3;
 
     /* This makes the div rounded */
     border: 2px solid black;
     margin: 20px auto;
 }
 
-.big-ellipse p{
+.big-ellipse p {
     font-weight: bold;
     color: BLACK; /* gray-700 */
     text-align: center;
     margin: 0;
 }
 
-.pc_rect{
+.pc_rect {
     width: 50px;
     height: 100px;
-    background-color: #acb1b3; 
+    background-color: #acb1b3;
     border-radius: 10px;
     border: 2px solid black;
     margin: 20px auto;
 }
 
 .center-text {
-  display: flex;
-  justify-content: center;  /* Căn giữa theo chiều ngang */
-  align-items: center;      /* Căn giữa theo chiều dọc */
-  /* height: 200px;            Đặt chiều cao cho div */
+    display: flex;
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    /* height: 200px;            Đặt chiều cao cho div */
 }
 
-
-
 .instruction-memory p {
-  font-weight: bold;
-  color: #374151; /* gray-700 */
-  text-align: center;
+    font-weight: bold;
+    color: #374151; /* gray-700 */
+    text-align: center;
 }
 
 .pc-component {
@@ -151,21 +149,21 @@
     height: 100px;
     border: 2px solid black;
     border-radius: 0;
-    background-color: #acb1b3; 
+    background-color: #acb1b3;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .pc-component p {
-  font-weight: bold;
-  color: black;/* gray-700 */
-  text-align: center;
-  margin: 0;
+    font-weight: bold;
+    color: black; /* gray-700 */
+    text-align: center;
+    margin: 0;
 }
 
 .text_style {
-  font-weight: bold;
-  color: black; 
-  margin: 0;
+    font-weight: bold;
+    color: black;
+    margin: 0;
 }

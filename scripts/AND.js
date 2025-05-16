@@ -17,12 +17,16 @@ ctx.moveTo(initialPosX, initialPosY);
 ctx.lineTo(initialPosX + 20, initialPosY);
 ctx.stroke();
 
-
-
 // Vẽ phần cong bên phải (nửa hình tròn)
 ctx.beginPath();
-ctx.arc(initialPosX + 20, initialPosY + 25, 25, -Math.PI / 2, Math.PI / 2, false);
+ctx.arc(
+    initialPosX + 20,
+    initialPosY + 25,
+    25,
+    -Math.PI / 2,
+    Math.PI / 2,
+    false,
+);
 ctx.stroke();
-
 
 console.log("AND gate drawn");
