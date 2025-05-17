@@ -177,10 +177,10 @@ createApp({
         const loadCode = () => {
             // In a real app, this would load from a file
             assemblyCode.value = `// Sample LEGv8 code
-ADD X0, X1, X2
-SUB X3, X4, X5
-LDUR X6, [X7, #0]
-STUR X8, [X9, #8]`;
+                                        ADD X0, X1, X2
+                                        SUB X3, X4, X5
+                                        LDUR X6, [X7, #0]
+                                        STUR X8, [X9, #8]`;
         };
 
         const saveCode = () => {

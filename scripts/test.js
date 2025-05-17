@@ -26,16 +26,16 @@ window.addEventListener("load", resizeMainDisplayToFitChildren);
 
 const myDiv = document.getElementById("main-display");
 
-// store first click positionj
-let firstClick = null;
+// store list of prev click position
+let prevClick = [];
 
 myDiv.addEventListener("click", (e) => {
     const rect = myDiv.getBoundingClientRect(); // vùng của div
     let x = e.clientX - rect.left; // tọa độ click trong div
     let y = e.clientY - rect.top; // tọa độ click trong div
 
-    if (firstClick === null) {
-        firstClick = { x, y }; // lưu tọa độ click đầu tiên
+    if (prevClick.length < 1) {
+        prevClick.push({ x, y }); // lưu tọa độ click
         console.log(
             `Tọa độ click đầu tiên: (${x.toFixed(0)}, ${y.toFixed(0)})`,
         );
@@ -43,16 +43,21 @@ myDiv.addEventListener("click", (e) => {
         // thay đổi đường đi của tag svg, path với 2 tọa độ click
         const path = document.getElementById("linePath0");
         // cải thiện đường đi, lấy giá trị lêchj tuyệt đối giữa 2 x, và 2 y, nếu chêch lệch theo trục nào nhỏ hơn thì cả 2 tọa độ sẽ cùng giá trị của click đầu tiên trong trục còn lại
-        const deltaX = Math.abs(firstClick.x - x);
-        const deltaY = Math.abs(firstClick.y - y);
+        const deltaX = Math.abs(prevClick[prevClick.length - 1].x - x);
+        const deltaY = Math.abs(prevClick[prevClick.length - 1].y - y);
         if (deltaX > deltaY) {
-            y = firstClick.y;
+            y = prevClick[prevClick.length - 1].y;
         } else {
-            x = firstClick.x;
+            x = prevClick[prevClick.length - 1].x;
         }
-        const newPath = `M ${firstClick.x} ${firstClick.y} L ${x} ${y}`;
+        // tạo đường đi mới bằng tất cả các tọa độ click trong mảng prevClick
+        let newPath = `M ${prevClick[0].x} ${prevClick[0].y} `;
+        for (let i = 1; i < prevClick.length; i++) {
+            newPath += `L ${prevClick[i].x} ${prevClick[i].y} `;
+        }
+        newPath += `L ${x} ${y} `; // thêm tọa độ click thứ 2 vào đường đi
         path.setAttribute("d", newPath); // cập nhật đường đi của tag svg
-        firstClick = null; // reset click đầu tiên
+        prevClick.push({ x, y }); // lưu tọa độ click thứ 2
         console.log(`Tọa độ click thứ hai: (${x.toFixed(0)}, ${y.toFixed(0)})`);
     }
 });
