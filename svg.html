@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Parallel Small Run</title>
+        <style>
+            svg {
+                border: 1px solid black;
+                margin-top: 10px;
+                display: block;
+            }
+            button {
+                margin: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <input id="textInput" placeholder="Nhập văn bản" />
+        <button id="startBtn">Start</button>
+        <button id="pauseBtn">Pause</button>
+        <button id="resumeBtn">Resume</button>
+
+        <svg width="600" height="300">
+            <path
+                id="path1"
+                d="M50,50 L550,50 L 550, 100"
+                stroke="black"
+                fill="none"
+            />
+            <path
+                id="path2"
+                d="M50,150 L550,150 L 550, 200"
+                stroke="green"
+                fill="none"
+            />
+            <path
+                id="path3"
+                d="M50,250 L550,250 L 550, 300"
+                stroke="blue"
+                fill="none"
+            />
+        </svg>
+
+        <script>
+            const namespace = "http://www.w3.org/2000/svg";
+            const textInput = document.getElementById("textInput");
+            const startBtn = document.getElementById("startBtn");
+            const pauseBtn = document.getElementById("pauseBtn");
+            const resumeBtn = document.getElementById("resumeBtn");
+
+            const duration = 3000;
+            let resumeCallbacks = []; // Add this line to initialize the array
+
+            let running = false;
+            let resumed = null;
+            let resumeBarrier = null;
+
+            function nextFrame() {
+                return new Promise((r) => requestAnimationFrame(r));
+            }
+
+           function waitForGlobalResume() {
+                return new Promise((resolve) => {
+                    resumeCallbacks.push(resolve);
+                });
+            }
+
+            async function run(text, pathId) {
+                // add text to path
+                const pathElement = document.getElementById(pathId);
+                const textElement = document.createElementNS(namespace, "text");
+                textElement.setAttribute("font-size", "20");
+                textElement.setAttribute("fill", "red");
+                const textPath = document.createElementNS(
+                    namespace,
+                    "textPath",
+                );
+                textPath.setAttributeNS(
+                    "http://www.w3.org/1999/xlink",
+                    "href",
+                    `#${pathId}`,
+                );
+                textPath.textContent = text;
+                textPath.setAttribute("startOffset", `0%`);
+                textElement.appendChild(textPath);
+                pathElement.parentNode.appendChild(textElement);
+
+                let elapsedTime = 0;
+                let lastStartTime = null;
+
+                while (elapsedTime < duration) {
+                    if (!running) {
+                        const resumeTimestamp = await waitForGlobalResume();
+                        lastStartTime = resumeTimestamp;
+                    }
+
+                    if (lastStartTime === null) {
+                        lastStartTime = performance.now();
+                    }
+
+                    await nextFrame();
+                    const now = performance.now();
+                    const delta = now - lastStartTime;
+                    elapsedTime += delta;
+                    lastStartTime = now;
+
+                    const progress = Math.min(elapsedTime / duration, 1);
+                    textPath.setAttribute("startOffset", `${progress * 100}%`);
+                }
+
+                console.log(`✅ run() hoàn tất trên path ${pathId}`);
+            }
+
+            async function bigrun() {
+
+                console.log("=== ⏯️ Bắt đầu bigrun ===");
+
+                const text = textInput.value || "Xin chào";
+
+                const pathIds = ["path1", "path2", "path3"];
+
+                const allRuns = pathIds.map((pathId) => run(text, pathId));
+                await Promise.all(allRuns);
+
+                console.log("✅ ✅ ✅ Kết thúc bigrun: tất cả run() xong");
+            }
+
+            startBtn.onclick = () => {
+                if (!running) {
+                    running = true;
+                    bigrun();
+                }
+            };
+
+            pauseBtn.onclick = () => {
+                console.log("⏸️ Pause");
+                running = false;
+            };
+
+           resumeBtn.onclick = () => {
+                console.log("▶️ Resume");
+                running = true;
+                const timestamp = performance.now();
+                // Resolve tất cả callbacks đang chờ
+                resumeCallbacks.forEach(resolve => resolve(timestamp));
+                // Reset mảng
+                resumeCallbacks = [];
+            };
+        </script>
+    </body>
+</html>

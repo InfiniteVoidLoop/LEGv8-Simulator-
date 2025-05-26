@@ -1,11 +1,11 @@
 const { createApp, ref, reactive, computed } = Vue;
 
-createApp({
+const APP = createApp({
     setup() {
         // Simulator state
         const simulatorState = ref("Ready");
-        const pcValue = ref("0x00000000");
-        const cycleCount = ref(0);
+        const pcValue = ref("0x00000001");
+        const cycleCount = ref(1);
         const executionSpeed = ref(5);
         const activeTab = ref("registers");
 
@@ -238,3 +238,4 @@ createApp({
         };
     },
 }).mount("#app");
+

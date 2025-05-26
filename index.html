@@ -62,13 +62,7 @@
                                         fill="none"
                                         d="M 140,550 L 200,550"
                                     />
-                                    <path
-                                        id="pc-add-4"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 140,550 L 170,550 L 170,130 L 260,130"
-                                    />
+                                <path id="pc-add-4" stroke="#007BFF" stroke-width="2" fill="none" d="M 140,550 L 170,550 L 170,130 L 260,130" />
                                     <path
                                         id="pc-alu"
                                         stroke="#007BFF"
@@ -739,7 +733,7 @@
                                     </button>
 
                                     <div class="flex space-x-2">
-                                        <button
+                                        <button id="startBtn"
                                             class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center justify-center"
                                             @click="run"
                                         >
@@ -756,7 +750,8 @@
                                         </button>
                                     </div>
 
-                                    <button
+                                    <button 
+                                    id ="pauseBtn"
                                         class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded flex items-center justify-center"
                                         @click="pause"
                                     >
@@ -764,6 +759,7 @@
                                     </button>
 
                                     <button
+                                    id="resetBtn"
                                         class="w-full bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded flex items-center justify-center"
                                         @click="reset"
                                     >
@@ -836,5 +832,7 @@
         <script src="scripts/AND.js"></script>
         <script src="scripts/OR.js"></script>
         <script src="scripts/test.js"></script>
+        <!-- <script src="scripts/main.js"></script> -->
+        <script src="scripts/async_running.js"></script>
     </body>
 </html>

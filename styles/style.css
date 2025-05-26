@@ -167,3 +167,13 @@
     color: black;
     margin: 0;
 }
+
+.hidden {
+    display: none;
+}
+
+#moving-data {
+    position: absolute;
+    transition: all 0.1s linear;
+    pointer-events: none;
+}
