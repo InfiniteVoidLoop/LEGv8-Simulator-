@@ -1,33 +1,45 @@
 const namespace = "http://www.w3.org/2000/svg";
-const textInput = {value: "0101010"}
+const textInput = { value: "0101010" };
 const startBtn = document.getElementById("startBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const resetBtn = document.getElementById("resetBtn");
 
-const duration = 3000;
+const speedInput = document.querySelector(
+    'input[type="range"][min="1"][max="10"]',
+);
+let executionSpeed = speedInput ? parseInt(speedInput.value, 10) : 1;
+
+speedInput.addEventListener("input", () => {
+    executionSpeed = parseInt(speedInput.value, 10);
+});
+
+let duration = 6000 / executionSpeed;
+speedInput.addEventListener("input", () => {
+    duration = 6000 / executionSpeed;
+});
 
 let running = false;
-let resumed = null;
+let resumeCallbacks = [];
 
 function nextFrame() {
     return new Promise((r) => requestAnimationFrame(r));
 }
 
-function waitUntilRunning() {
-    return new Promise((r) => (resumed = r));
+function waitForGlobalResume() {
+    return new Promise((resolve) => {
+        resumeCallbacks.push(resolve);
+    });
 }
 
 async function run(text, pathId) {
+    // add text to path
     const pathElement = document.getElementById(pathId);
+    console.log(`🔄 Bắt đầu run() trên path ${pathElement}`);
 
     const textElement = document.createElementNS(namespace, "text");
     textElement.setAttribute("font-size", "20");
     textElement.setAttribute("fill", "red");
-
-    const textPath = document.createElementNS(
-        namespace,
-        "textPath",
-    );
+    const textPath = document.createElementNS(namespace, "textPath");
     textPath.setAttributeNS(
         "http://www.w3.org/1999/xlink",
         "href",
@@ -35,7 +47,6 @@ async function run(text, pathId) {
     );
     textPath.textContent = text;
     textPath.setAttribute("startOffset", `0%`);
-
     textElement.appendChild(textPath);
     pathElement.parentNode.appendChild(textElement);
 
@@ -44,12 +55,12 @@ async function run(text, pathId) {
 
     while (elapsedTime < duration) {
         if (!running) {
-            await waitUntilRunning();
-            lastStartTime = performance.now(); // reset start time when resumed
+            const resumeTimestamp = await waitForGlobalResume();
+            lastStartTime = resumeTimestamp;
         }
 
         if (lastStartTime === null) {
-            lastStartTime = performance.now(); // on first start
+            lastStartTime = performance.now();
         }
 
         await nextFrame();
@@ -70,7 +81,7 @@ async function bigrun() {
 
     const text = textInput.value || "Xin chào";
 
-    const pathIds = ["pc-alu", "pc-ins-memory", "pc-add-4"];
+    const pathIds = ["pc-alu", "pc-ins-mem", "pc-add-4"];
 
     const allRuns = pathIds.map((pathId) => run(text, pathId));
 
@@ -80,24 +91,35 @@ async function bigrun() {
 }
 
 startBtn.onclick = () => {
-    if (!running) {
-        running = true;
-        bigrun();
-    }
+    resetBtn.click(); // Reset trước khi bắt đầu
+    running = true;
+    bigrun();
 };
 
 pauseBtn.onclick = () => {
-    console.log("⏸️ Pause");
-    running = false;
-};
+    if (!running) {
+        running = true;
+        const timestamp = performance.now();
+        // Resolve tất cả callbacks đang chờ
+        resumeCallbacks.forEach((resolve) => resolve(timestamp));
+        // Reset mảng
+        resumeCallbacks = [];
 
+        pauseBtn.innerHTML = '<i class="fas fa-pause mr-2"></i> Pause';
+        pauseBtn.classList.remove("bg-green-600", "hover:bg-green-700");
+        pauseBtn.classList.add("bg-red-600", "hover:bg-red-700");
+    } else {
+        running = false;
+        pauseBtn.innerHTML = '<i class="fas fa-play mr-2"></i> Continue';
+        pauseBtn.classList.remove("bg-red-600", "hover:bg-red-700");
+        pauseBtn.classList.add("bg-green-600", "hover:bg-green-700");
+    }
+};
 resetBtn.onclick = () => {
     running = false;
-    progress = 0;
-    lastTimestamp = null;
-
-    let textElement = svgRef.textElement;
-    svgRef.removeChild(textElement);
-
-    started = false;
+    console.log("🔄 Reset");
+    resumeCallbacks = [];
+    // Xoá tất cả text đã thêm
+    const texts = document.querySelectorAll("text");
+    texts.forEach((text) => text.remove());
 };

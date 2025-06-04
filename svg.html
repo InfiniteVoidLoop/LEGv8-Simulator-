@@ -19,6 +19,7 @@
         <button id="startBtn">Start</button>
         <button id="pauseBtn">Pause</button>
         <button id="resumeBtn">Resume</button>
+        <button id="resetBtn">Reset</button>
 
         <svg width="600" height="300">
             <path
@@ -47,19 +48,18 @@
             const startBtn = document.getElementById("startBtn");
             const pauseBtn = document.getElementById("pauseBtn");
             const resumeBtn = document.getElementById("resumeBtn");
+            const resetBtn = document.getElementById("resetBtn");
 
             const duration = 3000;
             let resumeCallbacks = []; // Add this line to initialize the array
 
             let running = false;
-            let resumed = null;
-            let resumeBarrier = null;
 
             function nextFrame() {
                 return new Promise((r) => requestAnimationFrame(r));
             }
 
-           function waitForGlobalResume() {
+            function waitForGlobalResume() {
                 return new Promise((resolve) => {
                     resumeCallbacks.push(resolve);
                 });
@@ -112,7 +112,6 @@
             }
 
             async function bigrun() {
-
                 console.log("=== ⏯️ Bắt đầu bigrun ===");
 
                 const text = textInput.value || "Xin chào";
@@ -136,13 +135,20 @@
                 console.log("⏸️ Pause");
                 running = false;
             };
-
-           resumeBtn.onclick = () => {
+            resetBtn.onclick = () => {
+                console.log("🔄 Reset");
+                running = false;
+                resumeCallbacks = [];
+                // Xoá tất cả text đã thêm
+                const texts = document.querySelectorAll("text");
+                texts.forEach((text) => text.remove());
+            };
+            resumeBtn.onclick = () => {
                 console.log("▶️ Resume");
                 running = true;
                 const timestamp = performance.now();
                 // Resolve tất cả callbacks đang chờ
-                resumeCallbacks.forEach(resolve => resolve(timestamp));
+                resumeCallbacks.forEach((resolve) => resolve(timestamp));
                 // Reset mảng
                 resumeCallbacks = [];
             };
