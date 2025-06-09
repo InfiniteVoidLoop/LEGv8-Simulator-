@@ -1,6 +1,6 @@
 const namespace = "http://www.w3.org/2000/svg";
 const textInput = { value: "0101010" };
-const startBtn = document.getElementById("startBtn");
+const startBtn = document.getElementById("runBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const resetBtn = document.getElementById("resetBtn");
 
@@ -13,9 +13,9 @@ speedInput.addEventListener("input", () => {
     executionSpeed = parseInt(speedInput.value, 10);
 });
 
-let duration = 6000 / executionSpeed;
+let duration = 10000 / executionSpeed;
 speedInput.addEventListener("input", () => {
-    duration = 6000 / executionSpeed;
+    duration = 10000 / executionSpeed;
 });
 
 let running = false;
@@ -76,10 +76,13 @@ async function run(text, pathId) {
     console.log(`✅ run() hoàn tất trên path ${pathId}`);
 }
 
-async function bigrun() {
+async function pc(instruction) {
     console.log("=== ⏯️ Bắt đầu bigrun ===");
 
-    const text = textInput.value || "Xin chào";
+    // turn assemblyInstructions into a string
+
+    // const text = assemblyInstructions[address].toString();
+    const text = instruction.toString();
 
     const pathIds = ["pc-alu", "pc-ins-mem", "pc-add-4"];
 
@@ -90,10 +93,17 @@ async function bigrun() {
     console.log("✅ ✅ ✅ Kết thúc bigrun: tất cả run() xong");
 }
 
-startBtn.onclick = () => {
+startBtn.onclick = async () => {
     resetBtn.click(); // Reset trước khi bắt đầu
     running = true;
-    bigrun();
+    // running each instruction step by step in array assemblyInstructions
+    for (let i = 0; i < assemblyInstructions.length; i++) {
+        const instruction = assemblyInstructions[i];
+        console.log(
+            `🔄 Bắt đầu chạy lệnh ${instruction} (${i + 1}/${assemblyInstructions.length})`,
+        );
+        await pc(instruction);
+    }
 };
 
 pauseBtn.onclick = () => {
@@ -116,6 +126,8 @@ pauseBtn.onclick = () => {
     }
 };
 resetBtn.onclick = () => {
+    // reset pcvalue
+    pcValue.textContent = "0x00000000";
     running = false;
     console.log("🔄 Reset");
     resumeCallbacks = [];

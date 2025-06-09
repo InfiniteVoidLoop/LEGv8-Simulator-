@@ -679,20 +679,20 @@
                                 <div class="flex space-x-2">
                                     <button
                                         class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm"
-                                        @click="loadCode"
+                                        id="loadCodeBtn"
                                     >
                                         <i class="fas fa-file-import mr-1"></i>
                                         Load
                                     </button>
                                     <button
                                         class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm"
-                                        @click="saveCode"
+                                        id="saveCodeBtn"
                                     >
                                         <i class="fas fa-save mr-1"></i> Save
                                     </button>
                                     <button
                                         class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm"
-                                        @click="clearCode"
+                                        id="clearCodeBtn"
                                     >
                                         <i class="fas fa-trash-alt mr-1"></i>
                                         Clear
@@ -702,11 +702,10 @@
 
                             <div class="flex-1">
                                 <textarea
-                                    v-model="assemblyCode"
+                                    id="assemblyCode"
                                     class="code-editor w-full h-full p-4 resize-none outline-none"
                                     spellcheck="false"
                                     placeholder="Enter your LEGv8 assembly code here..."
-                                    @input="updateCursorPosition"
                                 ></textarea>
                             </div>
 
@@ -714,13 +713,13 @@
                                 class="p-2 bg-gray-100 border-t border-gray-300 text-xs text-gray-600"
                             >
                                 <div class="flex justify-between">
-                                    <span
-                                        >Line: {{ currentLine }}, Col: {{
-                                        currentCol }}</span
+                                    <span id="cursorPosition"
+                                        >Line: 1, Col: 1</span
                                     >
                                     <span>UTF-8</span>
                                 </div>
                             </div>
+
                             <!-- Left Panel - Utility Controls -->
                             <div
                                 class="bg-gray-200 p-4 border-r border-gray-300 flex flex-col overflow-auto"
@@ -734,22 +733,21 @@
                                 <div class="space-y-4 mb-6">
                                     <button
                                         class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded flex items-center justify-center"
-                                        @click="assemble"
+                                        id="assembleBtn"
                                     >
                                         <i class="fas fa-cog mr-2"></i> Assemble
                                     </button>
 
                                     <div class="flex space-x-2">
                                         <button
-                                            id="startBtn"
+                                            id="runBtn"
                                             class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center justify-center"
-                                            @click="run"
                                         >
                                             <i class="fas fa-play mr-2"></i> Run
                                         </button>
                                         <button
                                             class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded flex items-center justify-center"
-                                            @click="step"
+                                            id="stepBtn"
                                         >
                                             <i
                                                 class="fas fa-step-forward mr-2"
@@ -761,7 +759,6 @@
                                     <button
                                         id="pauseBtn"
                                         class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded flex items-center justify-center"
-                                        @click="pause"
                                     >
                                         <i class="fas fa-pause mr-2"></i> Pause
                                     </button>
@@ -769,7 +766,6 @@
                                     <button
                                         id="resetBtn"
                                         class="w-full bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded flex items-center justify-center"
-                                        @click="reset"
                                     >
                                         <i class="fas fa-undo mr-2"></i> Reset
                                     </button>
@@ -780,10 +776,10 @@
                                         Execution Speed
                                     </h3>
                                     <input
+                                        id="executionSpeed"
                                         type="range"
                                         min="1"
                                         max="10"
-                                        v-model="executionSpeed"
                                         class="w-full"
                                     />
                                     <div
@@ -804,24 +800,28 @@
                                             <span class="text-gray-600"
                                                 >State:</span
                                             >
-                                            <span class="font-medium"
-                                                >{{ simulatorState }}</span
+                                            <span
+                                                id="simulatorState"
+                                                class="font-medium"
+                                                >Ready</span
                                             >
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-600"
                                                 >PC:</span
                                             >
-                                            <span class="font-mono"
-                                                >{{ pcValue }}</span
+                                            <span id="pcValue" class="font-mono"
+                                                >0x00000001</span
                                             >
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-600"
                                                 >Cycles:</span
                                             >
-                                            <span class="font-mono"
-                                                >{{ cycleCount }}</span
+                                            <span
+                                                id="cycleCount"
+                                                class="font-mono"
+                                                >1</span
                                             >
                                         </div>
                                     </div>
