@@ -37,7 +37,17 @@ const showHelp = () => {
     );
 };
 
-document.getElementById("assembleBtn").addEventListener("click", assemble);
+const assemblyCode = document.getElementById("assemblyCode");
+assemblyCode.addEventListener("input", updateCursorPosition);
+
 document.getElementById("loadCodeBtn").addEventListener("click", loadCode);
 document.getElementById("saveCodeBtn").addEventListener("click", saveCode);
 document.getElementById("clearCodeBtn").addEventListener("click", clearCode);
+
+configLoader = new InstructionConfigLoader();
+configLoader.loadConfig(); 
+
+InstructionFactory.initialize(configLoader); 
+
+
+

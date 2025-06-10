@@ -93,18 +93,18 @@ async function pc(instruction) {
     console.log("✅ ✅ ✅ Kết thúc bigrun: tất cả run() xong");
 }
 
-startBtn.onclick = async () => {
-    resetBtn.click(); // Reset trước khi bắt đầu
-    running = true;
-    // running each instruction step by step in array assemblyInstructions
-    for (let i = 0; i < assemblyInstructions.length; i++) {
-        const instruction = assemblyInstructions[i];
-        console.log(
-            `🔄 Bắt đầu chạy lệnh ${instruction} (${i + 1}/${assemblyInstructions.length})`,
-        );
-        await pc(instruction);
-    }
-};
+// startBtn.onclick = async () => {
+//     resetBtn.click(); // Reset trước khi bắt đầu
+//     running = true;
+//     // running each instruction step by step in array assemblyInstructions
+//     for (let i = 0; i < assemblyInstructions.length; i++) {
+//         const instruction = assemblyInstructions[i];
+//         console.log(
+//             `🔄 Bắt đầu chạy lệnh ${instruction} (${i + 1}/${assemblyInstructions.length})`,
+//         );
+//         await pc(instruction);
+//     }
+// };
 
 pauseBtn.onclick = () => {
     if (!running) {

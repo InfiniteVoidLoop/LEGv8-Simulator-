@@ -99,7 +99,7 @@
                                         d="M 927,637 L 959,637"
                                     />
                                     <path
-                                        id="Instruction-[32-31]"
+                                        id="Instruction-[31-21]"
                                         stroke="#007BFF"
                                         stroke-width="2"
                                         fill="none"
@@ -125,6 +125,13 @@
                                         stroke-width="2"
                                         fill="none"
                                         d="M 320,630 L 360,630 L 360, 850 L 650, 850"
+                                    />
+                                    <path
+                                        id="Instruction-[31-21]-1"
+                                        stroke="#007BFF"
+                                        stroke-width="2"
+                                        fill="none"
+                                        d="M 320,630 L 360,630 L 360, 850 L 563 850 L 563 918 L 839 918 L 839 857 L 901 857 "
                                     />
                                     <path
                                         id="Instruction-[4-0]"
@@ -173,7 +180,7 @@
                                         stroke="#007BFF"
                                         stroke-width="2"
                                         fill="none"
-                                        d="M 900 630 L 769 630"
+                                        d="M 769 630 L 900 630 "
                                     />
                                     <path
                                         id="read-data-2-write-data"
@@ -222,15 +229,9 @@
                                         stroke="#007BFF"
                                         stroke-width="2"
                                         fill="none"
-                                        d="M 1095 595 L 1095 809 L 1352 809 L 1352 664 L 1400 664 "
+                                        d="M 1067 595 L 1095 595 L 1095 809 L 1352 809 L 1352 664 L 1400 664 "
                                     />
-                                    <path
-                                        id="sign-extend-alu-control"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 563 850 L 563 918 L 839 918 L 839 857 L 901 857 "
-                                    />
+                            
                                     <path
                                         id="and-gate-or-gate"
                                         stroke="#007BFF"
@@ -842,5 +843,16 @@
         <script src="scripts/test.js"></script>
         <!-- <script src="scripts/main.js"></script> -->
         <script src="scripts/async_running.js"></script>
+        <script src="scripts/R-Format.js"></script>
+
+        <script src="scripts/AssemblyParser/Assembler.js"></script>
+        <script src="scripts/AssemblyParser/AssemblyException.js"></script>
+        <script src="scripts/AssemblyParser/ControlSignals.js"></script>
+        <script src="scripts/AssemblyParser/Instruction.js"></script>
+        <script src="scripts/AssemblyParser/InstructionConfigLoader.js"></script>
+        <script src="scripts/AssemblyParser/InstructionDefinition.js"></script>
+        <script src="scripts/AssemblyParser/InstructionFactory.js"></script>
+        <script src="scripts/AssemblyParser/ProgramCounter.js"></script>
+        <script src="scripts/AssemblyParser/RFormatInstruction.js"></script>
     </body>
 </html>
