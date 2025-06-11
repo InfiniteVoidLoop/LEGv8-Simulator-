@@ -69,7 +69,7 @@ class InstructionFactory {
             definition = this.configLoader.getDefinitionByMnemonic(bCondMnemonic);
 
             console.log(`ℹ Factory Debug: B.cond detected. Mnem='${bCondMnemonic}'. Definition found: ${definition ? definition.getMnemonic() : "NULL"}`);
-            
+
             if (definition && definition.getFormat() === 'C') {
                 identifiedFormat = 'C';
                 console.log(`ℹ Factory Decode Hint: Identified B.cond -> ${bCondMnemonic}`);
