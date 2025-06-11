@@ -481,10 +481,12 @@ class InstructionFactory {
 
     /**
      * Splits the operands string into an array of operands with a specified count.
+     * If there are more operands than the specified count, the excess operands
+     * are merged into the last element.
      * @param {string} operands The operands string to split.
      * @param {number} count The expected number of operands.
      * @returns {string[]} An array of operands.
-     * @throws {AssemblyException} if the number of operands does not match the expected count.
+     * @throws {AssemblyException} if the number of operands is less than the expected count.
      */
     static splitOperands(operands, count) {
         if (!operands) {
@@ -492,21 +494,59 @@ class InstructionFactory {
             else throw new AssemblyException(`Expected ${count} operands, but got none.`);
         }
 
-        const parts = operands.trim().split(/\s*,\s*/, count);
-        if (parts.length !== count || (parts.length === 1 && parts[0] === '' && count > 0)) {
-            if (parts.length === 1 && parts[0] === '' && count === 1) {
-                throw new AssemblyException(`Expected ${count} operand, but got empty string.`);
+        // Handle the case where count is 0
+        if (count === 0) {
+            if (operands.trim()) {
+                throw new AssemblyException(`Expected 0 operands, but got '${operands}'`);
             }
+            return [];
+        }
 
-            if (parts.length < count) {
-                throw new AssemblyException(`Expected ${count} operands, but found fewer in '${operands}'`);
-            }
+        // Split with limit to ensure we get at most 'count' parts
+        // The last part will contain any remaining operands
+        // First split everything to see how many operands we actually have
+        const allParts = operands.trim().split(/\s*,\s*/);
 
-            if (parts.length === count && parts[count - 1].trim() === '' && count > 0) {
-                throw new AssemblyException(`Trailing comma or missing operand detected in '${operands}'`);
+        // If we have fewer operands than expected, that's an error
+        if (allParts.length < count) {
+            throw new AssemblyException(`Expected ${count} operands, but found only ${allParts.length} in '${operands}'`);
+        }
+
+        // Take the first (count-1) parts as-is, then merge the rest into the last part
+        const parts = [];
+        for (let i = 0; i < count - 1; i++) {
+            parts.push(allParts[i]);
+        }
+
+        // Merge all remaining parts into the last element
+        if (count > 0) {
+            const remainingParts = allParts.slice(count - 1);
+            parts.push(remainingParts.join(', '));
+        }
+
+        // Check for empty operands
+        if (parts.length === 1 && parts[0] === '') {
+            throw new AssemblyException(`Expected ${count} operand${count > 1 ? 's' : ''}, but got empty string.`);
+        }
+
+        // Check if we have fewer operands than expected
+        if (parts.length < count) {
+            throw new AssemblyException(`Expected ${count} operands, but found only ${parts.length} in '${operands}'`);
+        }
+
+        // Check for empty operands in the middle or at the end
+        for (let i = 0; i < parts.length; i++) {
+            if (parts[i].trim() === '') {
+                if (i === parts.length - 1) {
+                    throw new AssemblyException(`Trailing comma or missing operand detected in '${operands}'`);
+                } else {
+                    throw new AssemblyException(`Empty operand detected at position ${i + 1} in '${operands}'`);
+                }
             }
         }
-        return parts;
+
+        // Trim all parts to remove any remaining whitespace
+        return parts.map(part => part.trim());
     }
 
     /**
