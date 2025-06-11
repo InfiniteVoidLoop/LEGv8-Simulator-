@@ -44,10 +44,10 @@ document.getElementById("loadCodeBtn").addEventListener("click", loadCode);
 document.getElementById("saveCodeBtn").addEventListener("click", saveCode);
 document.getElementById("clearCodeBtn").addEventListener("click", clearCode);
 
-configLoader = new InstructionConfigLoader();
-configLoader.loadConfig(); 
+// configLoader = new InstructionConfigLoader();
+// configLoader.loadConfig(); 
 
-InstructionFactory.initialize(configLoader); 
+// InstructionFactory.initialize(configLoader); 
 
 
 
