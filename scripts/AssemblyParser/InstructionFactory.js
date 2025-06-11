@@ -259,7 +259,7 @@ class InstructionFactory {
      */
     static assembleRFormat(bits, opcode, mnemonic, operands) {
         let rd, rn, rm = 0, shamt = 0;
-        const ops = this.splitOperands(operands);
+        const ops = this.splitOperands(operands, 3);
 
         switch (mnemonic) {
             case "LSL":
@@ -310,7 +310,7 @@ class InstructionFactory {
      * @param {string} operands The operands of the instruction.
      */
     static assembleIFormat(bits, opcode, mnemonic, operands) {
-        const ops = this.splitOperands(operands);
+        const ops = this.splitOperands(operands, 3);
         if (ops.length !== 3) {
             throw new AssemblyException(`${mnemonic} requires 3 operands: Rd, Rn, #immediate`);
         }
