@@ -7,7 +7,7 @@ class Instruction {
             throw new Error(`WARNING: InstructionDefinition cannot be null for standard instruction creation.`);
         }
 
-        this.bytecode = bytecode.clone();  // Assuming bytecode has a clone method.
+        this.bytecode = bytecode.slice();  // Assuming bytecode has a clone method.
         this.definition = definition;
 
         if (this.bytecode.length > 32) {
@@ -16,7 +16,7 @@ class Instruction {
     }
 
     getBytecode() {
-        return this.bytecode.clone();
+        return this.bytecode.slice();
     }
 
     getDefinition() {
@@ -25,39 +25,39 @@ class Instruction {
 
     // --- R-Format ---
     getOpcode_R() { return Instruction.extractBits(this.bytecode, 21, 31); }
-    getRm_R()     { return Instruction.extractBits(this.bytecode, 16, 20); }
-    getShamt_R()  { return Instruction.extractBits(this.bytecode, 10, 15); }
-    getRn_R()     { return Instruction.extractBits(this.bytecode, 5, 9); }
-    getRd_R()     { return Instruction.extractBits(this.bytecode, 0, 4); }
+    getRm_R() { return Instruction.extractBits(this.bytecode, 16, 20); }
+    getShamt_R() { return Instruction.extractBits(this.bytecode, 10, 15); }
+    getRn_R() { return Instruction.extractBits(this.bytecode, 5, 9); }
+    getRd_R() { return Instruction.extractBits(this.bytecode, 0, 4); }
 
     // --- I-Format ---
-    getOpcode_I()    { return Instruction.extractBits(this.bytecode, 22, 31); }
+    getOpcode_I() { return Instruction.extractBits(this.bytecode, 22, 31); }
     getImmediate_I() { return Instruction.extractBits(this.bytecode, 10, 21); }
-    getRn_I()        { return Instruction.extractBits(this.bytecode, 5, 9); }
-    getRd_I()        { return Instruction.extractBits(this.bytecode, 0, 4); }
+    getRn_I() { return Instruction.extractBits(this.bytecode, 5, 9); }
+    getRd_I() { return Instruction.extractBits(this.bytecode, 0, 4); }
 
     // --- D-Format ---
-    getOpcode_D()   { return Instruction.extractBits(this.bytecode, 21, 31); }
-    getAddress_D()  { return Instruction.extractBits(this.bytecode, 12, 20); }
-    getOp2_D()      { return Instruction.extractBits(this.bytecode, 10, 11); }
-    getRn_D()       { return Instruction.extractBits(this.bytecode, 5, 9); }
-    getRt_D()       { return Instruction.extractBits(this.bytecode, 0, 4); }
+    getOpcode_D() { return Instruction.extractBits(this.bytecode, 21, 31); }
+    getAddress_D() { return Instruction.extractBits(this.bytecode, 12, 20); }
+    getOp2_D() { return Instruction.extractBits(this.bytecode, 10, 11); }
+    getRn_D() { return Instruction.extractBits(this.bytecode, 5, 9); }
+    getRt_D() { return Instruction.extractBits(this.bytecode, 0, 4); }
 
     // --- B-Format ---
-    getOpcode_B()   { return Instruction.extractBits(this.bytecode, 26, 31); }
-    getAddress_B()  { return Instruction.extractBits(this.bytecode, 0, 25); }
+    getOpcode_B() { return Instruction.extractBits(this.bytecode, 26, 31); }
+    getAddress_B() { return Instruction.extractBits(this.bytecode, 0, 25); }
 
     // --- CB-Format ---
-    getOpcode_CB()  { return Instruction.extractBits(this.bytecode, 24, 31); }
+    getOpcode_CB() { return Instruction.extractBits(this.bytecode, 24, 31); }
     getAddress_CB() { return Instruction.extractBits(this.bytecode, 5, 23); }
-    getRt_CB()      { return Instruction.extractBits(this.bytecode, 0, 4); }
-    getCond_CB()    { return Instruction.extractBits(this.bytecode, 0, 3); }
+    getRt_CB() { return Instruction.extractBits(this.bytecode, 0, 4); }
+    getCond_CB() { return Instruction.extractBits(this.bytecode, 0, 3); }
 
     // --- I-Format Immediate ---
-    getOpcode_IM()    { return Instruction.extractBits(this.bytecode, 23, 31); }
-    getShift_IM()     { return Instruction.extractBits(this.bytecode, 21, 22); }
+    getOpcode_IM() { return Instruction.extractBits(this.bytecode, 23, 31); }
+    getShift_IM() { return Instruction.extractBits(this.bytecode, 21, 22); }
     getImmediate_IM() { return Instruction.extractBits(this.bytecode, 5, 20); }
-    getRd_IM()        { return Instruction.extractBits(this.bytecode, 0, 4); }
+    getRd_IM() { return Instruction.extractBits(this.bytecode, 0, 4); }
 
     // --- Static Utility Methods ---
 
@@ -69,7 +69,7 @@ class Instruction {
 
         let mask = 1;
         for (let i = startBit; i <= endBit; i++) {
-            bits.set(i, (value & mask) !== 0);
+            bits[i] = ((value & mask) !== 0);
             mask <<= 1;
         }
     }
@@ -82,7 +82,7 @@ class Instruction {
 
         let value = 0;
         for (let i = startBit; i <= endBit; i++) {
-            if (bits.get(i)) {
+            if (bits[i] == 1) {
                 value |= (1 << (i - startBit));
             }
         }
@@ -93,7 +93,7 @@ class Instruction {
     static formatBitSet(bits) {
         let sb = '';
         for (let i = 31; i >= 0; i--) {
-            sb += bits.get(i) ? '1' : '0';
+            sb += bits[i] ? '1' : '0';
             if (i > 0 && i % 8 === 0) {
                 sb += ' ';
             }

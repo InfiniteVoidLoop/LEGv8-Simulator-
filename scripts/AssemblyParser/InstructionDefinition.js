@@ -1,6 +1,6 @@
 class InstructionDefinition {
     // --- Constructor ---
-    
+
     /**
      * Constructor for InstructionDefinition.
      * @param {string} mnemonic The mnemonic of the instruction.
@@ -11,7 +11,7 @@ class InstructionDefinition {
     constructor(mnemonic, format, opcodeOrString, controlSignals) {
         this.mnemonic = mnemonic;
         this.format = format;
-        
+
         // Handle both constructor signatures
         if (typeof opcodeOrString === 'string') {
             // String constructor - parse binary string to integer
@@ -20,7 +20,7 @@ class InstructionDefinition {
             // Integer constructor
             this.opcode = opcodeOrString;
         }
-        
+
         this.controlSignals = controlSignals;
     }
 
@@ -60,9 +60,9 @@ class InstructionDefinition {
     getControlSignals() {
         return this.controlSignals;
     }
-    
+
     // --- Utility Methods ---
-    
+
     /**
      * @returns {string} A string representation of the InstructionDefinition object.
      *         This includes the mnemonic, format, opcode identifier string, and control signals.
@@ -70,7 +70,7 @@ class InstructionDefinition {
     toString() {
         const mnemonicPadded = this.mnemonic.padEnd(6);
         const opcodeStringPadded = this.getOpcodeIdentifierString().padEnd(11);
-        
+
         return `InstructionDefinition [mnemonic=${mnemonicPadded}, format=${this.format}, opcodeIdentifierString=${opcodeStringPadded}, controlSignals={${this.controlSignals}}]`;
     }
 }
