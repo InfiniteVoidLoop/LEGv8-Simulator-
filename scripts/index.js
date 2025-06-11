@@ -3,6 +3,9 @@ const pcValue = document.getElementById("pcValue");
 const cycleCount = document.getElementById("cycleCount");
 const executionSpeedInput = document.getElementById("executionSpeed");
 const cursorPosition = document.getElementById("cursorPosition");
+const assemblyCode = document.getElementById("assemblyCode");
+
+document.getElementById('main-display').style.width = "1700px";
 
 let currentLine = 1;
 let currentCol = 1;
@@ -37,7 +40,6 @@ const showHelp = () => {
     );
 };
 
-const assemblyCode = document.getElementById("assemblyCode");
 assemblyCode.addEventListener("input", updateCursorPosition);
 
 document.getElementById("loadCodeBtn").addEventListener("click", loadCode);
@@ -48,6 +50,5 @@ document.getElementById("clearCodeBtn").addEventListener("click", clearCode);
 // configLoader.loadConfig(); 
 
 // InstructionFactory.initialize(configLoader); 
-
 
 

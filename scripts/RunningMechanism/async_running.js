@@ -34,11 +34,13 @@ function waitForGlobalResume() {
 async function run(text, pathId) {
     // add text to path
     const pathElement = document.getElementById(pathId);
-    console.log(`🔄 Bắt đầu run() trên path ${pathElement}`);
 
     const textElement = document.createElementNS(namespace, "text");
     textElement.setAttribute("font-size", "20");
-    textElement.setAttribute("fill", "red");
+    textElement.setAttribute("fill", "#000");
+    textElement.setAttribute("font-weight", "bold");
+    textElement.setAttribute("class", "instruction-text");
+    textElement.setAttribute("font-family", "Courier New, monospace");
     const textPath = document.createElementNS(namespace, "textPath");
     textPath.setAttributeNS(
         "http://www.w3.org/1999/xlink",
@@ -76,22 +78,22 @@ async function run(text, pathId) {
     console.log(`✅ run() hoàn tất trên path ${pathId}`);
 }
 
-async function pc(instruction) {
-    console.log("=== ⏯️ Bắt đầu bigrun ===");
+// async function pc(instruction) {
+//     console.log("=== ⏯️ Bắt đầu bigrun ===");
 
-    // turn assemblyInstructions into a string
+//     // turn assemblyInstructions into a string
 
-    // const text = assemblyInstructions[address].toString();
-    const text = instruction.toString();
+//     // const text = assemblyInstructions[address].toString();
+//     const text = instruction.toString();
 
-    const pathIds = ["pc-alu", "pc-ins-mem", "pc-add-4"];
+//     const pathIds = ["pc-alu", "pc-ins-mem", "pc-add-4"];
 
-    const allRuns = pathIds.map((pathId) => run(text, pathId));
+//     const allRuns = pathIds.map((pathId) => run(text, pathId));
 
-    await Promise.all(allRuns);
+//     await Promise.all(allRuns);
 
-    console.log("✅ ✅ ✅ Kết thúc bigrun: tất cả run() xong");
-}
+//     console.log("✅ ✅ ✅ Kết thúc bigrun: tất cả run() xong");
+// }
 
 // startBtn.onclick = async () => {
 //     resetBtn.click(); // Reset trước khi bắt đầu
@@ -131,7 +133,9 @@ resetBtn.onclick = () => {
     running = false;
     console.log("🔄 Reset");
     resumeCallbacks = [];
-    // Xoá tất cả text đã thêm
-    const texts = document.querySelectorAll("text");
-    texts.forEach((text) => text.remove());
+    // Xoá tất cả element co class la instruction-text đã thêm
+    const instructionTexts = document.querySelectorAll(".instruction-text");
+    instructionTexts.forEach((text) => text.remove());
+    // const texts = document.querySelectorAll("text");
+    // texts.forEach((text) => text.remove());
 };

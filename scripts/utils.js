@@ -17,33 +17,6 @@ function add4ToHexAddress(hexAddressString) {
     return `0x${newHex}`;
 }
 
-function getAluControl(aluop1, aluop2, opcodeBin) {
-    if (aluop1 == "0" && aluop2 == "0") {
-        return "0010"; // ADD
-    }
-  
-    else if (aluop1 == "0" && aluop2 == "1") {
-        return "0111"; // Pass Input B (or similar for branch condition)
-    }
-  
-    else if (aluop1 == "1" && aluop2 == "0") {
-      
-        const rtypeLookup = {
-            "10001011000": "0010", // ADD (ALU control for addition)
-            "1001000100" : "0010", // ADD (ALU control for addition, I-Format)
-            "11001011000": "0110", // SUB (ALU control for subtraction)
-            "10001010000": "0000", // AND (ALU control for bitwise AND)
-            "10101010000": "0001"  // ORR (ALU control for bitwise OR)
-           
-        };
-
-        return rtypeLookup[opcodeBin] || "????"; // Unknown opcode
-    }
-    else {
-        return "????"; // Invalid ALUOp combination
-    }
-}
-
 /**
  * Cộng hai chuỗi thập lục phân và trả về tổng dưới dạng chuỗi thập lục phân.
  * Hàm này sử dụng BigInt để xử lý các số có độ lớn tùy ý, đảm bảo độ chính xác.
@@ -94,4 +67,69 @@ function addHexStrings(hexStr1, hexStr2) {
 
     // --- Bước 5: Định dạng Đầu ra (Thêm '0x' và Chữ hoa) ---
     return `0x${resultHex.toUpperCase()}`;
+}
+
+function toExactBinary(decimalNum, n_bits) {
+  if (decimalNum < 0) {
+    throw new Error("Số thập phân phải là số không âm.");
+  }
+
+  let binaryString = decimalNum.toString(2);
+
+  // Nếu chuỗi nhị phân quá dài, chỉ lấy n_bits cuối cùng
+  if (binaryString.length > n_bits) {
+    return binaryString.slice(-n_bits);
+  }
+
+  // Nếu chuỗi nhị phân ngắn hơn, thêm 0 vào đầu
+  return binaryString.padStart(n_bits, '0');
+}
+
+function toExactSignBinary(decimalNum, n_bits) {
+    if (n_bits <= 0 || !Number.isInteger(n_bits)) {
+        throw new Error("Số bit (n_bits) phải là một số nguyên dương.");
+    }
+
+    const maxPositive = Math.pow(2, n_bits - 1) - 1; // Giá trị dương lớn nhất có thể biểu diễn
+    const minNegative = -Math.pow(2, n_bits - 1);   // Giá trị âm nhỏ nhất có thể biểu diễn
+
+    if (decimalNum > maxPositive || decimalNum < minNegative) {
+        // Tùy chọn: ném lỗi hoặc trả về một giá trị đặc biệt nếu số nằm ngoài phạm vi biểu diễn
+        console.warn(`Cảnh báo: Số ${decimalNum} nằm ngoài phạm vi biểu diễn của ${n_bits} bit bù 2.`);
+        // Đối với ví dụ này, chúng ta sẽ cho phép nó bị cắt bớt hoặc tràn số theo hành vi bù 2
+        // nếu sử dụng phép toán bitwise 32-bit mặc định của JS.
+    }
+
+    if (decimalNum >= 0) {
+        // Xử lý số dương
+        let binaryString = decimalNum.toString(2);
+        // Thêm padding và đảm bảo độ dài là n_bits.
+        // Nếu binaryString dài hơn n_bits, padStart sẽ không cắt bớt,
+        // do đó cần slice ở cuối để đảm bảo đúng n_bits.
+        return binaryString.padStart(n_bits, '0').slice(-n_bits);
+    } else {
+        // Xử lý số âm (sử dụng bù 2)
+        // Lưu ý: JavaScript thực hiện các phép toán bitwise trên số 32-bit có dấu.
+        // Điều này có thể gây ra kết quả không mong muốn nếu n_bits > 32.
+        // Để linh hoạt hơn với n_bits bất kỳ, chúng ta sẽ mô phỏng thủ công.
+
+        // Bước 1: Lấy giá trị tuyệt đối của số âm, sau đó trừ đi 1
+        // (Đây là một mẹo để xử lý bù 2 thủ công dễ hơn)
+        // Ví dụ: -5 => 4. Chúng ta cần tính 2^n - |num|
+        const absoluteVal = Math.abs(decimalNum);
+
+        // Giá trị tương ứng trong biểu diễn bù 2 cho số âm
+        // Là (2^n_bits - |decimalNum|)
+        // Ví dụ: -5 (4 bit) => 2^4 - 5 = 16 - 5 = 11 (thập phân) => 1011 (nhị phân)
+        // Hoặc: -5 (8 bit) => 2^8 - 5 = 256 - 5 = 251 (thập phân) => 11111011 (nhị phân)
+        const twoComplementVal = Math.pow(2, n_bits) - absoluteVal;
+
+        // Chuyển đổi giá trị này sang nhị phân
+        let binaryString = twoComplementVal.toString(2);
+
+        // Đảm bảo chuỗi nhị phân có đúng n_bits
+        // Nếu n_bits quá nhỏ so với số âm, binaryString có thể dài hơn n_bits,
+        // ví dụ: -1 (4 bit) -> 1111. Nếu tính ra 8 bit -> 11111111. slice(-n_bits) sẽ cắt đúng.
+        return binaryString.slice(-n_bits);
+    }
 }

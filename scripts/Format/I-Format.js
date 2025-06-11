@@ -1,10 +1,27 @@
 class IFormat {
-    constructor(opcode, immmediate, Rn, Rd, address){
-        this.opcode = opcode; // 11 bits
-        this.immediate = immmediate; // 12 bits
-        this.Rn = Rn;         // 5 bits
-        this.Rd = Rd;         // 5 bits
-        this.address = address; // Address in hexadecimal format
+    constructor(IFormatInstruction, PC){
+        this.opcode = toExactBinary(IFormatInstruction.definition.opcode, 10); // 11 bits
+        this.immediate = toExactSignBinary(IFormatInstruction.immediate, 12); // 12 bits
+        this.Rn = toExactBinary(IFormatInstruction.rn, 5);
+        this.Rd = toExactBinary(IFormatInstruction.rd, 5);
+        this.address = LEGv8Registers.binaryToHex(LEGv8Registers.valueTo64BitBinary(PC.getCurrentAddress())); // Program Counter address
+        // ALU CONTROL
+        this.aluControl = toExactBinary(IFormatInstruction.definition.controlSignals.operation, 4); // Placeholder for ALU control, will be set in execute method
+        
+        this.controlSignals = {
+            Reg2Loc: IFormatInstruction.definition.controlSignals.reg2Loc,
+            UncondBranch: IFormatInstruction.definition.controlSignals.uncondBranch,
+            MemRead: IFormatInstruction.definition.controlSignals.memRead,
+            MemtoReg: IFormatInstruction.definition.controlSignals.memToReg,
+            ALUOp1: LEGv8Registers.valueTo64BitBinary(IFormatInstruction.definition.controlSignals.aluOp)[1],
+            ALUOp0: String(IFormatInstruction.definition.controlSignals.aluOp % 2),
+            MemWrite: IFormatInstruction.definition.controlSignals.memWrite,
+            ALUSrc: IFormatInstruction.definition.controlSignals.aluSrc,
+            RegWrite: IFormatInstruction.definition.controlSignals.regWrite,
+            Branch: IFormatInstruction.definition.controlSignals.flagBranch,
+        }
+        console.log(this.controlSignals.ALUOp0, 'ALUOp0');
+        console.log(this.controlSignals.ALUOp1, 'ALUOp1');
     }
 
     async instructionFetch(){
@@ -34,22 +51,23 @@ class IFormat {
         ];
 
         const allRuns = pathAndData.map(({ pathId, data }) => run(data, pathId));
-
         await Promise.all(allRuns);
+
         // Control signals 
         const controlPathAndData = [
-            { pathId: 'control-reg-loc', data: controlUnit.getControlSignals().Reg2Loc},
-            { pathId: 'control-uncond-branch', data: controlUnit.getControlSignals().UncondBranch},
-            { pathId: 'control-mem-read', data: controlUnit.getControlSignals().MemRead},
-            { pathId: 'control-mem-reg', data: controlUnit.getControlSignals().MemtoReg},
-            { pathId: 'control-ALU-op', data: controlUnit.getControlSignals().ALUOp1 + controlUnit.getControlSignals().ALUOp0},
-            { pathId: 'control-mem-write', data: controlUnit.getControlSignals().MemWrite},
-            { pathId: 'control-ALU-src', data: controlUnit.getControlSignals().ALUSrc},
-            { pathId: 'control-reg-write', data: controlUnit.getControlSignals().RegWrite},
-            { pathId: 'control-branch', data: controlUnit.getControlSignals().Branch},
+            { pathId: 'control-reg-loc', data: this.controlSignals.Reg2Loc },
+            { pathId: 'control-uncond-branch', data: this.controlSignals.UncondBranch },
+            { pathId: 'control-mem-read', data: this.controlSignals.MemRead },
+            { pathId: 'control-mem-reg', data: this.controlSignals.MemtoReg },
+            { pathId: 'control-ALU-op', data: this.controlSignals.ALUOp1 + this.controlSignals.ALUOp0 },
+            { pathId: 'control-mem-write', data: this.controlSignals.MemWrite },
+            { pathId: 'control-ALU-src', data: this.controlSignals.ALUSrc },
+            { pathId: 'control-reg-write', data: this.controlSignals.RegWrite },
+            { pathId: 'control-branch', data: this.controlSignals.Branch },
         ];
         const allControlRuns = controlPathAndData.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(allControlRuns);
+
         const muxToRegister = [
             { pathId: 'mux-read-res-2', data: instruction20_16},  // 20-16 bits
         ];
@@ -62,30 +80,23 @@ class IFormat {
         const register2_hexan = LEGv8Registers.binaryToHex(registers.readByBinary(instruction.substring(16, 20)));
         const extendImmediate_hexan = LEGv8Registers.binaryToHex(LEGv8Registers.signExtend(this.immediate)); // 20-16 bits
 
-        // Control Unit  !!!! 
-        const controlUnit = new ControlUnit(this.opcode);
-        
-        const aluControl = getAluControl(
-            controlUnit.getControlSignals().ALUOp1, 
-            controlUnit.getControlSignals().ALUOp0,
-            this.opcode
-        );
-
         const register1_decimal = LEGv8Registers.binaryToBigInt(registers.readByBinary(this.Rn)); 
         const immediate_decimal = LEGv8Registers.binaryToBigInt(LEGv8Registers.signExtend(this.immediate));
+       
         const newRegisterValue = {
             '0010': register1_decimal + immediate_decimal, // ADD
             '0110': register1_decimal - immediate_decimal, // SUB
             '0000': register1_decimal & immediate_decimal, // AND
             '0001': register1_decimal | immediate_decimal, // ORR
         }
-        const newRegister_bin = LEGv8Registers.valueTo64BitBinary(newRegisterValue[aluControl] || 0);
+        const newRegister_bin = LEGv8Registers.valueTo64BitBinary(newRegisterValue[this.aluControl] || 0);
         registers.writeByBinary(this.Rd, newRegister_bin); // Write the result to the destination register
-
+        console.log(this.aluControl, 'aluControl');
+        console.log(newRegister_bin, 'newRegisterValue');
         const pathAndData = [
             { pathId: 'read-1-alu', data: register1_hexan },
             { pathId: 'read-data-2-mux', data: register2_hexan },
-            { pathId: 'ALU-control-ALU', data: aluControl},         // fix alu control
+            { pathId: 'ALU-control-ALU', data: this.aluControl},         // fix alu control
             { pathId: 'Sign-extend-mux', data: extendImmediate_hexan }, // 4-0 bits
             { pathId: 'Sign-extend-shift', data: extendImmediate_hexan }, // 4-0 bits
         ]
@@ -95,7 +106,7 @@ class IFormat {
         const immediateShifted_hexan = LEGv8Registers.binaryToHex(immediateShifted_bin); // Shift left by 2 bits
         const anotherPathAndData = [
             { pathId: 'shift-add-alu', data: immediateShifted_hexan }, // 9-5 bits
-            { pathId: 'mux-alu', data: register2_hexan}, // 20-16 bits
+            { pathId: 'mux-alu', data: extendImmediate_hexan}, // 20-16 bits
         ];
 
         const anotherRuns = anotherPathAndData.map(({ pathId, data }) => run(data, pathId));
@@ -105,7 +116,6 @@ class IFormat {
     async memoryAccess() {
         const instruction = this.opcode + this.Rn + this.immediate + this.Rd; // Concatenate all parts to form the instruction
         const add4Address = add4ToHexAddress(this.address);
-        const register1_hexan = LEGv8Registers.binaryToHex(registers.readByBinary(this.Rn)); // 9-5 bits
         const register2_hexan = LEGv8Registers.binaryToHex(registers.readByBinary(instruction.substring(16, 20))); // 20-16 bits
         const newRegisterValue_hexan = LEGv8Registers.binaryToHex(registers.readByBinary(this.Rd)); // 4-0 bits
         const immediateShifted_bin = LEGv8Registers.valueTo64BitBinary(LEGv8Registers.binaryToBigInt(this.immediate) << BigInt(2));
@@ -147,4 +157,11 @@ class IFormat {
         await Promise.all(allRuns);
     }
     
+    async run() {
+        await this.instructionFetch();
+        await this.instructionDecode();
+        await this.execute();
+        await this.memoryAccess();
+        await this.registerWrite();
+    }
 }

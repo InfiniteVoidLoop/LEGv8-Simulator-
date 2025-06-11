@@ -392,7 +392,7 @@ class InstructionFactory {
      * @param {number} currentAddr The current instruction address for branch target resolution.
      */
     static assembleCBFormat(bits, opcode, mnemonic, operands, symbolTable, currentAddr) {
-        const ops = this.splitOperands(operands);
+        const ops = this.splitOperands(operands, 2);
         let rt_or_cond;
         let targetStr;
 

@@ -96,7 +96,7 @@ class LEGv8Registers {
     writeByBinary(binStrIndex, value) { // Renamed parameter from binStr to binStrIndex for clarity
         const index = parseInt(binStrIndex, 2);
         let valueToStore = value; // Default to the original value
-
+        
         // If the value is a binary string, explicitly sign-extend it to 64 bits.
         // The _valueTo64BitBinary method called by this.write will then take this 64-bit string directly.
         if (typeof value === 'string' && /^[01]+$/.test(value)) {

@@ -1,447 +1,255 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.25"
-        />
-        <title>LEGv8 Simulator</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vue@3.2.47/dist/vue.global.js"></script>
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        />
-        <link rel="stylesheet" href="styles/style.css" />
-    </head>
-    <body>
-        <div id="app">
-            <div class="bg-gray-100 h-screen flex flex-col">
-                <div class="flex flex-col h-full">
-                    <!-- Header -->
-                    <header class="bg-blue-800 text-white p-4 shadow-md">
-                        <div
-                            class="container mx-auto flex justify-between items-center"
-                        >
-                            <h1 class="text-2xl font-bold">LEGv8 Simulator</h1>
-                            <div class="flex items-center space-x-2">
-                                <span
-                                    class="text-sm bg-blue-700 px-2 py-1 rounded"
-                                    >v1.0</span
-                                >
-                                <button
-                                    class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm"
-                                    @click="showHelp"
-                                >
-                                    <i class="fas fa-question-circle mr-1"></i>
-                                    Help
-                                </button>
-                            </div>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.25" />
+    <title>LEGv8 Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.47/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="styles/style.css" />
+</head>
+
+<body>
+    <div id="app">
+        <div class="bg-gray-100 h-screen flex flex-col">
+            <div class="flex flex-col h-full">
+                <!-- Header -->
+                <header class="bg-blue-800 text-white p-4 shadow-md">
+                    <div class="container mx-auto flex justify-between items-center">
+                        <h1 class="text-2xl font-bold">LEGv8 Simulator</h1>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm bg-blue-700 px-2 py-1 rounded">v1.0</span>
+                            <button class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm" @click="showHelp">
+                                <i class="fas fa-question-circle mr-1"></i>
+                                Help
+                            </button>
                         </div>
-                    </header>
+                    </div>
+                </header>
 
-                    <!-- Main Content -->
-                    <div class="flex flex-1 overflow-hidden">
-                        <!-- Center Panel - Main Display (Reserved for later) -->
-                        <div
-                            class="flex-1 bg-white p-4 flex flex-col overflow-auto"
-                        >
-                            <div
-                                id="main-display"
-                                class="relative clearfix flex-1 rounded-lg flex items-center justify-center text-gray-500"
-                            >
-                                <svg
-                                    id="svg"
-                                    class="absolute w-full h-full border-gray-300"
-                                >
-                                    <path />
-                                    <path
-                                        id="pc-ins-mem"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 140,550 L 200,550"
-                                    />
-                                    <path
-                                        id="pc-add-4"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 140,550 L 170,550 L 170,130 L 260,130"
-                                    />
-                                    <path
-                                        id="pc-alu"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 140,550 L 170,550 L 170,260 L 500,260 L 500,170 L 1108,170"
-                                    />
-                                    <path
-                                        id="shift-add-alu"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 965,266 L 1110,266"
-                                    />
-                                    <path
-                                        id="read-1-alu"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 768,534 L 959,534"
-                                    />
-                                    <path
-                                        id="mux-alu"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 927,637 L 959,637"
-                                    />
-                                    <path
-                                        id="Instruction-[31-21]"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 320,630 L 360,630 L 360, 360 L 500, 360"
-                                    />
-                                    <path
-                                        id="Instruction-[9-5]"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 320,630 L 360,630 L 360, 520 L 600, 520"
-                                    />
-                                    <path
-                                        id="Instruction-[20-16]"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 320,630 L 360,630 L 360, 545 L 500, 545"
-                                    />
-                                    <path
-                                        id="Instruction-[31-0]"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 320,630 L 360,630 L 360, 850 L 650, 850"
-                                    />
-                                    <path
-                                        id="Instruction-[31-21]-1"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 320,630 L 360,630 L 360, 850 L 563 850 L 563 918 L 839 918 L 839 857 L 901 857 "
-                                    />
-                                    <path
-                                        id="Instruction-[4-0]"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 320,630 L 360,630 L 360, 655 L 600, 655"
-                                    />
-                                    <path
-                                        id="Instruction-[4-0]-1"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 320,630 L 360,630 L 360, 655 L 455, 655 L 455,610 L 502,610"
-                                    />
-                                    <path
-                                        id="Sign-extend-shift"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 716,831 L 822,831 L 822,269 L 901,269"
-                                    />
-                                    <path
-                                        id="Sign-extend-mux"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 716,831 L 822,831 L 822,686 L 901,686"
-                                    />
-                                    <path
-                                        id="mux-read-res-2"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 530, 590 L 600,590"
-                                    />
-                                    <path
-                                        id="4-ALU"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 227 218 L 258 218"
-                                    />
-                                    <path
-                                        id="read-data-2-mux"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 769 630 L 900 630 "
-                                    />
-                                    <path
-                                        id="read-data-2-write-data"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 797 629 L 797 705 L 1150 705"
-                                    />
-                                    <path
-                                        id="ALU-add-mux"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 1211 224 L 1415 224"
-                                    />
-                                    <path
-                                        id="or-gate-mux"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 1352 344 L 1413 344 L 1413 227 "
-                                    />
-                                    <path
-                                        id="ALU-control-ALU"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 969.015625 847.0546875 L 1029.015625 847.0546875 L 1029.015625 622.0546875 "
-                                    />
-                                    <path
-                                        id="ALU-address"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 1067 595 L 1149 595 "
-                                    />
-                                    <path
-                                        id="ALU-and-gate"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 1067 559 L 1083 559 L 1083 470 L 1109 470 "
-                                    />
-                                    <path
-                                        id="ALU-mux"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 1067 595 L 1095 595 L 1095 809 L 1352 809 L 1352 664 L 1400 664 "
-                                    />
+                <!-- Main Content -->
+                <div class="flex flex-1 overflow-auto">
+                    <!-- Center Panel - Main Display (Reserved for later) -->
+                    <div id="wrapper" class="h-[1230px] w-[1600px] flex-1 bg-white p-4 flex flex-col overflow-auto">
+                        <div id="main-display"
+                            class="relative clearfix flex-1 rounded-lg flex items-center justify-center text-gray-500 ">
+                            <svg id="svg" class="absolute w-full h-full border-gray-300">
+                                <defs>
+                                    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6"
+                                        markerHeight="6" orient="auto-start-reverse" markerUnits="strokeWidth">
+                                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#004085" />
+                                    </marker>
+                                </defs>
+                                <path id="pc-ins-mem" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 140,550 L 200,550" marker-end="url(#arrowhead)" />
+                                <path id="pc-add-4" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 140,550 L 170,550 L 170,130 L 260,130" marker-end="url(#arrowhead)"/>
+                                <path id="pc-alu" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 140,550 L 170,550 L 170,260 L 500,260 L 500,170 L 1108,170" marker-end="url(#arrowhead)" />
+                                <path id="shift-add-alu" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 965,266 L 1110,266" marker-end="url(#arrowhead)"/>
+                                <path id="read-1-alu" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 768,534 L 959,534" marker-end="url(#arrowhead)"/>
+                                <path id="mux-alu" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 927,637 L 959,637" marker-end="url(#arrowhead)"/>
+                                <path id="Instruction-[31-21]" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 320,630 L 360,630 L 360, 360 L 500, 360" marker-end="url(#arrowhead)"/>
+                                <path id="Instruction-[9-5]" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 320,630 L 360,630 L 360, 520 L 600, 520" marker-end="url(#arrowhead)"/>
+                                <path id="Instruction-[20-16]" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 320,630 L 360,630 L 360, 545 L 500, 545" marker-end="url(#arrowhead)"/>
+                                <path id="Instruction-[31-0]" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 320,630 L 360,630 L 360, 850 L 650, 850" marker-end="url(#arrowhead)" />
+                                <path id="Instruction-[31-21]-1" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 320,630 L 360,630 L 360, 850 L 563 850 L 563 918 L 839 918 L 839 857 L 901 857 " marker-end="url(#arrowhead)" />
+                                <path id="Instruction-[4-0]" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 320,630 L 360,630 L 360, 655 L 600, 655" marker-end="url(#arrowhead)"/>
+                                <path id="Instruction-[4-0]-1" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 320,630 L 360,630 L 360, 655 L 455, 655 L 455,610 L 502,610" marker-end="url(#arrowhead)" />
+                                <path id="Sign-extend-shift" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 716,831 L 822,831 L 822,269 L 901,269" marker-end="url(#arrowhead)"/>
+                                <path id="Sign-extend-mux" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 716,831 L 822,831 L 822,686 L 901,686" marker-end="url(#arrowhead)"/>
+                                <path id="mux-read-res-2" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 530, 590 L 600,590" marker-end="url(#arrowhead)"/>
+                                <path id="4-ALU" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 227 218 L 258 218" marker-end="url(#arrowhead)"/>
+                                <path id="read-data-2-mux" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 769 630 L 900 630 " marker-end="url(#arrowhead)"/>
+                                <path id="read-data-2-write-data" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 797 629 L 797 705 L 1150 705" marker-end="url(#arrowhead)"/>
+                                <path id="ALU-add-mux" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 1211 224 L 1415 224" marker-end="url(#arrowhead)"/>
+                                <path id="or-gate-mux" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 1352 344 L 1413 344 L 1413 227 " />
+                                <path id="ALU-control-ALU" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 969.015625 847.0546875 L 1029.015625 847.0546875 L 1029.015625 622.0546875 " marker-end="url(#arrowhead)" />
+                                <path id="ALU-address" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 1067 595 L 1149 595 " marker-end="url(#arrowhead)"/>
+                                <path id="ALU-and-gate" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 1067 559 L 1083 559 L 1083 470 L 1109 470 " />
+                                <path id="ALU-mux" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 1067 595 L 1095 595 L 1095 809 L 1352 809 L 1352 664 L 1400 664 " marker-end="url(#arrowhead)"/>
 
-                                    <path
-                                        id="and-gate-or-gate"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 1156 454 L 1169 454 L 1169 372 L 1297 372 "
-                                    />
-                                    <path
-                                        id="alu-add-4-mux"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 327 181 L 412 181 L 412 136 L 1288 136 L 1288 160 L 1402 160 "
-                                    />
-                                    <path
-                                        id="ALU-back-PC"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 1429 186 L 1452 186 L 1452 55 L 50 55 L 50 548 L 100 548"
-                                    />
-                                    <path
-                                        id="read-data-mux"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 1298 594 L 1401 594 "
-                                    />
-                                    <path
-                                        id="mux-write-data"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 1429 626 L 1451 626 L 1451 936 L 618 936 L 618 760 "
-                                    />
-                                    <path
-                                        id="control-reg-write"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 548 467 L 680 467 L 680 490 "
-                                    />
-                                    <path
-                                        id="control-ALU-src"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 569 437 L 909 437 L 909 610 "
-                                    />
-                                    <path
-                                        id="control-mem-write"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 576 407 L 1225 407 L 1225 552"
-                                    />
-                                    <path
-                                        id="control-ALU-op"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 579 382 L 858 382 L 858 925 L 929 925 L 929 900 "
-                                    />
-                                    <path
-                                        id="control-mem-reg"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 578 354 L 1191 354 L 1191 493 L 1408 493 L 1408 580 "
-                                    />
-                                    <path
-                                        id="control-mem-read"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 576 329 L 1247 329 L 1247 508 L 1323 508 L 1323 784 L 1220 784 L 1220 750 "
-                                    />
-                                    <path
-                                        id="control-branch"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 570 309 L 871 309 L 871 377 L 1037 377 L 1037 438 L 1110 438 "
-                                    />
-                                    <path
-                                        id="control-uncond-branch"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 563 289 L 888 289 L 888 318 L 1296 318 "
-                                    />
-                                    <path
-                                        id="control-reg-loc"
-                                        stroke="#007BFF"
-                                        stroke-width="2"
-                                        fill="none"
-                                        d="M 550 273 L 583 273 L 583 221 L 411 221 L 411 686 L 508 686 L 508 618 "
-                                    />
-                                    <!-- <path -->
-                                    <!--     id="linePath0" -->
-                                    <!--     stroke="#007BFF" -->
-                                    <!--     stroke-width="2" -->
-                                    <!--     fill="none" -->
-                                    <!-- /> -->
-                                </svg>
-                                <!-- ADD ALU RESULT -->
-                                <canvas
-                                    id="ADD-ALU-RESULT"
-                                    width="120"
-                                    height="160"
-                                    class="absolute top-[140px] left-[1100px]"
-                                ></canvas>
-                                <!-- ADD ALU RESULT 1 -->
-                                <canvas
-                                    id="ADD-ALU-RESULT-1"
-                                    width="120"
-                                    height="160"
-                                    class="absolute top-[500px] left-[950px]"
-                                ></canvas>
-                                <!-- OR COMPONENT -->
-                                <canvas
-                                    id="OR-GATE"
-                                    width="90"
-                                    height="80"
-                                    class="absolute top-[300px] left-[1280px]"
-                                ></canvas>
-                                <!-- AND COMPONENT -->
-                                <canvas
-                                    id="AND-GATE"
-                                    width="60"
-                                    height="70"
-                                    class="absolute top-[420px] left-[1100px]"
-                                ></canvas>
-                                <!-- ADD 4  COMPONENT -->
-                                <canvas
-                                    id="ADD-4"
-                                    width="80"
-                                    height="150"
-                                    class="absolute top-[100px] left-[250px]"
-                                ></canvas>
-                                <div class="absolute top-[210px] left-[200px]">
-                                    <p
-                                        class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
-                                    >
-                                        <span class="block" style="color: black"
-                                            >4</span
-                                        >
-                                    </p>
-                                </div>
-                                <!-- CONTROL -->
-                                <div
-                                    class="absolute top-[250px] left-[500px] center-text big-ellipse"
-                                >
-                                    <p>Control</p>
-                                </div>
-                                <!-- SHIFT LEFT 2 -->
-                                <div
-                                    class="absolute top-[210px] left-[900px] center-text Small_Ellipse"
-                                >
-                                    <p>Shift Left 2</p>
-                                </div>
+                                <path id="and-gate-or-gate" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 1156 454 L 1169 454 L 1169 372 L 1297 372 " />
+                                <path id="alu-add-4-mux" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 327 181 L 412 181 L 412 136 L 1288 136 L 1288 160 L 1402 160 " marker-end="url(#arrowhead)" />
+                                <path id="ALU-back-PC" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 1429 186 L 1452 186 L 1452 55 L 50 55 L 50 548 L 100 548" marker-end="url(#arrowhead)"/>
+                                <path id="read-data-mux" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 1298 594 L 1401 594 " marker-end="url(#arrowhead)"/>
+                                <path id="mux-write-data" stroke="#007BFF" stroke-width="2" fill="none"
+                                    d="M 1429 626 L 1451 626 L 1451 936 L 618 936 L 618 760 " marker-end="url(#arrowhead)"/>
+                                
+                                <path id="control-reg-write" stroke="#007BFF" stroke-width="4" fill="none"
+                                    d="M 548 467 L 680 467 L 680 490   "/>
+                                <path id="control-ALU-src" stroke="#007BFF" stroke-width="4" fill="none"
+                                    d="M 569 437 L 909 437 L 909 610 " />
+                                <path id="control-mem-write" stroke="#007BFF" stroke-width="4" fill="none"
+                                    d="M 576 407 L 1225 407 L 1225 552" />
+                                <path id="control-ALU-op" stroke="#007BFF" stroke-width="4" fill="none"
+                                    d="M 579 382 L 858 382 L 858 925 L 929 925 L 929 900 " />
+                                <path id="control-mem-reg" stroke="#007BFF" stroke-width="4" fill="none"
+                                    d="M 578 354 L 1191 354 L 1191 493 L 1408 493 L 1408 580 " />
+                                <path id="control-mem-read" stroke="#007BFF" stroke-width="4" fill="none"
+                                    d="M 576 329 L 1247 329 L 1247 508 L 1323 508 L 1323 784 L 1220 784 L 1220 750 " />
+                                <path id="control-branch" stroke="#007BFF" stroke-width="4" fill="none"
+                                    d="M 570 309 L 871 309 L 871 377 L 1037 377 L 1037 438 L 1110 438 " />
+                                <path id="control-uncond-branch" stroke="#007BFF" stroke-width="4" fill="none"
+                                    d="M 563 289 L 888 289 L 888 318 L 1296 318 " />
+                                <path id="control-reg-loc" stroke="#007BFF" stroke-width="4" fill="none"
+                                    d="M 550 273 L 583 273 L 583 221 L 411 221 L 411 686 L 508 686 L 508 618 " />
+                                <!-- <path -->
+                                <!--     id="linePath0" -->
+                                <!--     stroke="#007BFF" -->
+                                <!--     stroke-width="2" -->
+                                <!--     fill="none" -->
+                                <!-- /> -->
+                                <text transform="translate(0, -8)">
+                                    <textPath href="#control-uncond-branch" startOffset="5%" text-anchor="left"
+                                        font-weight="bold"
+                                        font-family="Consolas, monospace" font-size="14" fill="#007BFF"> UncondBranch
+                                    </textPath>
+                                </text>
+                                <text transform="translate(16, -9) rotate(180, 520, 222)">
+                                    <textPath href="#control-reg-loc" startOffset="15%" text-anchor="left"
+                                        font-weight="bold"
+                                        font-family="Consolas, monospace" font-size="14" fill="#007BFF">
+                                        Reg2Loc
+                                    </textPath>
+                                </text>
+                                <text transform="translate(0, -8)">
+                                    <textPath href="#control-branch" startOffset="5%" text-anchor="left"
+                                        font-weight="bold"
+                                        font-family="Consolas, monospace" font-size="14" fill="#007BFF"> Branch
+                                    </textPath>
+                                </text>
+                                <text transform="translate(0, -8)">
+                                    <textPath href="#control-mem-read" startOffset="2%" text-anchor="left"
+                                        font-weight="bold"
+                                        font-family="Consolas, monospace" font-size="14" fill="#007BFF"> MemRead
+                                    </textPath>
+                                </text>
+                                <text transform="translate(0, -8)">
+                                    <textPath href="#control-reg-write" startOffset="34%" text-anchor="left"
+                                        font-weight="bold"
+                                        font-family="Consolas, monospace" font-size="14" fill="#007BFF"> RegWrite
+                                    </textPath>
+                                </text>
+                                <text transform="translate(0, -8)">
+                                    <textPath href="#control-ALU-src" startOffset="6.3%" text-anchor="left"
+                                        font-weight="bold"
+                                        font-family="Consolas, monospace" font-size="14" fill="#007BFF"> ALUSrc
+                                    </textPath>
+                                </text>
+                                <text transform="translate(0, -8)">
+                                    <textPath href="#control-mem-write" startOffset="3.8%" text-anchor="left"
+                                        font-weight="bold"
+                                        font-family="Consolas, monospace" font-size="14" fill="#007BFF"> MemWrite
+                                    </textPath>
+                                </text>
+                                <text transform="translate(0, -8)">
+                                    <textPath href="#control-ALU-op" startOffset="2.8%" text-anchor="left"
+                                        font-weight="bold"
+                                        font-family="Consolas, monospace" font-size="14" fill="#007BFF"> ALUOp
+                                    </textPath>
+                                </text>
+                                <text transform="translate(0, -8)">
+                                    <textPath href="#control-mem-reg" startOffset="2.5%" text-anchor="left"
+                                        font-weight="bold"
+                                        font-family="Consolas, monospace" font-size="14" fill="#007BFF"> MemtoReg
+                                    </textPath>
+                                </text>
+                            </svg>
+                            <!-- ADD ALU RESULT -->
+                            <canvas id="ADD-ALU-RESULT" width="120" height="160"
+                                class="absolute top-[140px] left-[1100px]"></canvas>
+                            <!-- ADD ALU RESULT 1 -->
+                            <canvas id="ADD-ALU-RESULT-1" width="120" height="160"
+                                class="absolute top-[500px] left-[950px]"></canvas>
+                            <!-- OR COMPONENT -->
+                            <canvas id="OR-GATE" width="90" height="80"
+                                class="absolute top-[300px] left-[1280px]"></canvas>
+                            <!-- AND COMPONENT -->
+                            <canvas id="AND-GATE" width="60" height="70"
+                                class="absolute top-[420px] left-[1100px]"></canvas>
+                            <!-- ADD 4  COMPONENT -->
+                            <canvas id="ADD-4" width="80" height="150"
+                                class="absolute top-[100px] left-[250px]"></canvas>
+                            <div class="absolute top-[210px] left-[200px]">
+                                <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
+                                    <span class="block" style="color: black">4</span>
+                                </p>
+                            </div>
+                            <!-- CONTROL -->
+                            <div class="absolute top-[250px] left-[500px] center-text big-ellipse">
+                                <p>Control</p>
+                            </div>
+                            <!-- SHIFT LEFT 2 -->
+                            <div class="absolute top-[210px] left-[900px] center-text Small_Ellipse">
+                                <p>Shift Left 2</p>
+                            </div>
 
-                                <!-- PC COMPONENT -->
-                                <div
-                                    class="absolute top-[500px] left-[100px] pc-component center-text"
-                                >
-                                    <p>PC</p>
-                                </div>
-                                <!-- INSTRUCTION MEMORY -->
-                                <div
-                                    class="absolute top-[530px] left-[200px] instruction-memory center-text"
-                                >
-                                    <p
-                                        style="
+                            <!-- PC COMPONENT -->
+                            <div class="absolute top-[500px] left-[100px] pc-component center-text">
+                                <p>PC</p>
+                            </div>
+                            <!-- INSTRUCTION MEMORY -->
+                            <div class="absolute top-[530px] left-[200px] instruction-memory center-text">
+                                <p style="
                                             position: absolute;
                                             top: 0;
                                             left: 0;
                                             margin: 0;
                                             font-size: 15px;
                                             color: black;
-                                        "
-                                    >
-                                        Read
-                                    </p>
-                                    <p
-                                        style="
+                                        ">
+                                    Read
+                                </p>
+                                <p style="
                                             position: absolute;
                                             top: 20px;
                                             left: 0;
                                             margin: 0;
                                             font-size: 15px;
                                             color: black;
-                                        "
-                                    >
-                                        &nbsp;&nbsp;address
-                                    </p>
-                                    <p
-                                        style="
+                                        ">
+                                    &nbsp;&nbsp;address
+                                </p>
+                                <p style="
                                             position: absolute;
                                             top: 70px;
                                             left: 40px;
                                             margin: 0;
                                             font-size: 15px;
                                             color: black;
-                                        "
-                                    >
-                                        Instruction [31-0]
-                                    </p>
-                                    <p
-                                        style="
+                                        ">
+                                    Instruction [31-0]
+                                </p>
+                                <p style="
                                             position: absolute;
                                             top: 140px;
                                             left: 8px;
@@ -449,421 +257,482 @@
                                             font-size: 15.5px;
                                             font-weight: bold;
                                             color: black;
-                                        "
-                                    >
-                                        Instruction Memory
-                                    </p>
-                                </div>
+                                        ">
+                                    Instruction Memory
+                                </p>
+                            </div>
 
-                                <!-- Mux 1 -->
-                                <div
-                                    class="absolute top-[530px] left-[500px] mux"
-                                >
-                                    <p
-                                        class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
-                                    >
-                                        <span class="block" style="color: black"
-                                            >0</span
-                                        >
-                                        <span class="block" style="color: black"
-                                            >M</span
-                                        >
-                                        <span class="block" style="color: black"
-                                            >u</span
-                                        >
-                                        <span class="block" style="color: black"
-                                            >x</span
-                                        >
-                                        <span class="block" style="color: black"
-                                            >1</span
-                                        >
-                                    </p>
-                                </div>
+                            <!-- Mux 1 -->
+                            <div class="absolute top-[530px] left-[500px] mux">
+                                <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
+                                    <span class="block" style="color: black">0</span>
+                                    <span class="block" style="color: black">M</span>
+                                    <span class="block" style="color: black">u</span>
+                                    <span class="block" style="color: black">x</span>
+                                    <span class="block" style="color: black">1</span>
+                                </p>
+                            </div>
 
-                                <!-- Register Handler-->
+                            <!-- Register Handler-->
+                            <div class="absolute top-[490px] left-[600px] register-handler center-text">
                                 <div
-                                    class="absolute top-[490px] left-[600px] register-handler center-text"
-                                >
-                                    <div
-                                        class="grid grid-rows-4 h-full w-1/2 absolute top-0 left-0 text-x font-bold text-black leading-tight"
-                                    >
-                                        <div class="flex items-center pl-1">
-                                            Read<br />Register 1
-                                        </div>
-                                        <div class="flex items-center pl-1">
-                                            Read<br />Register 2
-                                        </div>
-                                        <div class="flex items-center pl-1">
-                                            Write<br />Register
-                                        </div>
-                                        <div class="flex items-center pl-1">
-                                            Write<br />Data
-                                        </div>
+                                    class="grid grid-rows-4 h-full w-1/2 absolute top-0 left-0 text-x font-bold text-black leading-tight">
+                                    <div class="flex items-center pl-1">
+                                        Read<br />Register 1
                                     </div>
-
-                                    <p
-                                        class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
-                                    >
-                                        <!-- Top Right -->
-                                        <span
-                                            class="absolute top-7 right-1 text-x text-black"
-                                            >Read<br />data 1</span
-                                        >
-                                        <!-- Top Right -->
-                                        <span
-                                            class="absolute top-13 right-1 text-x text-black"
-                                            >Read<br />data 2</span
-                                        >
-                                        <!-- Bottom Right -->
-                                        <span
-                                            class="absolute bottom-1 right-1 text-xl text-black"
-                                            >Register<br />handler</span
-                                        >
-                                    </p>
-                                </div>
-                                <!-- SIGN-EXTEND -->
-                                <div
-                                    class="absolute top-[800px] left-[650px] ellipse center-text"
-                                >
-                                    <p
-                                        class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
-                                    >
-                                        <span class="block" style="color: black"
-                                            >Sign-</span
-                                        >
-                                        <span class="block" style="color: black"
-                                            >Extend</span
-                                        >
-                                    </p>
-                                </div>
-                                <!-- Mux 2 -->
-                                <div
-                                    class="absolute top-[610px] left-[900px] mux"
-                                >
-                                    <p
-                                        class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
-                                    >
-                                        <span class="block" style="color: black"
-                                            >0</span
-                                        >
-                                        <span class="block" style="color: black"
-                                            >M</span
-                                        >
-                                        <span class="block" style="color: black"
-                                            >u</span
-                                        >
-                                        <span class="block" style="color: black"
-                                            >x</span
-                                        >
-                                        <span class="block" style="color: black"
-                                            >1</span
-                                        >
-                                    </p>
-                                </div>
-                                <!-- ALU control -->
-                                <div
-                                    class="absolute top-[800px] left-[900px] ellipse center-text"
-                                >
-                                    <p
-                                        class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
-                                    >
-                                        <span class="block" style="color: black"
-                                            >ALU</span
-                                        >
-                                        <span class="block" style="color: black"
-                                            >Control</span
-                                        >
-                                    </p>
+                                    <div class="flex items-center pl-1">
+                                        Read<br />Register 2
+                                    </div>
+                                    <div class="flex items-center pl-1">
+                                        Write<br />Register
+                                    </div>
+                                    <div class="flex items-center pl-1">
+                                        Write<br />Data
+                                    </div>
                                 </div>
 
-                                <!-- DATA MEMORY -->
-                                <div
-                                    class="absolute top-[550px] left-[1150px] data-memory"
-                                >
-                                    <p
-                                        class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
-                                    >
-                                        <!-- Top Left -->
-                                        <span
-                                            class="absolute top-9 left-1 text-x"
-                                            style="color: black"
-                                            >Address</span
-                                        >
+                                <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
+                                    <!-- Top Right -->
+                                    <span class="absolute top-7 right-1 text-x text-black">Read<br />data 1</span>
+                                    <!-- Top Right -->
+                                    <span class="absolute top-13 right-1 text-x text-black">Read<br />data 2</span>
+                                    <!-- Bottom Right -->
+                                    <span
+                                        class="absolute bottom-1 right-1 text-xl text-black">Register<br />handler</span>
+                                </p>
+                            </div>
+                            <!-- SIGN-EXTEND -->
+                            <div class="absolute top-[800px] left-[650px] ellipse center-text">
+                                <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
+                                    <span class="block" style="color: black">Sign-</span>
+                                    <span class="block" style="color: black">Extend</span>
+                                </p>
+                            </div>
+                            <!-- Mux 2 -->
+                            <div class="absolute top-[610px] left-[900px] mux">
+                                <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
+                                    <span class="block" style="color: black">0</span>
+                                    <span class="block" style="color: black">M</span>
+                                    <span class="block" style="color: black">u</span>
+                                    <span class="block" style="color: black">x</span>
+                                    <span class="block" style="color: black">1</span>
+                                </p>
+                            </div>
+                            <!-- ALU control -->
+                            <div class="absolute top-[800px] left-[900px] ellipse center-text">
+                                <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
+                                    <span class="block" style="color: black">ALU</span>
+                                    <span class="block" style="color: black">Control</span>
+                                </p>
+                            </div>
 
-                                        <!-- Top Right -->
-                                        <span
-                                            class="absolute top-7 right-1 text-x"
-                                            style="color: black"
-                                            >Read<br />data</span
-                                        >
+                            <!-- DATA MEMORY -->
+                            <div class="absolute top-[550px] left-[1150px] data-memory">
+                                <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
+                                    <!-- Top Left -->
+                                    <span class="absolute top-9 left-1 text-x" style="color: black">Address</span>
 
-                                        <!-- Bottom Left -->
-                                        <span
-                                            class="absolute bottom-10 left-1 text-x"
-                                            style="color: black"
-                                            >Write<br />data</span
-                                        >
+                                    <!-- Top Right -->
+                                    <span class="absolute top-7 right-1 text-x"
+                                        style="color: black">Read<br />data</span>
 
-                                        <!-- Bottom Right -->
-                                        <span
-                                            class="absolute bottom-1 right-1 text-xl"
-                                            style="color: black"
-                                            >Data<br />memory</span
-                                        >
-                                    </p>
-                                </div>
-                                <!-- Mux 3 -->
-                                <div
-                                    class="absolute top-[580px] left-[1400px] mux"
-                                >
-                                    <p
-                                        class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
-                                    >
-                                        <span class="block" style="color: black"
-                                            >1</span
-                                        >
-                                        <span class="block" style="color: black"
-                                            >M</span
-                                        >
-                                    </p>
-                                    <p
-                                        class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
-                                    >
-                                        <span class="block" style="color: black"
-                                            >u</span
-                                        >
-                                        <span class="block" style="color: black"
-                                            >x</span
-                                        >
-                                        <span class="block" style="color: black"
-                                            >0</span
-                                        >
-                                    </p>
-                                </div>
-                                <!-- Mux 4 -->
-                                <div
-                                    class="absolute top-[140px] left-[1400px] mux"
-                                >
-                                    <p
-                                        class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
-                                    >
-                                        <span class="block" style="color: black"
-                                            >0</span
-                                        >
-                                        <span class="block" style="color: black"
-                                            >M</span
-                                        >
-                                        <span class="block" style="color: black"
-                                            >u</span
-                                        >
-                                        <span class="block" style="color: black"
-                                            >x</span
-                                        >
-                                        <span class="block" style="color: black"
-                                            >1</span
-                                        >
-                                    </p>
-                                </div>
+                                    <!-- Bottom Left -->
+                                    <span class="absolute bottom-10 left-1 text-x"
+                                        style="color: black">Write<br />data</span>
+
+                                    <!-- Bottom Right -->
+                                    <span class="absolute bottom-1 right-1 text-xl"
+                                        style="color: black">Data<br />memory</span>
+                                </p>
+                            </div>
+                            <!-- Mux 3 -->
+                            <div class="absolute top-[580px] left-[1400px] mux">
+                                <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
+                                    <span class="block" style="color: black">1</span>
+                                    <span class="block" style="color: black">M</span>
+                                </p>
+                                <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
+                                    <span class="block" style="color: black">u</span>
+                                    <span class="block" style="color: black">x</span>
+                                    <span class="block" style="color: black">0</span>
+                                </p>
+                            </div>
+                            <!-- Mux 4 -->
+                            <div class="absolute top-[140px] left-[1400px] mux">
+                                <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
+                                    <span class="block" style="color: black">0</span>
+                                    <span class="block" style="color: black">M</span>
+                                    <span class="block" style="color: black">u</span>
+                                    <span class="block" style="color: black">x</span>
+                                    <span class="block" style="color: black">1</span>
+                                </p>
                             </div>
                         </div>
-
-                        <!-- Right Panel - Code Editor -->
-                        <div
-                            class="w-1/5 bg-gray-50 border-l border-gray-300 flex flex-col"
-                        >
-                            <div class="p-4 border-b border-gray-300">
-                                <h2
-                                    class="text-lg font-semibold text-gray-800 mb-2"
+                        <!-- Bottom Panel - Registers and Memory -->
+                        <div class="bg-gray-800 text-white">
+                            <div class="flex border-b border-gray-700">
+                                <button
+                                    class="tab-btn active px-4 py-2 font-medium bg-gray-700"
+                                    data-tab="registers"
                                 >
-                                    Assembly Code
-                                </h2>
-                                <div class="flex space-x-2">
-                                    <button
-                                        class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm"
-                                        id="loadCodeBtn"
-                                    >
-                                        <i class="fas fa-file-import mr-1"></i>
-                                        Load
-                                    </button>
-                                    <button
-                                        class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm"
-                                        id="saveCodeBtn"
-                                    >
-                                        <i class="fas fa-save mr-1"></i> Save
-                                    </button>
-                                    <button
-                                        class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm"
-                                        id="clearCodeBtn"
-                                    >
-                                        <i class="fas fa-trash-alt mr-1"></i>
-                                        Clear
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="flex-1">
-                                <textarea
-                                    id="assemblyCode"
-                                    class="code-editor w-full h-full p-4 resize-none outline-none"
-                                    spellcheck="false"
-                                    placeholder="Enter your LEGv8 assembly code here..."
-                                ></textarea>
-                            </div>
-
-                            <div
-                                class="p-2 bg-gray-100 border-t border-gray-300 text-xs text-gray-600"
-                            >
-                                <div class="flex justify-between">
-                                    <span id="cursorPosition"
-                                        >Line: 1, Col: 1</span
-                                    >
-                                    <span>UTF-8</span>
-                                </div>
-                            </div>
-
-                            <!-- Left Panel - Utility Controls -->
-                            <div
-                                class="bg-gray-200 p-4 border-r border-gray-300 flex flex-col overflow-auto"
-                            >
-                                <h2
-                                    class="text-lg font-semibold mb-4 text-gray-800"
+                                    <i class="fas fa-memory mr-2"></i> Registers
+                                </button>
+                                <button
+                                    class="tab-btn px-4 py-2 font-medium hover:bg-gray-700"
+                                    data-tab="stack"
                                 >
-                                    Controls
-                                </h2>
+                                    <i class="fas fa-layer-group mr-2"></i> Stack
+                                </button>
+                            </div>
 
-                                <div class="space-y-4 mb-6">
-                                    <button
-                                        class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded flex items-center justify-center"
-                                        id="assembleBtn"
-                                    >
-                                        <i class="fas fa-cog mr-2"></i> Assemble
-                                    </button>
+                            <div class="overflow-auto" style="max-height: 200px">
+                                <!-- Registers Tab -->
+                                <div id="registers" class="tab-content active p-2">
+                                    <div class="grid grid-cols-6 gap-2 text-sm">
+                                        <!-- General Purpose Registers -->
+                                        <div class="col-span-2">
+                                            <h3
+                                                class="font-mono font-bold mb-1 text-blue-300"
+                                            >
+                                                General Purpose
+                                            </h3>
+                                            <div class="grid grid-cols-3 gap-1">
+                                                <template id="registerTemplate">
+                                                    <div
+                                                        class="register-cell bg-gray-700 p-1 rounded flex justify-between"
+                                                    >
+                                                        <span class="font-mono">X0</span>
+                                                        <span class="font-mono"
+                                                            >0x00000000</span
+                                                        >
+                                                    </div>
+                                                </template>
+                                                <!-- Registers will be populated by JavaScript -->
+                                            </div>
+                                        </div>
 
-                                    <div class="flex space-x-2">
-                                        <button
-                                            id="runBtn"
-                                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center justify-center"
-                                        >
-                                            <i class="fas fa-play mr-2"></i> Run
-                                        </button>
-                                        <button
-                                            class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded flex items-center justify-center"
-                                            id="stepBtn"
-                                        >
-                                            <i
-                                                class="fas fa-step-forward mr-2"
-                                            ></i>
-                                            Step
-                                        </button>
-                                    </div>
+                                        <!-- Special Registers -->
+                                        <div class="col-span-2">
+                                            <h3
+                                                class="font-mono font-bold mb-1 text-green-300"
+                                            >
+                                                Special
+                                            </h3>
+                                            <div class="grid grid-cols-2 gap-1">
+                                                <div
+                                                    class="register-cell bg-gray-700 p-1 rounded flex justify-between"
+                                                >
+                                                    <span class="font-mono">SP</span>
+                                                    <span class="font-mono"
+                                                        >0x7FFFFFF0</span
+                                                    >
+                                                </div>
+                                                <div
+                                                    class="register-cell bg-gray-700 p-1 rounded flex justify-between"
+                                                >
+                                                    <span class="font-mono">FP</span>
+                                                    <span class="font-mono"
+                                                        >0x7FFFFFF0</span
+                                                    >
+                                                </div>
+                                                <div
+                                                    class="register-cell bg-gray-700 p-1 rounded flex justify-between"
+                                                >
+                                                    <span class="font-mono">LR</span>
+                                                    <span class="font-mono"
+                                                        >0x00000000</span
+                                                    >
+                                                </div>
+                                                <div
+                                                    class="register-cell bg-gray-700 p-1 rounded flex justify-between"
+                                                >
+                                                    <span class="font-mono">PC</span>
+                                                    <span class="font-mono"
+                                                        >0x00000000</span
+                                                    >
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                    <button
-                                        id="pauseBtn"
-                                        class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded flex items-center justify-center"
-                                    >
-                                        <i class="fas fa-pause mr-2"></i> Pause
-                                    </button>
-
-                                    <button
-                                        id="resetBtn"
-                                        class="w-full bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded flex items-center justify-center"
-                                    >
-                                        <i class="fas fa-undo mr-2"></i> Reset
-                                    </button>
-                                </div>
-
-                                <div class="mb-6">
-                                    <h3 class="font-medium text-gray-700 mb-2">
-                                        Execution Speed
-                                    </h3>
-                                    <input
-                                        id="executionSpeed"
-                                        type="range"
-                                        min="1"
-                                        max="10"
-                                        class="w-full"
-                                    />
-                                    <div
-                                        class="flex justify-between text-xs text-gray-600"
-                                    >
-                                        <span>Slow</span>
-                                        <span>Fast</span>
+                                        <!-- Status Registers -->
+                                        <div class="col-span-2">
+                                            <h3
+                                                class="font-mono font-bold mb-1 text-purple-300"
+                                            >
+                                                Status
+                                            </h3>
+                                            <div class="grid grid-cols-2 gap-1">
+                                                <div
+                                                    class="register-cell bg-gray-700 p-1 rounded flex justify-between"
+                                                >
+                                                    <span class="font-mono">NZCV</span>
+                                                    <span class="font-mono"
+                                                        >0x00000000</span
+                                                    >
+                                                </div>
+                                                <div
+                                                    class="register-cell bg-gray-700 p-1 rounded flex justify-between"
+                                                >
+                                                    <span class="font-mono">PSTATE</span>
+                                                    <span class="font-mono"
+                                                        >0x00000000</span
+                                                    >
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="mt-auto">
-                                    <h3 class="font-medium text-gray-700 mb-2">
-                                        Status
-                                    </h3>
+
+                                <!-- Memory Tab -->
+                                <div id="memory" class="tab-content p-2">
+                                    <div class="flex items-center mb-2">
+                                        <input
+                                            type="text"
+                                            placeholder="Memory address (hex)"
+                                            class="bg-gray-700 text-white px-2 py-1 rounded-l text-sm font-mono w-32"
+                                            value="0x00000000"
+                                        />
+                                        <button
+                                            class="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded-r text-sm"
+                                        >
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                        <div class="ml-4 text-xs text-gray-400">
+                                            Showing 256 bytes from
+                                            <span class="font-mono">0x00000000</span>
+                                        </div>
+                                    </div>
+
                                     <div
-                                        class="bg-white p-2 rounded border border-gray-300 text-sm"
+                                        class="memory-view grid grid-cols-8 gap-1 text-xs font-mono"
                                     >
-                                        <div class="flex justify-between">
-                                            <span class="text-gray-600"
-                                                >State:</span
-                                            >
-                                            <span
-                                                id="simulatorState"
-                                                class="font-medium"
-                                                >Ready</span
+                                        <div
+                                            class="memory-header col-span-2 text-center text-gray-400"
+                                        >
+                                            Address
+                                        </div>
+                                        <div
+                                            class="memory-header text-center text-gray-400"
+                                        >
+                                            +0
+                                        </div>
+                                        <div
+                                            class="memory-header text-center text-gray-400"
+                                        >
+                                            +1
+                                        </div>
+                                        <div
+                                            class="memory-header text-center text-gray-400"
+                                        >
+                                            +2
+                                        </div>
+                                        <div
+                                            class="memory-header text-center text-gray-400"
+                                        >
+                                            +3
+                                        </div>
+                                        <div
+                                            class="memory-header text-center text-gray-400"
+                                        >
+                                            +4
+                                        </div>
+                                        <div
+                                            class="memory-header text-center text-gray-400"
+                                        >
+                                            +5
+                                        </div>
+                                        <div
+                                            class="memory-header text-center text-gray-400"
+                                        >
+                                            +6
+                                        </div>
+                                        <div
+                                            class="memory-header text-center text-gray-400"
+                                        >
+                                            +7
+                                        </div>
+
+                                        <!-- Memory rows will be populated by JavaScript -->
+                                    </div>
+                                </div>
+
+                                <!-- Stack Tab -->
+                                <div id="stack" class="tab-content p-2">
+                                    <div class="flex items-center mb-2">
+                                        <div class="text-sm text-gray-400">
+                                            Stack pointer:
+                                            <span class="font-mono text-white"
+                                                >0x7FFFFFF0</span
                                             >
                                         </div>
-                                        <div class="flex justify-between">
-                                            <span class="text-gray-600"
-                                                >PC:</span
-                                            >
-                                            <span id="pcValue" class="font-mono"
-                                                >0x00000001</span
-                                            >
+                                    </div>
+
+                                    <div
+                                        class="stack-view grid grid-cols-3 gap-1 text-xs font-mono"
+                                    >
+                                        <div class="memory-header text-gray-400">
+                                            Address
                                         </div>
-                                        <div class="flex justify-between">
-                                            <span class="text-gray-600"
-                                                >Cycles:</span
-                                            >
-                                            <span
-                                                id="cycleCount"
-                                                class="font-mono"
-                                                >1</span
-                                            >
-                                        </div>
+                                        <div class="memory-header text-gray-400">Value</div>
+                                        <div class="memory-header text-gray-400">Note</div>
+
+                                        <!-- Stack entries will be populated by JavaScript -->
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Right Panel - Code Editor -->
+                    <div class="w-1/5 bg-gray-50 border-l border-gray-300 flex flex-col">
+                        <div class="p-4 border-b border-gray-300">
+                            <h2 class="text-lg font-semibold text-gray-800 mb-2">
+                                Assembly Code
+                            </h2>
+                            <div class="flex space-x-2">
+                                <button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm"
+                                    id="loadCodeBtn">
+                                    <i class="fas fa-file-import mr-1"></i>
+                                    Load
+                                </button>
+                                <button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm"
+                                    id="saveCodeBtn">
+                                    <i class="fas fa-save mr-1"></i> Save
+                                </button>
+                                <button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm"
+                                    id="clearCodeBtn">
+                                    <i class="fas fa-trash-alt mr-1"></i>
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex-1">
+                            <textarea id="assemblyCode" class="code-editor w-full h-full p-4 resize-none outline-none"
+                                spellcheck="false" placeholder="Enter your LEGv8 assembly code here..."></textarea>
+                        </div>
+
+                        <div class="p-2 bg-gray-100 border-t border-gray-300 text-xs text-gray-600">
+                            <div class="flex justify-between">
+                                <span id="cursorPosition">Line: 1, Col: 1</span>
+                                <span>UTF-8</span>
+                            </div>
+                        </div>
+
+                        <!-- Left Panel - Utility Controls -->
+                        <div class="bg-gray-200 p-4 border-r border-gray-300 flex flex-col overflow-auto">
+                            <h2 class="text-lg font-semibold mb-4 text-gray-800">
+                                Controls
+                            </h2>
+
+                            <div class="space-y-4 mb-6">
+                                <button
+                                    class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded flex items-center justify-center"
+                                    id="assembleBtn">
+                                    <i class="fas fa-cog mr-2"></i> Assemble
+                                </button>
+
+                                <div class="flex space-x-2">
+                                    <button id="runBtn"
+                                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center justify-center">
+                                        <i class="fas fa-play mr-2"></i> Run
+                                    </button>
+                                    <button
+                                        class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded flex items-center justify-center"
+                                        id="stepBtn">
+                                        <i class="fas fa-step-forward mr-2"></i>
+                                        Step
+                                    </button>
+                                </div>
+
+                                <button id="pauseBtn"
+                                    class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded flex items-center justify-center">
+                                    <i class="fas fa-pause mr-2"></i> Pause
+                                </button>
+
+                                <button id="resetBtn"
+                                    class="w-full bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded flex items-center justify-center">
+                                    <i class="fas fa-undo mr-2"></i> Reset
+                                </button>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="font-medium text-gray-700 mb-2">
+                                    Execution Speed
+                                </h3>
+                                <input id="executionSpeed" type="range" min="1" max="10" class="w-full" />
+                                <div class="flex justify-between text-xs text-gray-600">
+                                    <span>Slow</span>
+                                    <span>Fast</span>
+                                </div>
+                            </div>
+                            <div class="mt-auto">
+                                <h3 class="font-medium text-gray-700 mb-2">
+                                    Status
+                                </h3>
+                                <div class="bg-white p-2 rounded border border-gray-300 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">State:</span>
+                                        <span id="simulatorState" class="font-medium">Ready</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">PC:</span>
+                                        <span id="pcValue" class="font-mono">0x00000001</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Cycles:</span>
+                                        <span id="cycleCount" class="font-mono">1</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
                 </div>
             </div>
         </div>
+    </div>
 
-        <script src="scripts/index.js"></script>
-        <script src="scripts/ADD_ALU_RESULT.js"></script>
-        <script src="scripts/ADD_ALU_RESULT_1.js"></script>
-        <script src="scripts/ADD_4.js"></script>
-        <script src="scripts/AND.js"></script>
-        <script src="scripts/OR.js"></script>
-        <script src="scripts/test.js"></script>
-        <script src="scripts/MEM.js"></script>
-        <!-- <script src="scripts/main.js"></script> -->
-        <script src="scripts/async_running.js"></script>
-        <script src="scripts/ControlUnits.js"></script>
-        <script src="scripts/registers.js"></script>
-        <script src="scripts/Format/D-Format.js"></script>
-        <script src="scripts/Format/I-Format.js"></script>
-        <script src="scripts/Format/R-Format.js"></script>
-        <script src="scripts/utils.js"></script>
-        <script src="scripts/AssemblyParser/Assembler.js"></script>
-        <!-- <script src="scripts/AssemblyParser/AssemblyException.js"></script> -->
-        <script src="scripts/AssemblyParser/ControlSignals.js"></script>
-        <script src="scripts/AssemblyParser/Instruction.js"></script>
-        <script src="scripts/AssemblyParser/InstructionConfigLoader.js"></script>
-        <script src="scripts/AssemblyParser/InstructionDefinition.js"></script>
-        <script src="scripts/AssemblyParser/InstructionFactory.js"></script>
-        <script src="scripts/AssemblyParser/ProgramCounter.js"></script>
-        <script src="scripts/AssemblyParser/RFormatInstruction.js"></script>
-        <script src="scripts/AssemblyParser/RegisterStorage.js"></script>
-        <script src="scripts/AssemblyParser/IFormatInstruction.js"></script>
-        <script src="scripts/AssemblyParser/Extractor.js"></script>
-        <script src="scripts/AssemblyParser/MemoryStorage.js"></script>
-        <script src="scripts/AssemblyParser/DFormatInstruction.js"></script>
-        <script src="scripts/AssemblyParser/BFormatInstruction.js"></script>
-    </body>
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/index.js"></script>
+    <script src="scripts/UnitsDesign/ADD_ALU_RESULT.js"></script>
+    <script src="scripts/UnitsDesign/ADD_ALU_RESULT_1.js"></script>
+    <script src="scripts/UnitsDesign/ADD_4.js"></script>
+    <script src="scripts/UnitsDesign/AND.js"></script>
+    <script src="scripts/UnitsDesign/OR.js"></script>
+    <script src="scripts/test.js"></script>
+
+    <script src="scripts/Memory/MEM.js"></script>
+    <script src="scripts/Memory/registers.js"></script>
+    <!-- <script src="scripts/main.js"></script> -->
+    <script src="scripts/RunningMechanism/async_running.js"></script>
+    <script src="scripts/ControlUnits.js"></script>
+    <script src="scripts/Format/CB-Format.js"></script>
+    <script src="scripts/Format/B-Format.js"></script>
+    <script src="scripts/Format/D-Format.js"></script>
+    <script src="scripts/Format/I-Format.js"></script>
+    <script src="scripts/Format/R-Format.js"></script>
+    <script src="scripts/AssemblyParser/Assembler.js"></script>
+    <!-- <script src="scripts/AssemblyParser/AssemblyException.js"></script> -->
+    <script src="scripts/AssemblyParser/ControlSignals.js"></script>
+    <script src="scripts/AssemblyParser/Instruction.js"></script>
+    <script src="scripts/AssemblyParser/InstructionConfigLoader.js"></script>
+    <script src="scripts/AssemblyParser/InstructionDefinition.js"></script>
+    <script src="scripts/AssemblyParser/InstructionFactory.js"></script>
+    <script src="scripts/AssemblyParser/ProgramCounter.js"></script>
+    <script src="scripts/AssemblyParser/RFormatInstruction.js"></script>
+    <script src="scripts/AssemblyParser/RegisterStorage.js"></script>
+    <script src="scripts/AssemblyParser/IFormatInstruction.js"></script>
+    <script src="scripts/AssemblyParser/Extractor.js"></script>
+    <!-- <script src="scripts/AssemblyParser/MemoryStorage.js"></script> -->
+    <script src="scripts/AssemblyParser/DFormatInstruction.js"></script>
+    <script src="scripts/AssemblyParser/BFormatInstruction.js"></script>
+    <script src="scripts/AssemblyParser/CBFormatInstruction.js"></script>
+
+    <script src="scripts/main.js"></script>
+    <!-- <script src="scripts/Draggable.js"></script> -->
+    <script src="scripts/Memory/mem_display.js"></script>
+</body>
+
 </html>

@@ -1,11 +1,27 @@
 class RFormat {
-    constructor(opcode, Rm, shamt, Rn, Rd, address) {
-        this.opcode = opcode; // 11 bits
-        this.Rm = Rm;         // 5 bits
-        this.shamt = shamt;   // 6 bits
-        this.Rn = Rn;         // 5 bits
-        this.Rd = Rd;         // 5 bits
-        this.address = address;
+    constructor(RFormatInstruction, PC){
+        this.opcode = toExactBinary(RFormatInstruction.definition.opcode, 11);
+        this.Rm = toExactBinary(RFormatInstruction.rm, 5);
+        this.shamt = toExactBinary(RFormatInstruction.shamt, 6);
+        this.Rn = toExactBinary(RFormatInstruction.rn, 5);
+        this.Rd = toExactBinary(RFormatInstruction.rd, 5);
+        this.address = LEGv8Registers.binaryToHex(LEGv8Registers.valueTo64BitBinary(PC.getCurrentAddress())); // Program Counter address
+
+        // ALU Control 
+        this.aluControl = toExactBinary(RFormatInstruction.definition.controlSignals.operation, 4); // Placeholder for ALU control, will be set in execute method
+        this.controlSignals = {
+            Reg2Loc: RFormatInstruction.definition.controlSignals.reg2Loc,
+            UncondBranch: RFormatInstruction.definition.controlSignals.uncondBranch,
+            MemRead: RFormatInstruction.definition.controlSignals.memRead,
+            MemtoReg: RFormatInstruction.definition.controlSignals.memToReg,
+            ALUOp1: LEGv8Registers.valueTo64BitBinary(RFormatInstruction.definition.controlSignals.aluOp)[1],
+            ALUOp0: String(RFormatInstruction.definition.controlSignals.aluOp % 2),
+            MemWrite: RFormatInstruction.definition.controlSignals.memWrite,
+            ALUSrc: RFormatInstruction.definition.controlSignals.aluSrc,
+            RegWrite: RFormatInstruction.definition.controlSignals.regWrite,
+            Branch: RFormatInstruction.definition.controlSignals.flagBranch,
+        };
+        console.log(this.controlSignals.Branch, 'Branch control signal');
     }
 
     async instructionFetch() {
@@ -35,21 +51,20 @@ class RFormat {
         const allRuns = pathAndData.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(allRuns);
 
-        const controlUnit = new ControlUnit(this.opcode);
-
         const controlPathAndData = [
-            { pathId: 'control-reg-loc', data: controlUnit.getControlSignals().Reg2Loc },
-            { pathId: 'control-uncond-branch', data: controlUnit.getControlSignals().UncondBranch },
-            { pathId: 'control-mem-read', data: controlUnit.getControlSignals().MemRead },
-            { pathId: 'control-mem-reg', data: controlUnit.getControlSignals().MemtoReg },
-            { pathId: 'control-ALU-op', data: controlUnit.getControlSignals().ALUOp1 + controlUnit.getControlSignals().ALUOp0 },
-            { pathId: 'control-mem-write', data: controlUnit.getControlSignals().MemWrite },
-            { pathId: 'control-ALU-src', data: controlUnit.getControlSignals().ALUSrc },
-            { pathId: 'control-reg-write', data: controlUnit.getControlSignals().RegWrite },
-            { pathId: 'control-branch', data: controlUnit.getControlSignals().Branch },
+            { pathId: 'control-reg-loc', data: this.controlSignals.Reg2Loc },
+            { pathId: 'control-uncond-branch', data: this.controlSignals.UncondBranch },
+            { pathId: 'control-mem-read', data: this.controlSignals.MemRead },
+            { pathId: 'control-mem-reg', data: this.controlSignals.MemtoReg },
+            { pathId: 'control-ALU-op', data: this.controlSignals.ALUOp1 + this.controlSignals.ALUOp0 },
+            { pathId: 'control-mem-write', data: this.controlSignals.MemWrite },
+            { pathId: 'control-ALU-src', data: this.controlSignals.ALUSrc },
+            { pathId: 'control-reg-write', data: this.controlSignals.RegWrite },
+            { pathId: 'control-branch', data: this.controlSignals.Branch },
         ];
         const allControlRuns = controlPathAndData.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(allControlRuns);
+        
         const muxToRegister = [
             { pathId: 'mux-read-res-2', data: this.Rm },  // 20-16 bits
         ];
@@ -61,13 +76,6 @@ class RFormat {
         const register2_hexan = LEGv8Registers.binaryToHex(registers.readByBinary(this.Rm));
         const register1_decimal = LEGv8Registers.binaryToBigInt(registers.readByBinary(this.Rn));
         const register2_decimal = LEGv8Registers.binaryToBigInt(registers.readByBinary(this.Rm));
-
-        const controlUnit = new ControlUnit(this.opcode);
-        const aluControl = getAluControl(
-            controlUnit.getControlSignals().ALUOp1,
-            controlUnit.getControlSignals().ALUOp0,
-            this.opcode
-        );
         
         const newRegisterValue = {
             '0010': register1_decimal + register2_decimal, // ADD
@@ -75,13 +83,14 @@ class RFormat {
             '0000': register1_decimal & register2_decimal, // AND
             '0001': register1_decimal | register2_decimal, // ORR
         }
-        const newRegister_bin = LEGv8Registers.valueTo64BitBinary(newRegisterValue[aluControl]);
+
+        const newRegister_bin = LEGv8Registers.valueTo64BitBinary(newRegisterValue[this.aluControl] || 0n); 
         registers.writeByBinary(this.Rd, newRegister_bin); // 4-0 bits
 
         const pathAndData = [
             { pathId: 'read-1-alu', data: register1_hexan },
             { pathId: 'read-data-2-mux', data: register2_hexan },
-            { pathId: 'ALU-control-ALU', data: aluControl },
+            { pathId: 'ALU-control-ALU', data: this.aluControl },
             { pathId: 'Sign-extend-mux', data: 0 }, // 4-0 bits
             { pathId: 'Sign-extend-shift', data: 0 }, // 4-0 bits
         ]
@@ -137,19 +146,22 @@ class RFormat {
         const allRuns = pathAndData.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(allRuns);
     }
+
+    async run() {
+        await this.instructionFetch();
+        await this.instructionDecode();
+        await this.execute();
+        await this.memoryAccess();
+        await this.registerWrite();
+    }
 }
 
-const rformat = new RFormat('10001011000', '01010', '000000', '01001', '01000', '0x40000000');
-const iformat = new IFormat('1001000100', '0101', '01001', '01010', '0x40000000');
-const dformat = new Load('11111000010', '0', '00', '01001', '01010','0x40000000');
-const d1format = new Store('11111000000', '0', '00', '01001', '01010','0x40000000');
+// const rformat = new RFormat('10001011000', '01010', '000000', '01001', '01000', '0x40000000');
+// const iformat = new IFormat('1001000100', '0101', '01001', '01010', '0x40000000');
+// const dformat = new Load('11111000010', '0', '00', '01001', '01010','0x40000000');
+// const d1format = new Store('11111000000', '0', '00', '01001', '01010','0x40000000');
 
-const memory = new MemoryStorage();
-const registers = new LEGv8Registers();
 
-registers.writeByBinary('01001', '0101'); // X9 = 5
-registers.writeByBinary('01010', '011'); // X10 = 3
-memory.writeDoubleWord(5, BigInt(10)); // Memory[5] = 10
 // Example usage
 // startBtn.onclick = async () => {
 //     console.log(registers.readByBinary('01001')); // X9 = 5
@@ -178,18 +190,18 @@ memory.writeDoubleWord(5, BigInt(10)); // Memory[5] = 10
 
 // }
 
-startBtn.onclick = async () => {
-    resetBtn.click(); // Reset trước khi bắt đầu
-    running = true;
-    await dformat.instructionFetch();
-    await dformat.instructionDecode();
-    await dformat.execute();
-    await dformat.memoryAccess();
-    await dformat.registerWrite();
-    // console.log(memory.readDoubleWord(5)); //  = 3
-    console.log(registers.readByBinary('01010')); // = 5
+// startBtn.onclick = async () => {
+//     resetBtn.click(); // Reset trước khi bắt đầu
+//     running = true;
+//     await dformat.instructionFetch();
+//     await dformat.instructionDecode();
+//     await dformat.execute();
+//     await dformat.memoryAccess();
+//     await dformat.registerWrite();
+//     // console.log(memory.readDoubleWord(5)); //  = 3
+//     console.log(registers.readByBinary('01010')); // = 5
     
-}
+// }
 
 
 // startBtn.onclick = async () => {
@@ -204,3 +216,4 @@ startBtn.onclick = async () => {
 //     // console.log(registers.readByBinary('01010')); // = 5
     
 // }
+

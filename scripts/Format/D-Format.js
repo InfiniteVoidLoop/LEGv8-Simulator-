@@ -1,11 +1,27 @@
 class Load {
-    constructor(opcode, address, op2, Rn, Rd, address_instruction){
-        this.opcode = opcode; // 11 bits
-        this.address = address; // Address in hexadecimal format    // 9 bits
-        this.op2 = op2;         // 5 bits
-        this.Rn = Rn;         // 5 bits
-        this.Rd = Rd;         // 5 bits
-        this.address_instruction = address_instruction; // Address in hexadecimal format
+    constructor(DFormatInstruction, PC){
+        this.opcode = toExactBinary(DFormatInstruction.definition.opcode, 11); // 11 bits
+        this.address = toExactBinary(DFormatInstruction.address, 9); // 9 bits
+        this.op2 = "00";
+        this.Rn = toExactBinary(DFormatInstruction.rn, 5); // 5 bits
+        this.Rd = toExactBinary(DFormatInstruction.rt, 5); // 5 bits
+        this.address_instruction = LEGv8Registers.binaryToHex(LEGv8Registers.valueTo64BitBinary(PC.getCurrentAddress())); // Program Counter address
+ // Address in hexadecimal format
+
+        // ALU CONTROL
+        this.aluControl = toExactBinary(DFormatInstruction.definition.controlSignals.operation, 4); // Placeholder for ALU control, will be set in execute method
+        this.controlSignals = {
+            Reg2Loc: DFormatInstruction.definition.controlSignals.reg2Loc,
+            UncondBranch: DFormatInstruction.definition.controlSignals.uncondBranch,
+            MemRead: DFormatInstruction.definition.controlSignals.memRead,
+            MemtoReg: DFormatInstruction.definition.controlSignals.memToReg,
+            ALUOp1: LEGv8Registers.valueTo64BitBinary(DFormatInstruction.definition.controlSignals.aluOp)[1],
+            ALUOp0: String(DFormatInstruction.definition.controlSignals.aluOp % 2),
+            MemWrite: DFormatInstruction.definition.controlSignals.memWrite,
+            ALUSrc: DFormatInstruction.definition.controlSignals.aluSrc,
+            RegWrite: DFormatInstruction.definition.controlSignals.regWrite,
+            Branch: DFormatInstruction.definition.controlSignals.flagBranch,
+        }
     }
 
     async instructionFetch(){
@@ -34,23 +50,23 @@ class Load {
         ];
 
         const allRuns = pathAndData.map(({ pathId, data }) => run(data, pathId));
-        const controlUnit = new ControlUnit(this.opcode);
-
         await Promise.all(allRuns);
+
         // Control signals 
         const controlPathAndData = [
-            { pathId: 'control-reg-loc', data: controlUnit.getControlSignals().Reg2Loc},
-            { pathId: 'control-uncond-branch', data: controlUnit.getControlSignals().UncondBranch},
-            { pathId: 'control-mem-read', data: controlUnit.getControlSignals().MemRead},
-            { pathId: 'control-mem-reg', data: controlUnit.getControlSignals().MemtoReg},
-            { pathId: 'control-ALU-op', data: controlUnit.getControlSignals().ALUOp1 + controlUnit.getControlSignals().ALUOp0},
-            { pathId: 'control-mem-write', data: controlUnit.getControlSignals().MemWrite},
-            { pathId: 'control-ALU-src', data: controlUnit.getControlSignals().ALUSrc},
-            { pathId: 'control-reg-write', data: controlUnit.getControlSignals().RegWrite},
-            { pathId: 'control-branch', data: controlUnit.getControlSignals().Branch},
+            { pathId: 'control-reg-loc', data: this.controlSignals.Reg2Loc },
+            { pathId: 'control-uncond-branch', data: this.controlSignals.UncondBranch },
+            { pathId: 'control-mem-read', data: this.controlSignals.MemRead },
+            { pathId: 'control-mem-reg', data: this.controlSignals.MemtoReg },
+            { pathId: 'control-ALU-op', data: this.controlSignals.ALUOp1 + this.controlSignals.ALUOp0 },
+            { pathId: 'control-mem-write', data: this.controlSignals.MemWrite },
+            { pathId: 'control-ALU-src', data: this.controlSignals.ALUSrc },
+            { pathId: 'control-reg-write', data: this.controlSignals.RegWrite },
+            { pathId: 'control-branch', data: this.controlSignals.Branch },
         ];
         const allControlRuns = controlPathAndData.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(allControlRuns);
+       
         const muxToRegister = [
             { pathId: 'mux-read-res-2', data: instruction20_16},  // 20-16 bits
         ];
@@ -64,23 +80,17 @@ class Load {
         const extendAddress_hexan = LEGv8Registers.binaryToHex(LEGv8Registers.signExtend(this.address)); 
 
         // Control Unit  !!!! 
-        const controlUnit = new ControlUnit(this.opcode);
-        
-        const aluControl = getAluControl(
-            controlUnit.getControlSignals().ALUOp1, 
-            controlUnit.getControlSignals().ALUOp0,
-            this.opcode
-        );
 
         const pathAndData = [
             { pathId: 'read-1-alu', data: register1_hexan },
             { pathId: 'read-data-2-mux', data: register2_hexan },
-            { pathId: 'ALU-control-ALU', data: aluControl},         // fix alu control
+            { pathId: 'ALU-control-ALU', data: this.aluControl},         // fix alu control
             { pathId: 'Sign-extend-mux', data: extendAddress_hexan }, 
             { pathId: 'Sign-extend-shift', data: extendAddress_hexan }, 
         ]
         const allRuns = pathAndData.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(allRuns);
+       
         const addressShifted_bin = LEGv8Registers.valueTo64BitBinary(LEGv8Registers.binaryToBigInt(LEGv8Registers.signExtend(this.address)) << BigInt(2));
         const addressShifted_hexan = LEGv8Registers.binaryToHex(addressShifted_bin); // Shift left by 2 bits
         const anotherPathAndData = [
@@ -96,7 +106,6 @@ class Load {
     async memoryAccess() {
         const instruction = this.opcode + this.Rn + this.address + this.Rd; // Concatenate all parts to form the instruction
         const add4Address = add4ToHexAddress(this.address);
-        const register1_hexan = LEGv8Registers.binaryToHex(registers.readByBinary(this.Rn)); // 9-5 bits
         const register2_hexan = LEGv8Registers.binaryToHex(registers.readByBinary(instruction.substring(16, 20))); // 20-16 bits
 
 
@@ -105,12 +114,6 @@ class Load {
 
         const register1_decimal = LEGv8Registers.binaryToBigInt(registers.readByBinary(this.Rn)); 
         const address_decimal = LEGv8Registers.binaryToBigInt(LEGv8Registers.signExtend(this.address));
-        const controlUnit = new ControlUnit(this.opcode);
-        const aluControl = getAluControl(
-            controlUnit.getControlSignals().ALUOp1, 
-            controlUnit.getControlSignals().ALUOp0,
-            this.opcode
-        );
 
         const newRegisterValue = {
             '0010': register1_decimal + address_decimal, // ADD
@@ -119,7 +122,7 @@ class Load {
             '0001': register1_decimal | address_decimal, // ORR
         }
         // load value Rd to memory
-        const memoryAddress_bin = LEGv8Registers.valueTo64BitBinary(newRegisterValue[aluControl] || 0);
+        const memoryAddress_bin = LEGv8Registers.valueTo64BitBinary(newRegisterValue[this.aluControl] || 0);
         const memoryAddress_dec = LEGv8Registers.binaryToBigInt(memoryAddress_bin);
         const memoryAddress_hexan = LEGv8Registers.binaryToHex(memoryAddress_bin); // 4-0 bits
         const registerSource_decimal = memory.readDoubleWord(memoryAddress_dec); // Read the value from memory
@@ -162,16 +165,38 @@ class Load {
         const allRuns = pathAndData.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(allRuns);
     }
+    async run() {
+        await this.instructionFetch();
+        await this.instructionDecode();
+        await this.execute();
+        await this.memoryAccess();
+        await this.registerWrite();
+    }
 }
 
 class Store {
-    constructor(opcode, address, op2, Rn, Rd, address_instruction){
-        this.opcode = opcode; // 11 bits
-        this.address = address; // Address in hexadecimal format    // 9 bits
-        this.op2 = op2;         // 5 bits
-        this.Rn = Rn;         // 5 bits
-        this.Rd = Rd;         // 5 bits
-        this.address_instruction = address_instruction; // Address in hexadecimal format
+     constructor(DFormatInstruction, PC){
+        this.opcode = toExactBinary(DFormatInstruction.definition.opcode, 11); // 11 bits
+        this.address = toExactBinary(DFormatInstruction.address, 9); // 9 bits
+        this.op2 = "00"
+        this.Rn = toExactBinary(DFormatInstruction.rn, 5); // 5 bits
+        this.Rd = toExactBinary(DFormatInstruction.rt, 5); // 5 bits
+        this.address_instruction = LEGv8Registers.binaryToHex(LEGv8Registers.valueTo64BitBinary(PC.getCurrentAddress())); // Program Counter address
+
+        // ALU CONTROL
+        this.aluControl = toExactBinary(DFormatInstruction.definition.controlSignals.operation, 4); // Placeholder for ALU control, will be set in execute method
+        this.controlSignals = {
+            Reg2Loc: DFormatInstruction.definition.controlSignals.reg2Loc,
+            UncondBranch: DFormatInstruction.definition.controlSignals.uncondBranch,
+            MemRead: DFormatInstruction.definition.controlSignals.memRead,
+            MemtoReg: DFormatInstruction.definition.controlSignals.memToReg,
+            ALUOp1: LEGv8Registers.valueTo64BitBinary(DFormatInstruction.definition.controlSignals.aluOp)[1],
+            ALUOp0: String(DFormatInstruction.definition.controlSignals.aluOp % 2),
+            MemWrite: DFormatInstruction.definition.controlSignals.memWrite,
+            ALUSrc: DFormatInstruction.definition.controlSignals.aluSrc,
+            RegWrite: DFormatInstruction.definition.controlSignals.regWrite,
+            Branch: DFormatInstruction.definition.controlSignals.flagBranch,
+        }
     }
 
     async instructionFetch(){
@@ -200,20 +225,19 @@ class Store {
         ];
 
         const allRuns = pathAndData.map(({ pathId, data }) => run(data, pathId));
-        const controlUnit = new ControlUnit(this.opcode);
 
         await Promise.all(allRuns);
         // Control signals 
         const controlPathAndData = [
-            { pathId: 'control-reg-loc', data: controlUnit.getControlSignals().Reg2Loc},
-            { pathId: 'control-uncond-branch', data: controlUnit.getControlSignals().UncondBranch},
-            { pathId: 'control-mem-read', data: controlUnit.getControlSignals().MemRead},
-            { pathId: 'control-mem-reg', data: controlUnit.getControlSignals().MemtoReg},
-            { pathId: 'control-ALU-op', data: controlUnit.getControlSignals().ALUOp1 + controlUnit.getControlSignals().ALUOp0},
-            { pathId: 'control-mem-write', data: controlUnit.getControlSignals().MemWrite},
-            { pathId: 'control-ALU-src', data: controlUnit.getControlSignals().ALUSrc},
-            { pathId: 'control-reg-write', data: controlUnit.getControlSignals().RegWrite},
-            { pathId: 'control-branch', data: controlUnit.getControlSignals().Branch},
+            { pathId: 'control-reg-loc', data: this.controlSignals.Reg2Loc },
+            { pathId: 'control-uncond-branch', data: this.controlSignals.UncondBranch },
+            { pathId: 'control-mem-read', data: this.controlSignals.MemRead },
+            { pathId: 'control-mem-reg', data: this.controlSignals.MemtoReg },
+            { pathId: 'control-ALU-op', data: this.controlSignals.ALUOp1 + this.controlSignals.ALUOp0 },
+            { pathId: 'control-mem-write', data: this.controlSignals.MemWrite },
+            { pathId: 'control-ALU-src', data: this.controlSignals.ALUSrc },
+            { pathId: 'control-reg-write', data: this.controlSignals.RegWrite },
+            { pathId: 'control-branch', data: this.controlSignals.Branch },
         ];
         const allControlRuns = controlPathAndData.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(allControlRuns);
@@ -229,19 +253,10 @@ class Store {
         const register2_hexan = LEGv8Registers.binaryToHex(registers.readByBinary(this.Rd));
         const extendAddress_hexan = LEGv8Registers.binaryToHex(LEGv8Registers.signExtend(this.address)); 
 
-        // Control Unit  !!!! 
-        const controlUnit = new ControlUnit(this.opcode);
-        
-        const aluControl = getAluControl(
-            controlUnit.getControlSignals().ALUOp1, 
-            controlUnit.getControlSignals().ALUOp0,
-            this.opcode
-        );
-
         const pathAndData = [
             { pathId: 'read-1-alu', data: register1_hexan },
             { pathId: 'read-data-2-mux', data: register2_hexan },
-            { pathId: 'ALU-control-ALU', data: aluControl},         // fix alu control
+            { pathId: 'ALU-control-ALU', data: this.aluControl},         // fix alu control
             { pathId: 'Sign-extend-mux', data: extendAddress_hexan }, 
             { pathId: 'Sign-extend-shift', data: extendAddress_hexan }, 
         ]
@@ -271,13 +286,6 @@ class Store {
 
         const register1_decimal = LEGv8Registers.binaryToBigInt(registers.readByBinary(this.Rn)); 
         const address_decimal = LEGv8Registers.binaryToBigInt(LEGv8Registers.signExtend(this.address));
-        const controlUnit = new ControlUnit(this.opcode);
-        const aluControl = getAluControl(
-            controlUnit.getControlSignals().ALUOp1, 
-            controlUnit.getControlSignals().ALUOp0,
-            this.opcode
-        );
-
         const newRegisterValue = {
             '0010': register1_decimal + address_decimal, // ADD
             '0110': register1_decimal - address_decimal, // SUB
@@ -285,7 +293,7 @@ class Store {
             '0001': register1_decimal | address_decimal, // ORR
         }
         // load value Rd to memory
-        const memoryAddress_bin = LEGv8Registers.valueTo64BitBinary(newRegisterValue[aluControl] || 0);
+        const memoryAddress_bin = LEGv8Registers.valueTo64BitBinary(newRegisterValue[this.aluControl] || 0);
         const memoryAddress_dec = LEGv8Registers.binaryToBigInt(memoryAddress_bin);
         const memoryAddress_hexan = LEGv8Registers.binaryToHex(memoryAddress_bin); // 4-0 bits
 
@@ -333,5 +341,12 @@ class Store {
         ];
         const allRuns = pathAndData.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(allRuns);
+    }
+    async run() {
+        await this.instructionFetch();
+        await this.instructionDecode();
+        await this.execute();
+        await this.memoryAccess();
+        await this.registerWrite();
     }
 }
