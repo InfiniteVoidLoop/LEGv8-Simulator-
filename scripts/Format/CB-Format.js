@@ -115,7 +115,7 @@ class CBFormat {
             PC.setAddress(PC.getCurrentAddress() + addressShifted_decimal); // Update Program Counter
         }
         else PC.setAddress(PC.getCurrentAddress() + 4); // Increment PC by 4 if not zero
-
+        jumpToAddress(PC, vec, PC.getCurrentAddress()); // Update the address in the UI
         const pathAndData = [
             { pathId: 'read-data-2-write-data', data: register2_hexan}, 
             { pathId: 'ALU-mux', data: "0x0"}, // 4-0 bits

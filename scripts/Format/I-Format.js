@@ -161,6 +161,8 @@ class IFormat {
         await Promise.all(allRuns);
         // Update Pc
         PC.setAddress(PC.getCurrentAddress() + 4); // Increment PC by 4 for the next instruction
+        jumpToAddress(PC, vec, PC.getCurrentAddress()); // Update the address in the UI
+
         const pos = LEGv8Registers.binaryToBigInt(this.Rd); // Convert binary Rd to decimal position
         document.getElementById(`register-X${pos}`).querySelector('span:last-child').textContent = newRegister_hexan; 
         document.getElementById('mux0_0').style.color = "black";

@@ -52,19 +52,19 @@ function addHexStrings(hexStr1, hexStr2) {
 }
 
 function toExactBinary(decimalNum, n_bits) {
-  if (decimalNum < 0) {
-    throw new Error("Số thập phân phải là số không âm.");
-  }
+    if (decimalNum < 0) {
+        throw new Error("Số thập phân phải là số không âm.");
+    }
 
-  let binaryString = decimalNum.toString(2);
+    let binaryString = decimalNum.toString(2);
 
-  // Nếu chuỗi nhị phân quá dài, chỉ lấy n_bits cuối cùng
-  if (binaryString.length > n_bits) {
-    return binaryString.slice(-n_bits);
-  }
+    // Nếu chuỗi nhị phân quá dài, chỉ lấy n_bits cuối cùng
+    if (binaryString.length > n_bits) {
+        return binaryString.slice(-n_bits);
+    }
 
-  // Nếu chuỗi nhị phân ngắn hơn, thêm 0 vào đầu
-  return binaryString.padStart(n_bits, '0');
+    // Nếu chuỗi nhị phân ngắn hơn, thêm 0 vào đầu
+    return binaryString.padStart(n_bits, '0');
 }
 
 function toExactSignBinary(decimalNum, n_bits) {
@@ -121,4 +121,26 @@ function getBits(bitStr, startBit, endBit) {
     const start = len - 1 - endBit;
     const end = len - startBit;
     return bitStr.substring(start, end);
+}
+
+function jumpToAddress(PC, lst, address) {
+    const obj = PC.getObjectAtAddress(address);
+    if (obj.definition.format == 'R') {
+        lst.push(new RFormat(obj, PC))
+    }
+    else if (obj.definition.format == 'I') {
+        lst.push(new IFormat(obj, PC))
+    }
+    else if (obj.definition.format == 'D' && ins[i].definition.mnemonic == 'STUR') {
+        lst.push(new Store(obj, PC))
+    }
+    else if (obj.definition.format == 'D' && ins[i].definition.mnemonic == 'LDUR') {
+        lst.push(new Load(obj, PC))
+    }
+    else if (obj.definition.format == 'C') {
+        lst.push(new CBFormat(obj, PC))
+    }
+    else if (obj.definition.format == 'B') {
+        lst.push(new BFormat(obj, PC))
+    }
 }

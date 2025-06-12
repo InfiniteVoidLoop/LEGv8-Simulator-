@@ -157,6 +157,8 @@ class Load {
 
     async registerWrite() {
         PC.setAddress(PC.getCurrentAddress() + 4); // Increment PC by 4
+        jumpToAddress(PC, vec, PC.getCurrentAddress()); // Update the address in the UI
+
         const memoryValue_hexan = LEGv8Registers.binaryToHex(registers.readByBinary(this.Rd)); // 4-0 bits
         const pathAndData = [
             { pathId: 'mux-write-data', data: memoryValue_hexan }, // 4-0 bits
@@ -349,6 +351,8 @@ class Store {
 
     async registerWrite() {
         PC.setAddress(PC.getCurrentAddress() + 4); // Increment PC by 4 for the next instruction
+        jumpToAddress(PC, vec, PC.getCurrentAddress()); // Update the address in the UI
+
         const pathAndData = [
             { pathId: 'mux-write-data', data: "0x0000" }, // 4-0 bits
             { pathId: 'ALU-back-PC', data: add4ToHexAddress(this.address_instruction)}, // 4-0 bits

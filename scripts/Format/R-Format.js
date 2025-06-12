@@ -153,7 +153,8 @@ class RFormat {
 
         // Update the Program Counter to the next instruction address
         PC.setAddress(PC.getCurrentAddress() + 4); 
-        
+        jumpToAddress(PC, vec, PC.getCurrentAddress()); // Update the address in the UI
+
         const allRuns = pathAndData.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(allRuns);
         const pos = LEGv8Registers.binaryToBigInt(this.Rd); // Convert binary Rd to decimal position

@@ -113,6 +113,8 @@ class BFormat {
         const addressShifted_hexan = LEGv8Registers.binaryToHex(addressShifted_bin); // Shift left by 2 bits
 
         PC.setAddress(PC.getCurrentAddress() + addressShifted_decimal); // Update Program Counter
+        jumpToAddress(PC, vec, PC.getCurrentAddress()); // Update the address in the UI
+
         const pathAndData = [
             { pathId: 'read-data-2-write-data', data: register2_hexan }, // 20-16 bits
             { pathId: 'ALU-mux', data: "0x0"}, // 4-0 bits
