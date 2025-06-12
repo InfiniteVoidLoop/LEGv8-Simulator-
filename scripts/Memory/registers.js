@@ -186,21 +186,32 @@ class LEGv8Registers {
         }
         return bigIntValue;
     }
+   
     /**
-     * Static method to convert a binary string to its hexadecimal representation.
-     * The input binary string can be of any valid length (e.g., 64-bit, 32-bit).
-     * @param {string} binStr - The binary string to convert.
-     * @returns {string} The hexadecimal string, prefixed with '0x'.
-     * @throws {Error} If the input binary string is invalid.
-     */
-    static binaryToHex(binStr) {
-        if (!/^[01]+$/.test(binStr) || binStr.length === 0) {
-            throw new Error(`Invalid binary string: ${binStr}. Must contain only '0' or '1' and not be empty.`);
-        }
-        // Convert binary string to BigInt (unsigned for hex conversion)
-        const bigIntValue = BigInt('0b' + binStr);
-        return '0x' + bigIntValue.toString(16).toUpperCase();
+ * Chuyển một chuỗi nhị phân 64-bit (theo chuẩn two's complement) sang số hex có dấu.
+ * @param {string} binStr - Chuỗi nhị phân 64-bit.
+ * @returns {string} Chuỗi hex thập lục phân có dấu, ví dụ: '0xFF...' hoặc '-0x1A...'.
+ */
+static binaryToHex(binStr) {
+    if (!/^[01]+$/.test(binStr) || binStr.length === 0) {
+        throw new Error(`Invalid binary string: ${binStr}. Must contain only '0' or '1' and not be empty.`);
     }
+
+    // Sign-extend nếu độ dài < 64
+    if (binStr.length !== 64) {
+        binStr = LEGv8Registers.signExtend(binStr, 64);
+    }
+
+    const signedBigInt = LEGv8Registers.binaryToBigInt(binStr); // sử dụng hàm đã có
+
+    // Chuyển BigInt sang hex
+    const hexStr = signedBigInt < 0n
+        ? '-0x' + (-signedBigInt).toString(16).toUpperCase()
+        : '0x' + signedBigInt.toString(16).toUpperCase();
+
+    return hexStr;
+}
+
 
     /**
      * Static method to perform sign extension on a binary string.
