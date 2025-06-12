@@ -133,3 +133,10 @@ function toExactSignBinary(decimalNum, n_bits) {
         return binaryString.slice(-n_bits);
     }
 }
+
+function getBits(bitStr, startBit, endBit) {
+    const len = bitStr.length;
+    const start = len - 1 - endBit;
+    const end = len - startBit;
+    return bitStr.substring(start, end);
+}

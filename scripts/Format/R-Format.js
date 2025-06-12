@@ -14,14 +14,13 @@ class RFormat {
             UncondBranch: RFormatInstruction.definition.controlSignals.uncondBranch,
             MemRead: RFormatInstruction.definition.controlSignals.memRead,
             MemtoReg: RFormatInstruction.definition.controlSignals.memToReg,
-            ALUOp1: LEGv8Registers.valueTo64BitBinary(RFormatInstruction.definition.controlSignals.aluOp)[1],
+            ALUOp1: LEGv8Registers.valueTo64BitBinary(RFormatInstruction.definition.controlSignals.aluOp).slice(-2, -1),
             ALUOp0: String(RFormatInstruction.definition.controlSignals.aluOp % 2),
             MemWrite: RFormatInstruction.definition.controlSignals.memWrite,
             ALUSrc: RFormatInstruction.definition.controlSignals.aluSrc,
             RegWrite: RFormatInstruction.definition.controlSignals.regWrite,
             Branch: RFormatInstruction.definition.controlSignals.flagBranch,
         };
-        console.log(this.controlSignals.Branch, 'Branch control signal');
     }
 
     async instructionFetch() {
@@ -64,7 +63,14 @@ class RFormat {
         ];
         const allControlRuns = controlPathAndData.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(allControlRuns);
-        
+
+        // change document
+        document.getElementById('mux0_0').style.color = "#007BFF";
+        document.getElementById('mux1_0').style.color = "#007BFF";
+        document.getElementById('mux2_0').style.color = "#007BFF";
+        document.getElementById('mux3_0').style.color = "#007BFF";
+        document.getElementById('register-handler').style.borderColor = "#007BFF";
+        document.getElementById('register-handler-write').style.color = "#007BFF";
         const muxToRegister = [
             { pathId: 'mux-read-res-2', data: this.Rm },  // 20-16 bits
         ];
@@ -91,14 +97,14 @@ class RFormat {
             { pathId: 'read-1-alu', data: register1_hexan },
             { pathId: 'read-data-2-mux', data: register2_hexan },
             { pathId: 'ALU-control-ALU', data: this.aluControl },
-            { pathId: 'Sign-extend-mux', data: 0 }, // 4-0 bits
-            { pathId: 'Sign-extend-shift', data: 0 }, // 4-0 bits
+            { pathId: 'Sign-extend-mux', data: "0x0" }, // 4-0 bits
+            { pathId: 'Sign-extend-shift', data: "0x0" }, // 4-0 bits
         ]
         const allRuns = pathAndData.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(allRuns);
 
         const anotherPathAndData = [
-            { pathId: 'shift-add-alu', data: 0 }, // 9-5 bits
+            { pathId: 'shift-add-alu', data: "0x0" }, // 9-5 bits
             { pathId: 'mux-alu', data: register2_hexan}, // 20-16 bits
         ];
 
@@ -124,14 +130,14 @@ class RFormat {
         
         // This is the part where read adress register in memory
         const anotherPathAndData = [
-            { pathId: 'read-data-mux', data: newRegister_hexan }, // 4-0 bits  !!!!! 
-            { pathId: 'and-gate-or-gate', data: 0 },
+            { pathId: 'read-data-mux', data: "0x0000"}, // 4-0 bits  !!!!! 
+            { pathId: 'and-gate-or-gate', data: "0" },
         ];
         const anotherRuns = anotherPathAndData.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(anotherRuns);
 
         const orToMux = [
-            { pathId: 'or-gate-mux', data: 0 }, // 4-0 bits
+            { pathId: 'or-gate-mux', data: "0" }, // 4-0 bits
         ];
         const orRuns = orToMux.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(orRuns);
@@ -139,12 +145,26 @@ class RFormat {
 
     async registerWrite() {
         const newRegisterValue_hexan = LEGv8Registers.binaryToHex(registers.readByBinary(this.Rd));
+
         const pathAndData = [
             { pathId: 'mux-write-data', data: newRegisterValue_hexan }, 
             { pathId: 'ALU-back-PC', data: add4ToHexAddress(this.address) }, 
         ];
+
+        // Update the Program Counter to the next instruction address
+        PC.setAddress(PC.getCurrentAddress() + 4); 
+        
         const allRuns = pathAndData.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(allRuns);
+        const pos = LEGv8Registers.binaryToBigInt(this.Rd); // Convert binary Rd to decimal position
+        document.getElementById(`register-X${pos}`).querySelector('span:last-child').textContent = newRegisterValue_hexan; 
+        document.getElementById('mux0_0').style.color = "black"
+        document.getElementById('mux1_0').style.color = "black"
+        document.getElementById('mux2_0').style.color = "black"
+        document.getElementById('mux3_0').style.color = "black"
+        document.getElementById('register-handler').style.borderColor = "black";
+        document.getElementById('register-handler-write').style.color = "black";
+        
     }
 
     async run() {
@@ -155,65 +175,3 @@ class RFormat {
         await this.registerWrite();
     }
 }
-
-// const rformat = new RFormat('10001011000', '01010', '000000', '01001', '01000', '0x40000000');
-// const iformat = new IFormat('1001000100', '0101', '01001', '01010', '0x40000000');
-// const dformat = new Load('11111000010', '0', '00', '01001', '01010','0x40000000');
-// const d1format = new Store('11111000000', '0', '00', '01001', '01010','0x40000000');
-
-
-// Example usage
-// startBtn.onclick = async () => {
-//     console.log(registers.readByBinary('01001')); // X9 = 5
-//     console.log(registers.readByBinary('01010')); // X10 = 3
-//     console.log(LEGv8Registers.binaryToBigInt(registers.readByBinary('01001'))); // X9 = 5
-//     console.log(LEGv8Registers.binaryToBigInt(registers.readByBinary('01010'))); // X10 = 3
-//     console.log(LEGv8Registers.binaryToHex(registers.readByBinary('01001'))); // X9 = 5
-//     console.log(LEGv8Registers.binaryToHex(registers.readByBinary('01010'))); // X10 = 3
-//     resetBtn.click(); // Reset trước khi bắt đầu
-//     running = true;
-//     await rformat.instructionFetch();
-//     await rformat.instructionDecode();
-//     await rformat.execute();
-//     await rformat.memoryAccess();
-//     await rformat.registerWrite();
-// }
-
-// startBtn.onclick = async () => {
-//     resetBtn.click(); // Reset trước khi bắt đầu
-//     running = true;
-//     await iformat.instructionFetch();
-//     await iformat.instructionDecode();
-//     await iformat.execute();
-//     await iformat.memoryAccess();
-//     await iformat.registerWrite();
-
-// }
-
-// startBtn.onclick = async () => {
-//     resetBtn.click(); // Reset trước khi bắt đầu
-//     running = true;
-//     await dformat.instructionFetch();
-//     await dformat.instructionDecode();
-//     await dformat.execute();
-//     await dformat.memoryAccess();
-//     await dformat.registerWrite();
-//     // console.log(memory.readDoubleWord(5)); //  = 3
-//     console.log(registers.readByBinary('01010')); // = 5
-    
-// }
-
-
-// startBtn.onclick = async () => {
-//     resetBtn.click(); // Reset trước khi bắt đầu
-//     running = true;
-//     await d1format.instructionFetch();
-//     await d1format.instructionDecode();
-//     await d1format.execute();
-//     await d1format.memoryAccess();
-//     await d1format.registerWrite();
-//     console.log(memory.readDoubleWord(5)); //  = 3
-//     // console.log(registers.readByBinary('01010')); // = 5
-    
-// }
-

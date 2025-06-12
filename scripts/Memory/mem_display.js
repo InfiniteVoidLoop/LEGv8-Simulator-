@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const registerTemplate =
         document.getElementById("registerTemplate").content;
 
-    for (let i = 0; i < 31; i++) {
+    for (let i = 0; i <= 27; i++) {
         const registerClone = registerTemplate.cloneNode(true);
         const registerDiv = registerClone.querySelector(".register-cell");
         const registerName = registerDiv.querySelector("span:first-child");
@@ -40,30 +40,36 @@ document.addEventListener("DOMContentLoaded", function () {
         registersContainer.appendChild(registerClone);
     }
 
-    // Initialize stack display
+
     const stackContainer = document.querySelector(".stack-view");
-    for (let i = 0; i < 10; i++) {
-        const address = 0x7ffffff0 - i * 8;
-        const row = document.createElement("div");
-        row.className = "stack-row grid grid-cols-3 gap-1";
 
-        // Address
+    for (let i = 0; i < 3; i++) {
+        const addrHeader = document.createElement("div");
+        addrHeader.className = "memory-header text-gray-400";
+        addrHeader.textContent = "Address";
+        stackContainer.appendChild(addrHeader);
+
+        const valHeader = document.createElement("div");
+        valHeader.className = "memory-header text-gray-400";
+        valHeader.textContent = "Value";
+        stackContainer.appendChild(valHeader);
+    }
+
+    const totalPairs = 30;
+
+    for (let i = 0; i < totalPairs; i++) {
+        const address = i;
+
         const addrCell = document.createElement("div");
-        addrCell.className = "stack-address text-gray-400";
+        addrCell.className = "text-gray-400 w-100";
         addrCell.textContent = `0x${address.toString(16).padStart(8, "0")}`;
-        row.appendChild(addrCell);
+        stackContainer.appendChild(addrCell);
 
-        // Value
         const valueCell = document.createElement("div");
-        valueCell.className = "stack-value bg-gray-700 px-2 py-1 rounded";
+        valueCell.className = "bg-gray-700 text-white px-2 py-1 rounded";
         valueCell.textContent = `0x${(0).toString(16).padStart(8, "0")}`;
-        row.appendChild(valueCell);
+        valueCell.id = `${address}`;
+        stackContainer.appendChild(valueCell);
+    }
 
-        // Note
-        const noteCell = document.createElement("div");
-        noteCell.className = "stack-note text-gray-400 text-xs";
-        noteCell.textContent = i === 0 ? "[SP]" : "";
-        row.appendChild(noteCell);
-
-        stackContainer.appendChild(row);
-}})
+})

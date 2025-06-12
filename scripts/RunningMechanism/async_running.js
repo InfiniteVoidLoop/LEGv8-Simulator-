@@ -38,7 +38,7 @@ async function run(text, pathId) {
     const textElement = document.createElementNS(namespace, "text");
     textElement.setAttribute("font-size", "20");
     textElement.setAttribute("fill", "#000");
-    textElement.setAttribute("font-weight", "bold");
+    // textElement.setAttribute("font-weight", "bold");
     textElement.setAttribute("class", "instruction-text");
     textElement.setAttribute("font-family", "Courier New, monospace");
     const textPath = document.createElementNS(namespace, "textPath");

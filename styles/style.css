@@ -177,3 +177,10 @@
     transition: all 0.1s linear;
     pointer-events: none;
 }
+
+.intersection-node {
+    fill: #007BFF;         /* Màu đen cho chấm tròn */
+    r: 4;                /* Bán kính của chấm tròn (điều chỉnh cho phù hợp) */
+    stroke: #007BFF;       /* Viền trắng nhẹ để nổi bật trên nền đậm */
+    stroke-width: 0.5;   /* Độ dày viền */
+}

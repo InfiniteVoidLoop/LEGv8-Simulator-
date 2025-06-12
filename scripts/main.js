@@ -55,7 +55,10 @@ startBtn.onclick = async () => {
     resetBtn.click(); // Reset trước khi bắt đầu
     running = true;
     for (let i = 0; i < vec.length; i++){
-        await vec[i].run()
+        document.getElementById('pcValue').textContent = `0x${PC.getCurrentAddress().toString(16).padStart(8, '0').toUpperCase()}`;
+        await vec[i].run();
+        document.getElementById('pcValue').textContent = `0x${PC.getCurrentAddress().toString(16).padStart(8, '0').toUpperCase()}`;
+
     }
 }
 

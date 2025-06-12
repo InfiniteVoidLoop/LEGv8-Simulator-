@@ -1,5 +1,5 @@
 class ProgramCounter {
-    static BASE_ADDRESS = 0x400000;
+    static BASE_ADDRESS = 0x40000000;
 
     constructor() {
         this.currentAddress = ProgramCounter.BASE_ADDRESS;
