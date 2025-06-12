@@ -187,10 +187,10 @@ class LEGv8Registers {
         return bigIntValue;
     }
    
-    /**
- * Chuyển một chuỗi nhị phân 64-bit (theo chuẩn two's complement) sang số hex có dấu.
+/**
+ * Chuyển một chuỗi nhị phân 64-bit (theo chuẩn two's complement) sang chuỗi hex 64-bit unsigned (two's complement).
  * @param {string} binStr - Chuỗi nhị phân 64-bit.
- * @returns {string} Chuỗi hex thập lục phân có dấu, ví dụ: '0xFF...' hoặc '-0x1A...'.
+ * @returns {string} Chuỗi hex thập lục phân two's complement, ví dụ: '0xFFFFFFFFFFFFFFFE'.
  */
 static binaryToHex(binStr) {
     if (!/^[01]+$/.test(binStr) || binStr.length === 0) {
@@ -202,14 +202,14 @@ static binaryToHex(binStr) {
         binStr = LEGv8Registers.signExtend(binStr, 64);
     }
 
-    const signedBigInt = LEGv8Registers.binaryToBigInt(binStr); // sử dụng hàm đã có
+    const signedBigInt = LEGv8Registers.binaryToBigInt(binStr); // signed BigInt từ two's complement
 
-    // Chuyển BigInt sang hex
-    const hexStr = signedBigInt < 0n
-        ? '-0x' + (-signedBigInt).toString(16).toUpperCase()
-        : '0x' + signedBigInt.toString(16).toUpperCase();
+    // Nếu là số âm, cần cộng 2^64 để lấy two's complement unsigned hex
+    const hexBigInt = signedBigInt < 0n ? (1n << 64n) + signedBigInt : signedBigInt;
 
-    return hexStr;
+    const hexStr = hexBigInt.toString(16).toUpperCase().padStart(16, '0');
+
+    return `0x${hexStr}`;
 }
 
 
