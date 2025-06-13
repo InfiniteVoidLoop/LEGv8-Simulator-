@@ -5,7 +5,7 @@ const pauseBtn = document.getElementById("pauseBtn");
 const resetBtn = document.getElementById("resetBtn");
 
 const speedInput = document.querySelector(
-    'input[type="range"][min="1"][max="10"]',
+    'input[type="range"][min="1"][max="10"]'
 );
 let executionSpeed = speedInput ? parseInt(speedInput.value, 10) : 1;
 
@@ -45,7 +45,7 @@ async function run(text, pathId) {
     textPath.setAttributeNS(
         "http://www.w3.org/1999/xlink",
         "href",
-        `#${pathId}`,
+        `#${pathId}`
     );
     textPath.textContent = text;
     textPath.setAttribute("startOffset", `0%`);

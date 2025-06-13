@@ -58,11 +58,11 @@ B.LO,C,01010100,1,0,0,1,0,0,0,0,0,0,0,0,C=0`;
  * Console logging colors (simplified version)
  */
 const ColoredLog = {
-    PENDING: '\x1b[33m[PENDING] \x1b[0m',
-    SUCCESS: '\x1b[32m[SUCCESS] \x1b[0m',
-    WARNING: '\x1b[33m[WARNING] \x1b[0m',
-    ERROR: '\x1b[31m[ERROR] \x1b[0m',
-    FAILURE: '\x1b[31m[FAILURE] \x1b[0m'
+    PENDING: "\x1b[33m[PENDING] \x1b[0m",
+    SUCCESS: "\x1b[32m[SUCCESS] \x1b[0m",
+    WARNING: "\x1b[33m[WARNING] \x1b[0m",
+    ERROR: "\x1b[31m[ERROR] \x1b[0m",
+    FAILURE: "\x1b[31m[FAILURE] \x1b[0m",
 };
 
 /**
@@ -78,7 +78,7 @@ class InstructionConfigLoader {
          * The key is the opcode ID, and the value is a map of format characters to InstructionDefinition objects.
          */
         this.detailedDefinitionMap = new Map();
-        
+
         /**
          * A map that stores instruction definitions based on their mnemonic.
          * The key is the mnemonic string, and the value is the corresponding InstructionDefinition object.
@@ -121,31 +121,44 @@ class InstructionConfigLoader {
     loadConfig() {
         this.detailedDefinitionMap.clear();
         this.mnemonicMap.clear();
-        console.log(ColoredLog.PENDING + "Loading instruction configuration from hard-coded data");
+        console.log(
+            ColoredLog.PENDING +
+                "Loading instruction configuration from hard-coded data"
+        );
 
         try {
-            const lines = INSTRUCTION_DATA.split('\n');
+            const lines = INSTRUCTION_DATA.split("\n");
             let lineNumber = 0;
             let headerSkipped = false;
 
             for (const line of lines) {
                 lineNumber++;
                 const trimmedLine = line.trim();
-                
+
                 // Skip empty lines and comments
-                if (!trimmedLine || trimmedLine.startsWith("#") || trimmedLine.startsWith("//")) {
+                if (
+                    !trimmedLine ||
+                    trimmedLine.startsWith("#") ||
+                    trimmedLine.startsWith("//")
+                ) {
                     continue;
                 }
-                
+
                 // Skip header line
-                if (!headerSkipped && (trimmedLine.toLowerCase().includes("mnemonic") || trimmedLine.toLowerCase().includes("opcode"))) {
+                if (
+                    !headerSkipped &&
+                    (trimmedLine.toLowerCase().includes("mnemonic") ||
+                        trimmedLine.toLowerCase().includes("opcode"))
+                ) {
                     headerSkipped = true;
                     continue;
                 }
 
-                const parts = trimmedLine.split(',');
+                const parts = trimmedLine.split(",");
                 if (parts.length !== 16) {
-                    console.warn(`${ColoredLog.WARNING}ConfigLoader WARNING line ${lineNumber}: Incorrect field count (${parts.length}, expected 16). Skipping: ${trimmedLine}`);
+                    console.warn(
+                        `${ColoredLog.WARNING}ConfigLoader WARNING line ${lineNumber}: Incorrect field count (${parts.length}, expected 16). Skipping: ${trimmedLine}`
+                    );
                     continue;
                 }
 
@@ -154,65 +167,135 @@ class InstructionConfigLoader {
 
                     const formatStr = parts[1].trim().toUpperCase();
                     const formatChar = this.parseFormat(formatStr);
-                    if (formatChar === '?') {
-                        console.warn(`${ColoredLog.WARNING}ConfigLoader WARNING line ${lineNumber}: Unknown format '${formatStr}' for ${mnemonic}. Skipping.`);
+                    if (formatChar === "?") {
+                        console.warn(
+                            `${ColoredLog.WARNING}ConfigLoader WARNING line ${lineNumber}: Unknown format '${formatStr}' for ${mnemonic}. Skipping.`
+                        );
                         continue;
                     }
 
                     const opcodeIdStr = parts[2].trim();
                     if (!opcodeIdStr) {
-                        console.warn(`${ColoredLog.WARNING}ConfigLoader WARNING line ${lineNumber}: Empty Opcode ID for ${mnemonic}. Skipping.`);
+                        console.warn(
+                            `${ColoredLog.WARNING}ConfigLoader WARNING line ${lineNumber}: Empty Opcode ID for ${mnemonic}. Skipping.`
+                        );
                         continue;
                     }
                     const opcode = parseInt(opcodeIdStr, 2);
 
-                    const reg2Loc = this.parseFlag(parts[3], mnemonic, "Reg2Loc");
-                    const uncondBranch = this.parseFlag(parts[4], mnemonic, "UncondBranch");
-                    const flagBranch = this.parseFlag(parts[5], mnemonic, "FlagBranch");
-                    const zeroBranch = this.parseFlag(parts[6], mnemonic, "ZeroBranch");
-                    const memRead = this.parseFlag(parts[7], mnemonic, "MemRead");
-                    const memToReg = this.parseFlag(parts[8], mnemonic, "MemToReg");
-                    const memWrite = this.parseFlag(parts[9], mnemonic, "MemWrite");
-                    const flagWrite = this.parseFlag(parts[10], mnemonic, "FlagWrite");
-                    const aluSrc = this.parseFlag(parts[11], mnemonic, "ALUSrc");
-                    const aluOp = this.parseBinary(parts[12], mnemonic, "ALUOp");
-                    const regWrite = this.parseFlag(parts[13], mnemonic, "RegWrite");
-                    const aluControlOut = this.parseBinary(parts[14], mnemonic, "ALUControlOut");
+                    const reg2Loc = this.parseFlag(
+                        parts[3],
+                        mnemonic,
+                        "Reg2Loc"
+                    );
+                    const uncondBranch = this.parseFlag(
+                        parts[4],
+                        mnemonic,
+                        "UncondBranch"
+                    );
+                    const flagBranch = this.parseFlag(
+                        parts[5],
+                        mnemonic,
+                        "FlagBranch"
+                    );
+                    const zeroBranch = this.parseFlag(
+                        parts[6],
+                        mnemonic,
+                        "ZeroBranch"
+                    );
+                    const memRead = this.parseFlag(
+                        parts[7],
+                        mnemonic,
+                        "MemRead"
+                    );
+                    const memToReg = this.parseFlag(
+                        parts[8],
+                        mnemonic,
+                        "MemToReg"
+                    );
+                    const memWrite = this.parseFlag(
+                        parts[9],
+                        mnemonic,
+                        "MemWrite"
+                    );
+                    const flagWrite = this.parseFlag(
+                        parts[10],
+                        mnemonic,
+                        "FlagWrite"
+                    );
+                    const aluSrc = this.parseFlag(
+                        parts[11],
+                        mnemonic,
+                        "ALUSrc"
+                    );
+                    const aluOp = this.parseBinary(
+                        parts[12],
+                        mnemonic,
+                        "ALUOp"
+                    );
+                    const regWrite = this.parseFlag(
+                        parts[13],
+                        mnemonic,
+                        "RegWrite"
+                    );
+                    const aluControlOut = this.parseBinary(
+                        parts[14],
+                        mnemonic,
+                        "ALUControlOut"
+                    );
 
                     const signals = new ControlSignals(
-                        reg2Loc, uncondBranch, flagBranch, zeroBranch,
-                        memRead, memToReg, memWrite,
+                        reg2Loc,
+                        uncondBranch,
+                        flagBranch,
+                        zeroBranch,
+                        memRead,
+                        memToReg,
+                        memWrite,
                         flagWrite,
-                        aluSrc, aluOp,
+                        aluSrc,
+                        aluOp,
                         regWrite,
                         aluControlOut
                     );
 
                     const definition = new InstructionDefinition(
-                        mnemonic, formatChar, opcode, signals
+                        mnemonic,
+                        formatChar,
+                        opcode,
+                        signals
                     );
 
                     // Add to detailed definition map
                     if (!this.detailedDefinitionMap.has(opcode)) {
                         this.detailedDefinitionMap.set(opcode, new Map());
                     }
-                    this.detailedDefinitionMap.get(opcode).set(formatChar, definition);
+                    this.detailedDefinitionMap
+                        .get(opcode)
+                        .set(formatChar, definition);
 
                     // Add to mnemonic map if not already present
                     if (!this.mnemonicMap.has(mnemonic)) {
                         this.mnemonicMap.set(mnemonic, definition);
                     }
-
                 } catch (error) {
-                    if (error.message.includes('Invalid number format')) {
-                        console.error(`${ColoredLog.FAILURE}ConfigLoader ERROR line ${lineNumber}: Invalid number format (OpcodeID?). Skipping: ${trimmedLine} - ${error.message}`);
+                    if (error.message.includes("Invalid number format")) {
+                        console.error(
+                            `${ColoredLog.FAILURE}ConfigLoader ERROR line ${lineNumber}: Invalid number format (OpcodeID?). Skipping: ${trimmedLine} - ${error.message}`
+                        );
                     } else {
-                        console.error(`${ColoredLog.FAILURE}ConfigLoader ERROR line ${lineNumber}: Cannot parse line: ${trimmedLine} - ${error.message}`);
+                        console.error(
+                            `${ColoredLog.FAILURE}ConfigLoader ERROR line ${lineNumber}: Cannot parse line: ${trimmedLine} - ${error.message}`
+                        );
                     }
                 }
             }
 
-            console.log(`${ColoredLog.SUCCESS}Instruction configuration loaded. ${this.mnemonicMap.size} unique mnemonics, ${this.countTotalDefinitions()} opcode/format definitions.`);
+            console.log(
+                `${ColoredLog.SUCCESS}Instruction configuration loaded. ${
+                    this.mnemonicMap.size
+                } unique mnemonics, ${this.countTotalDefinitions()} opcode/format definitions.`
+            );
 
             // console.log("--- Loaded Instruction Definitions ---");
             // this.detailedDefinitionMap.forEach((formatMap, opcodeId) => {
@@ -231,9 +314,12 @@ class InstructionConfigLoader {
             // console.log("-----------------------");
 
             return true;
-
         } catch (error) {
-            console.error(ColoredLog.ERROR + "ConfigLoader FATAL ERROR: Cannot process config data: " + error.message);
+            console.error(
+                ColoredLog.ERROR +
+                    "ConfigLoader FATAL ERROR: Cannot process config data: " +
+                    error.message
+            );
             console.error(error);
             return false;
         }
@@ -246,15 +332,22 @@ class InstructionConfigLoader {
      */
     parseFormat(formatStr) {
         switch (formatStr) {
-            case "R": return 'R';
-            case "I": return 'I';
-            case "D": return 'D';
-            case "B": return 'B';
+            case "R":
+                return "R";
+            case "I":
+                return "I";
+            case "D":
+                return "D";
+            case "B":
+                return "B";
             case "CB":
-            case "C": return 'C';
+            case "C":
+                return "C";
             case "IM":
-            case "M": return 'M';
-            default: return '?';
+            case "M":
+                return "M";
+            default:
+                return "?";
         }
     }
 
@@ -270,7 +363,9 @@ class InstructionConfigLoader {
         if (trimmed === "0" || trimmed === "1" || trimmed === "0") {
             return trimmed;
         } else {
-            throw new Error(`ConfigLoader ERROR: Invalid flag value '${trimmed}' for ${mnemonic}/${flagName}. Expected '1', '0', or '0'.`);
+            throw new Error(
+                `ConfigLoader ERROR: Invalid flag value '${trimmed}' for ${mnemonic}/${flagName}. Expected '1', '0', or '0'.`
+            );
         }
     }
 
@@ -288,7 +383,9 @@ class InstructionConfigLoader {
             }
             return parseInt(binStr.trim(), 2);
         } catch (error) {
-            console.warn(`${ColoredLog.WARNING}ConfigLoader WARNING: Invalid binary value '${binStr}' for ${mnemonic}/${fieldName}. Assuming 0.`);
+            console.warn(
+                `${ColoredLog.WARNING}ConfigLoader WARNING: Invalid binary value '${binStr}' for ${mnemonic}/${fieldName}. Assuming 0.`
+            );
             return 0;
         }
     }
@@ -310,17 +407,21 @@ class InstructionConfigLoader {
 // const loader = new InstructionConfigLoader();
 // if (loader.loadConfig()) {
 //     console.log("Configuration loaded successfully!");
-//     
+//
 //     // Get definition by mnemonic
 //     const addDef = loader.getDefinitionByMnemonic("ADD");
 //     console.log("ADD instruction:", addDef);
-//     
+//
 //     // Get definition by opcode and format
 //     const def = loader.getDefinition(1099, 'R'); // ADD instruction opcode in decimal
 //     console.log("Definition by opcode:", def);
 // }
 
 // Export for use in other modules (Node.js style)
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { InstructionConfigLoader, InstructionDefinition, ControlSignals };
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+        InstructionConfigLoader,
+        InstructionDefinition,
+        ControlSignals,
+    };
 }

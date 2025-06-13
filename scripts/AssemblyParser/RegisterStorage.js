@@ -11,7 +11,7 @@ class RegisterStorage {
     static ZERO_REGISTER_INDEX = 31;
 
     // Mask for 64-bit value using BigInt
-    static VALUE_MASK = 0xFFFFFFFFFFFFFFFFn;
+    static VALUE_MASK = 0xffffffffffffffffn;
 
     // Private instance field for the register storage array
     #registers;
@@ -26,7 +26,9 @@ class RegisterStorage {
             // --- Copy constructor logic ---
             // Validate the object being copied
             if (other.#registers.length !== RegisterStorage.NUM_REGISTERS) {
-                throw new Error(`Invalid RegisterStorage size: ${other.#registers.length}`);
+                throw new Error(
+                    `Invalid RegisterStorage size: ${other.#registers.length}`
+                );
             }
             // Create a deep copy of the registers array using spread syntax
             this.#registers = [...other.#registers];
@@ -34,7 +36,9 @@ class RegisterStorage {
             // --- Default constructor logic ---
             // Initialize a new array and fill it with the BigInt value 0n
             this.#registers = new Array(RegisterStorage.NUM_REGISTERS).fill(0n);
-            console.log(`${ColoredLog.SUCCESS}Register Storage initialized (${RegisterStorage.NUM_REGISTERS} registers).`);
+            console.log(
+                `${ColoredLog.SUCCESS}Register Storage initialized (${RegisterStorage.NUM_REGISTERS} registers).`
+            );
         }
     }
 
@@ -68,15 +72,22 @@ class RegisterStorage {
         this.#validateRegisterNumber(regNum, "write");
 
         if (regNum === RegisterStorage.ZERO_REGISTER_INDEX) {
-            console.log(`${ColoredLog.WARNING}RegisterStorage Info: Ignored write to XZR.`);
+            console.log(
+                `${ColoredLog.WARNING}RegisterStorage Info: Ignored write to XZR.`
+            );
             return; // Writes to the zero register are ignored.
         }
 
         this.#registers[regNum] = maskedValue;
 
         // Log the write operation
-        const hexValue = maskedValue.toString(16).toUpperCase().padStart(16, '0');
-        console.log(`${ColoredLog.INFO}RegisterStorage Write: X${regNum} <= 0x${hexValue}`);
+        const hexValue = maskedValue
+            .toString(16)
+            .toUpperCase()
+            .padStart(16, "0");
+        console.log(
+            `${ColoredLog.INFO}RegisterStorage Write: X${regNum} <= 0x${hexValue}`
+        );
     }
 
     /**
@@ -95,7 +106,11 @@ class RegisterStorage {
     #validateRegisterNumber(regNum, operation) {
         if (regNum < 0 || regNum >= RegisterStorage.NUM_REGISTERS) {
             // RangeError is the idiomatic error type for this in JavaScript.
-            throw new RangeError(`Invalid register number for ${operation}: ${regNum}. Must be 0-${RegisterStorage.NUM_REGISTERS - 1}`);
+            throw new RangeError(
+                `Invalid register number for ${operation}: ${regNum}. Must be 0-${
+                    RegisterStorage.NUM_REGISTERS - 1
+                }`
+            );
         }
     }
 
@@ -112,27 +127,36 @@ class RegisterStorage {
             const formatReg = (regNum) => {
                 let name;
                 switch (regNum) {
-                    case RegisterStorage.STACK_POINTER_INDEX: name = "SP"; break;
-                    case RegisterStorage.ZERO_REGISTER_INDEX: name = "XZR"; break;
-                    default: name = `X${regNum}`;
+                    case RegisterStorage.STACK_POINTER_INDEX:
+                        name = "SP";
+                        break;
+                    case RegisterStorage.ZERO_REGISTER_INDEX:
+                        name = "XZR";
+                        break;
+                    default:
+                        name = `X${regNum}`;
                 }
 
                 const value = this.getValue(regNum); // Use getter to handle XZR correctly
-                const hexValue = value.toString(16).toUpperCase().padStart(16, '0');
+                const hexValue = value
+                    .toString(16)
+                    .toUpperCase()
+                    .padStart(16, "0");
 
                 // Replicate Java's String.format("%-3s(%-2d): %016X")
-                const namePart = name.padEnd(3, ' ');
-                const numPart = String(regNum).padEnd(2, ' ');
+                const namePart = name.padEnd(3, " ");
+                const numPart = String(regNum).padEnd(2, " ");
 
                 return `${namePart}(${numPart}): ${hexValue}`;
             };
 
             // Format a line with two registers
             const part1 = formatReg(i);
-            const part2 = (i + 1 < RegisterStorage.NUM_REGISTERS) ? formatReg(i + 1) : '';
+            const part2 =
+                i + 1 < RegisterStorage.NUM_REGISTERS ? formatReg(i + 1) : "";
 
             lines.push(` ${part1}   ${part2}`);
         }
-        return lines.join('\n');
+        return lines.join("\n");
     }
 }

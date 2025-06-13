@@ -1,6 +1,4 @@
-
 class CBFormatInstruction extends Instruction {
-
     // Private field for the address offset. `#` is the JS equivalent of `private`.
 
     /**
@@ -16,7 +14,7 @@ class CBFormatInstruction extends Instruction {
         this.addressOffset = this.getAddress_CB();
         this.rt = this.getRt_CB();
     }
-    
+
     disassemble() {
         const mnemonic = this.definition.getMnemonic();
         const signExtendedOffset = Extractor.extend(this.addressOffset, 19);

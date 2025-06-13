@@ -3,7 +3,9 @@ class Extractor {
      * Private constructor to prevent instantiation of the utility class.
      */
     constructor() {
-        throw new Error("Extractor is a static utility class and should not be instantiated.");
+        throw new Error(
+            "Extractor is a static utility class and should not be instantiated."
+        );
     }
 
     /**
@@ -14,7 +16,9 @@ class Extractor {
      */
     static extend(value, originalBits) {
         if (originalBits <= 0 || originalBits > 32) {
-            throw new Error(`originalBits for number input must be 1-32, was: ${originalBits}`);
+            throw new Error(
+                `originalBits for number input must be 1-32, was: ${originalBits}`
+            );
         }
         if (originalBits === 32) return value;
 
@@ -29,7 +33,7 @@ class Extractor {
         // If positive, it's already correct.
         return value;
     }
-    
+
     /**
      * Extends the sign of a 64-bit BigInt value.
      * @param {bigint} value The BigInt value to extend.
@@ -38,10 +42,12 @@ class Extractor {
      */
     static extendBigInt(value, originalBits) {
         if (originalBits <= 0 || originalBits > 64) {
-             throw new Error(`originalBits for BigInt input must be 1-64, was: ${originalBits}`);
+            throw new Error(
+                `originalBits for BigInt input must be 1-64, was: ${originalBits}`
+            );
         }
         if (originalBits === 64) return value;
-        
+
         const signBit = 1n << (BigInt(originalBits) - 1n);
         // Check if the sign bit is set
         if ((value & signBit) !== 0n) {
@@ -68,27 +74,28 @@ class Extractor {
         let numBits;
 
         switch (format) {
-            case 'B':
+            case "B":
                 rawValue = Instruction.extractBits(instructionBits, 0, 25);
                 numBits = 26;
                 break;
 
-            case 'C':
+            case "C":
                 rawValue = Instruction.extractBits(instructionBits, 5, 23);
                 numBits = 19;
                 break;
 
-            case 'I':
+            case "I":
                 rawValue = Instruction.extractBits(instructionBits, 10, 21);
                 numBits = 12;
                 break;
 
-            case 'D':
+            case "D":
                 rawValue = Instruction.extractBits(instructionBits, 12, 20);
                 numBits = 9;
                 break;
 
-            case 'M': { // Use block scope for `let`/`const`
+            case "M": {
+                // Use block scope for `let`/`const`
                 const hw = Instruction.extractBits(instructionBits, 21, 22);
                 const imm16 = Instruction.extractBits(instructionBits, 5, 20);
                 const shiftAmount = hw * 16;
@@ -96,15 +103,18 @@ class Extractor {
                 return BigInt(imm16) << BigInt(shiftAmount);
             }
 
-            case 'R':
+            case "R":
                 if (mnemonic === "LSL" || mnemonic === "LSR") {
-                    rawValue = Instruction.extractBits(instructionBits, 10, 15) & 0x3F;
+                    rawValue =
+                        Instruction.extractBits(instructionBits, 10, 15) & 0x3f;
                     return rawValue; // No sign extension needed for these
                 }
                 return 0; // Default case for R-format without immediate
 
             default:
-                throw new Error(`Unsupported format for sign extension: ${format}`);
+                throw new Error(
+                    `Unsupported format for sign extension: ${format}`
+                );
         }
 
         return this.extend(rawValue, numBits);
@@ -122,43 +132,50 @@ class Extractor {
         let numBits;
 
         switch (format) {
-            case 'B':
-                rawValue = instruction & 0x3FFFFFF;
+            case "B":
+                rawValue = instruction & 0x3ffffff;
                 numBits = 26;
                 break;
 
-            case 'C': // CB
-                rawValue = (instruction >>> 5) & 0x7FFFF;
+            case "C": // CB
+                rawValue = (instruction >>> 5) & 0x7ffff;
                 numBits = 19;
                 break;
 
-            case 'I':
-                rawValue = (instruction >>> 10) & 0xFFF;
+            case "I":
+                rawValue = (instruction >>> 10) & 0xfff;
                 numBits = 12;
                 break;
 
-            case 'D':
-                rawValue = (instruction >>> 12) & 0x1FF;
+            case "D":
+                rawValue = (instruction >>> 12) & 0x1ff;
                 numBits = 9;
                 break;
 
-            case 'M': { // IM
+            case "M": {
+                // IM
                 const hw = (instruction >>> 21) & 0x3;
-                const imm16 = (instruction >>> 5) & 0xFFFF;
+                const imm16 = (instruction >>> 5) & 0xffff;
                 const shiftAmount = hw * 16;
                 // Use BigInt as result can exceed 32-bit integer limit
                 return BigInt(imm16) << BigInt(shiftAmount);
             }
 
-            case 'R':
-                if (mnemonic === "LSL" || mnemonic === "LSR" || mnemonic === "ASR") {
-                    rawValue = (instruction >>> 10) & 0x3F;
+            case "R":
+                if (
+                    mnemonic === "LSL" ||
+                    mnemonic === "LSR" ||
+                    mnemonic === "ASR"
+                ) {
+                    rawValue = (instruction >>> 10) & 0x3f;
                     return rawValue; // No sign extension needed for these shifts
                 }
                 return 0; // Default case
 
             default:
-                throw new Error(`Unsupported format for sign extension: ${format}`);
+                throw new Error(
+                    `Unsupported format for sign extension: ${format}`
+                );
         }
 
         return this.extend(rawValue, numBits);

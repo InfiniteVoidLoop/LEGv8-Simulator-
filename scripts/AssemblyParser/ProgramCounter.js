@@ -1,5 +1,5 @@
 class ProgramCounter {
-    static BASE_ADDRESS = 0x40000000;
+    static BASE_ADDRESS = 40000000;
 
     constructor() {
         this.currentAddress = ProgramCounter.BASE_ADDRESS;
@@ -7,7 +7,11 @@ class ProgramCounter {
         // Map lưu thông tin: address (number) -> object
         this.addressMap = new Map();
 
-        console.log(`Program Counter initialized. PC = 0x${this.currentAddress.toString(16)}`);
+        console.log(
+            `Program Counter initialized. PC = 0x${this.currentAddress.toString(
+                16
+            )}`
+        );
     }
 
     getCurrentAddress() {
@@ -16,21 +20,34 @@ class ProgramCounter {
 
     setAddress(newAddress) {
         if (newAddress < 0) {
-            throw new InvalidPCException(`Attempt to set PC to negative address: ${newAddress}`, newAddress);
+            throw new InvalidPCException(
+                `Attempt to set PC to negative address: ${newAddress}`,
+                newAddress
+            );
         }
         if (newAddress % 4 !== 0) {
-            console.warn(`Warning: Setting PC to non-word-aligned address 0x${newAddress.toString(16)}. Behavior might be undefined during fetch.`);
-            throw new InvalidPCException(`Attempt to set PC to non-word-aligned address: ${newAddress}`, newAddress);
+            console.warn(
+                `Warning: Setting PC to non-word-aligned address 0x${newAddress.toString(
+                    16
+                )}. Behavior might be undefined during fetch.`
+            );
+            throw new InvalidPCException(
+                `Attempt to set PC to non-word-aligned address: ${newAddress}`,
+                newAddress
+            );
         }
 
-        console.log(`(ProgramCounter) Set: 0x${this.currentAddress.toString(16)} -> 0x${newAddress.toString(16)}`);
+        console.log(
+            `(ProgramCounter) Set: 0x${this.currentAddress.toString(
+                16
+            )} -> 0x${newAddress.toString(16)}`
+        );
         this.currentAddress = newAddress;
     }
 
     reset() {
         this.setAddress(ProgramCounter.BASE_ADDRESS);
     }
-
 
     /**
      * Gán một object cho một địa chỉ cụ thể.
@@ -39,7 +56,9 @@ class ProgramCounter {
      */
     setObjectAtAddress(address, obj) {
         if (address % 4 !== 0) {
-            throw new Error(`Address 0x${address.toString(16)} is not word-aligned.`);
+            throw new Error(
+                `Address 0x${address.toString(16)} is not word-aligned.`
+            );
         }
         this.addressMap.set(address, obj);
     }
@@ -78,6 +97,9 @@ class ProgramCounter {
     }
 
     toString() {
-        return `PC=0x${this.currentAddress.toString(16).padStart(8, '0').toUpperCase()}`;
+        return `PC=0x${this.currentAddress
+            .toString(16)
+            .padStart(8, "0")
+            .toUpperCase()}`;
     }
 }

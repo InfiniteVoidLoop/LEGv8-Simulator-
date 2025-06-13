@@ -25,7 +25,7 @@ ctx.arc(
     25,
     -Math.PI / 2,
     Math.PI / 2,
-    false,
+    false
 );
 ctx.stroke();
 

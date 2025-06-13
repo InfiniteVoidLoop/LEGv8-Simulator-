@@ -16,7 +16,11 @@ class Assembler {
         this.symbolTable = new Map();
         this.processedLines = [];
         this.errors = [];
-        console.log(`Assembler initialized with base address: 0x${baseAddress.toString(16)}`);
+        console.log(
+            `Assembler initialized with base address: 0x${baseAddress.toString(
+                16
+            )}`
+        );
     }
 
     reset() {
@@ -38,7 +42,9 @@ class Assembler {
 
         console.log("  Pass 1 finished. Symbol Table:");
         for (const [label, addr] of this.symbolTable.entries()) {
-            console.log(`    ${label.padEnd(20)} : 0x${addr.toString(16).toUpperCase()}`);
+            console.log(
+                `    ${label.padEnd(20)} : 0x${addr.toString(16).toUpperCase()}`
+            );
         }
 
         console.log("  Starting Pass 2: Generating Instructions...");
@@ -49,7 +55,9 @@ class Assembler {
             throw new AssemblyException(this.aggregateErrors());
         }
 
-        console.log(`  Pass 2 finished. Generated ${instructions.length} instructions.`);
+        console.log(
+            `  Pass 2 finished. Generated ${instructions.length} instructions.`
+        );
         console.log("Assembler finished successfully.");
         return instructions;
     }
@@ -68,9 +76,21 @@ class Assembler {
             if (processed.endsWith(":")) {
                 const label = processed.slice(0, -1).trim();
                 if (!this.isValidLabel(label))
-                    throw new AssemblyException(this.formatError(lineNumber, `Invalid label name: '${label}'`, raw));
+                    throw new AssemblyException(
+                        this.formatError(
+                            lineNumber,
+                            `Invalid label name: '${label}'`,
+                            raw
+                        )
+                    );
                 if (this.symbolTable.has(label))
-                    throw new AssemblyException(this.formatError(lineNumber, `Duplicate label definition: '${label}'`, raw));
+                    throw new AssemblyException(
+                        this.formatError(
+                            lineNumber,
+                            `Duplicate label definition: '${label}'`,
+                            raw
+                        )
+                    );
                 this.symbolTable.set(label, currentAddress);
             } else {
                 this.processedLines.push(processed);
@@ -86,7 +106,11 @@ class Assembler {
         for (const line of this.processedLines) {
             count++;
             try {
-                const instr = InstructionFactory.createFromAssembly(line, this.symbolTable, addr);
+                const instr = InstructionFactory.createFromAssembly(
+                    line,
+                    this.symbolTable,
+                    addr
+                );
                 instructions.push(instr);
             } catch (e) {
                 this.addError(count, e.message, line);
@@ -122,7 +146,7 @@ class Assembler {
         if (this.errors.length === 0) return "Assembly successful.";
         return (
             `Assembly failed with ${this.errors.length} error(s):\n` +
-            this.errors.map(e => `  - ${e}`).join("\n")
+            this.errors.map((e) => `  - ${e}`).join("\n")
         );
     }
 }

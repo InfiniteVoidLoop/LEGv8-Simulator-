@@ -2,7 +2,6 @@
  * Represents a B-Format (Branch) instruction.
  */
 class BFormatInstruction extends Instruction {
-
     // Private field for the address offset. `#` is the JS equivalent of `private`.
 
     /**

@@ -1,186 +1,186 @@
 .code-editor {
-    font-family: "Courier New", monospace;
-    font-size: 14px;
-    line-height: 1.5;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .register-cell {
-    transition: background-color 0.3s;
+  transition: background-color 0.3s;
 }
 
 .register-cell.changed {
-    background-color: #fef08a;
+  background-color: #fef08a;
 }
 
 .memory-cell {
-    transition: background-color 0.3s;
+  transition: background-color 0.3s;
 }
 
 .memory-cell.changed {
-    background-color: #fef08a;
+  background-color: #fef08a;
 }
 
 .memory-cell.active {
-    background-color: #dbeafe;
+  background-color: #dbeafe;
 }
 
 .tab-content {
-    display: none;
+  display: none;
 }
 
 .tab-content.active {
-    display: block;
+  display: block;
 }
 
 .pc-display {
-    font-size: 1.25rem;
-    color: #1d4ed8;
+  font-size: 1.25rem;
+  color: #1d4ed8;
 }
 
 /* COMPONENTS */
 
 .instruction-memory {
-    width: 120px;
-    height: 200px;
-    border: 2px solid BLACK;
-    border-radius: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #acb1b3;
+  width: 120px;
+  height: 200px;
+  border: 2px solid BLACK;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #acb1b3;
 }
 .register-handler {
-    width: 170px;
-    height: 270px;
-    background-color: #acb1b3;
-    border: 2px solid BLACK;
+  width: 170px;
+  height: 270px;
+  background-color: #acb1b3;
+  border: 2px solid BLACK;
 }
 .ellipse {
-    width: 70px;
-    height: 100px;
-    background-color: #acb1b3;
-    border-radius: 50%;
-    border: 2px solid BLACK;
+  width: 70px;
+  height: 100px;
+  background-color: #acb1b3;
+  border-radius: 50%;
+  border: 2px solid BLACK;
 }
 .mux {
-    width: 30px;
-    height: 90px;
-    background-color: #acb1b3;
-    border: 2px solid BLACK;
-    border-radius: 9999px; /* Makes the top and bottom perfectly round */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column; /* stack characters vertically */
+  width: 30px;
+  height: 90px;
+  background-color: #acb1b3;
+  border: 2px solid BLACK;
+  border-radius: 9999px; /* Makes the top and bottom perfectly round */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column; /* stack characters vertically */
 }
 
 .data-memory {
-    width: 150px;
-    height: 200px;
-    background-color: #acb1b3;
-    border: 2px solid BLACK;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 150px;
+  height: 200px;
+  background-color: #acb1b3;
+  border: 2px solid BLACK;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .Small_Ellipse {
-    width: 65px;
-    /* Horizontal size (major axis) */
-    height: 80px;
-    /* Vertical size (minor axis) */
-    border-radius: 50%;
-    /* This makes the div rounded */
-    background-color: #acb1b3;
+  width: 65px;
+  /* Horizontal size (major axis) */
+  height: 80px;
+  /* Vertical size (minor axis) */
+  border-radius: 50%;
+  /* This makes the div rounded */
+  background-color: #acb1b3;
 
-    border: 2px solid black;
-    margin: 20px auto;
+  border: 2px solid black;
+  margin: 20px auto;
 }
 .Small_Ellipse p {
-    font-weight: bold;
-    color: BLACK;
-    text-align: center;
-    margin: 0;
+  font-weight: bold;
+  color: BLACK;
+  text-align: center;
+  margin: 0;
 }
 
 .big-ellipse {
-    width: 80px;
-    /* Horizontal size (major axis) */
-    height: 200px;
-    /* Vertical size (minor axis) */
-    border-radius: 50%;
-    background-color: #acb1b3;
+  width: 80px;
+  /* Horizontal size (major axis) */
+  height: 200px;
+  /* Vertical size (minor axis) */
+  border-radius: 50%;
+  background-color: #acb1b3;
 
-    /* This makes the div rounded */
-    border: 2px solid black;
-    margin: 20px auto;
+  /* This makes the div rounded */
+  border: 2px solid black;
+  margin: 20px auto;
 }
 
 .big-ellipse p {
-    font-weight: bold;
-    color: BLACK; /* gray-700 */
-    text-align: center;
-    margin: 0;
+  font-weight: bold;
+  color: BLACK; /* gray-700 */
+  text-align: center;
+  margin: 0;
 }
 
 .pc_rect {
-    width: 50px;
-    height: 100px;
-    background-color: #acb1b3;
-    border-radius: 10px;
-    border: 2px solid black;
-    margin: 20px auto;
+  width: 50px;
+  height: 100px;
+  background-color: #acb1b3;
+  border-radius: 10px;
+  border: 2px solid black;
+  margin: 20px auto;
 }
 
 .center-text {
-    display: flex;
-    justify-content: center; /* Căn giữa theo chiều ngang */
-    align-items: center; /* Căn giữa theo chiều dọc */
-    /* height: 200px;            Đặt chiều cao cho div */
+  display: flex;
+  justify-content: center; /* Căn giữa theo chiều ngang */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  /* height: 200px;            Đặt chiều cao cho div */
 }
 
 .instruction-memory p {
-    font-weight: bold;
-    color: #374151; /* gray-700 */
-    text-align: center;
+  font-weight: bold;
+  color: #374151; /* gray-700 */
+  text-align: center;
 }
 
 .pc-component {
-    width: 40px;
-    height: 100px;
-    border: 2px solid black;
-    border-radius: 0;
-    background-color: #acb1b3;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 40px;
+  height: 100px;
+  border: 2px solid black;
+  border-radius: 0;
+  background-color: #acb1b3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pc-component p {
-    font-weight: bold;
-    color: black; /* gray-700 */
-    text-align: center;
-    margin: 0;
+  font-weight: bold;
+  color: black; /* gray-700 */
+  text-align: center;
+  margin: 0;
 }
 
 .text_style {
-    font-weight: bold;
-    color: black;
-    margin: 0;
+  font-weight: bold;
+  color: black;
+  margin: 0;
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
 #moving-data {
-    position: absolute;
-    transition: all 0.1s linear;
-    pointer-events: none;
+  position: absolute;
+  transition: all 0.1s linear;
+  pointer-events: none;
 }
 
 .intersection-node {
-    fill: #007BFF;         /* Màu đen cho chấm tròn */
-    r: 4;                /* Bán kính của chấm tròn (điều chỉnh cho phù hợp) */
-    stroke: #007BFF;       /* Viền trắng nhẹ để nổi bật trên nền đậm */
-    stroke-width: 0.5;   /* Độ dày viền */
+  fill: #007bff; /* Màu đen cho chấm tròn */
+  r: 4; /* Bán kính của chấm tròn (điều chỉnh cho phù hợp) */
+  stroke: #007bff; /* Viền trắng nhẹ để nổi bật trên nền đậm */
+  stroke-width: 0.5; /* Độ dày viền */
 }

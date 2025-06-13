@@ -1,18 +1,21 @@
 class MemoryStorage {
     static MIN_ADDRESS = 0x500000n;
-    static VALUE_MASK   = 0xFFFFFFFFFFFFFFFFn;
-    static ENDIANNESS   = true; // little-endian for DataView
+    static VALUE_MASK = 0xffffffffffffffffn;
+    static ENDIANNESS = true; // little-endian for DataView
 
     constructor(initialMemory) {
-        this.memory = initialMemory instanceof MemoryStorage
-            ? new Map(initialMemory.memory)
-            : new Map();
+        this.memory =
+            initialMemory instanceof MemoryStorage
+                ? new Map(initialMemory.memory)
+                : new Map();
     }
 
     _checkAddress(addr) {
-        addr = typeof addr === 'bigint' ? addr : BigInt(addr);
+        addr = typeof addr === "bigint" ? addr : BigInt(addr);
         if (addr < MemoryStorage.MIN_ADDRESS) {
-            const msg = `Access below minimum address 0x${MemoryStorage.MIN_ADDRESS.toString(16)}`;
+            const msg = `Access below minimum address 0x${MemoryStorage.MIN_ADDRESS.toString(
+                16
+            )}`;
             console.error(msg, addr);
             throw new Error(msg);
         }
@@ -43,28 +46,43 @@ class MemoryStorage {
         this._checkAddress(addr + BigInt(len - 1));
 
         for (let i = 0; i < len; i++) {
-            const a = addr + BigInt(i), b = byteArray[i] & 0xFF;
+            const a = addr + BigInt(i),
+                b = byteArray[i] & 0xff;
             if (b === 0) this.memory.delete(a);
-            else         this.memory.set(a, b);
+            else this.memory.set(a, b);
         }
     }
 
-    readByte(addr)      { return this.readBytes(addr, 1)[0]; }
-    writeByte(addr, v)  { this.writeBytes(addr, [v & 0xFF]); }
+    readByte(addr) {
+        return this.readBytes(addr, 1)[0];
+    }
+    writeByte(addr, v) {
+        this.writeBytes(addr, [v & 0xff]);
+    }
 
     readHalfWord(addr) {
         const bytes = this.readBytes(addr, 2);
-        return new DataView(bytes.buffer).getUint16(0, MemoryStorage.ENDIANNESS);
+        return new DataView(bytes.buffer).getUint16(
+            0,
+            MemoryStorage.ENDIANNESS
+        );
     }
     writeHalfWord(addr, value) {
         const buf = new ArrayBuffer(2);
-        new DataView(buf).setUint16(0, value & 0xFFFF, MemoryStorage.ENDIANNESS);
+        new DataView(buf).setUint16(
+            0,
+            value & 0xffff,
+            MemoryStorage.ENDIANNESS
+        );
         this.writeBytes(addr, new Uint8Array(buf));
     }
 
     readWord(addr) {
         const bytes = this.readBytes(addr, 4);
-        return new DataView(bytes.buffer).getUint32(0, MemoryStorage.ENDIANNESS);
+        return new DataView(bytes.buffer).getUint32(
+            0,
+            MemoryStorage.ENDIANNESS
+        );
     }
     writeWord(addr, value) {
         const buf = new ArrayBuffer(4);
@@ -74,11 +92,20 @@ class MemoryStorage {
 
     readDoubleWord(addr) {
         const bytes = this.readBytes(addr, 8);
-        return new DataView(bytes.buffer).getBigUint64(0, MemoryStorage.ENDIANNESS) & MemoryStorage.VALUE_MASK;
+        return (
+            new DataView(bytes.buffer).getBigUint64(
+                0,
+                MemoryStorage.ENDIANNESS
+            ) & MemoryStorage.VALUE_MASK
+        );
     }
     writeDoubleWord(addr, value) {
         const buf = new ArrayBuffer(8);
-        new DataView(buf).setBigUint64(0, BigInt(value) & MemoryStorage.VALUE_MASK, MemoryStorage.ENDIANNESS);
+        new DataView(buf).setBigUint64(
+            0,
+            BigInt(value) & MemoryStorage.VALUE_MASK,
+            MemoryStorage.ENDIANNESS
+        );
         this.writeBytes(addr, new Uint8Array(buf));
     }
 
@@ -87,7 +114,8 @@ class MemoryStorage {
     }
 
     getMemoryDoubleWord(startAddr, endAddr) {
-        let s = BigInt(startAddr), e = BigInt(endAddr);
+        let s = BigInt(startAddr),
+            e = BigInt(endAddr);
         this._checkAddress(s);
         this._checkAddress(e);
         if (s > e) {
@@ -113,7 +141,8 @@ class MemoryStorage {
     }
 
     displayMemoryContents(startAddr, endAddr) {
-        let s = BigInt(startAddr), e = BigInt(endAddr);
+        let s = BigInt(startAddr),
+            e = BigInt(endAddr);
         this._checkAddress(s);
         this._checkAddress(e);
         if (s > e) {
@@ -121,19 +150,32 @@ class MemoryStorage {
             console.error(msg);
             throw new Error(msg);
         }
-        const lines = [`Bytes from 0x${s.toString(16)} to 0x${e.toString(16)}:`];
+        const lines = [
+            `Bytes from 0x${s.toString(16)} to 0x${e.toString(16)}:`,
+        ];
         for (let a = s; a <= e; a += 8n) {
             const v = this.readDoubleWord(a);
-            lines.push(`  0x${a.toString(16).padStart(8,'0')} : 0x${v.toString(16).padStart(16,'0')} (${v})`);
+            lines.push(
+                `  0x${a.toString(16).padStart(8, "0")} : 0x${v
+                    .toString(16)
+                    .padStart(16, "0")} (${v})`
+            );
         }
-        console.log("INFO: Memory Contents\n" + lines.join('\n'));
+        console.log("INFO: Memory Contents\n" + lines.join("\n"));
     }
 
     toString() {
-        const entries = Array.from(this.memory.entries()).sort((a,b)=>a[0]<b[0]?-1:1);
+        const entries = Array.from(this.memory.entries()).sort((a, b) =>
+            a[0] < b[0] ? -1 : 1
+        );
         if (!entries.length) return "Data Memory (Initialized Bytes): (Empty)";
-        return entries.map(([addr,b])=>
-            `0x${addr.toString(16).padStart(8,'0')} : 0x${b.toString(16).padStart(2,'0')} (${b})`
-        ).join('\n');
+        return entries
+            .map(
+                ([addr, b]) =>
+                    `0x${addr.toString(16).padStart(8, "0")} : 0x${b
+                        .toString(16)
+                        .padStart(2, "0")} (${b})`
+            )
+            .join("\n");
     }
 }

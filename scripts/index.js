@@ -5,7 +5,7 @@ const executionSpeedInput = document.getElementById("executionSpeed");
 const cursorPosition = document.getElementById("cursorPosition");
 const assemblyCode = document.getElementById("assemblyCode");
 
-document.getElementById('main-display').style.width = "1700px";
+document.getElementById("main-display").style.width = "1500px";
 
 let currentLine = 1;
 let currentCol = 1;
@@ -36,7 +36,7 @@ const clearCode = () => {
 
 const showHelp = () => {
     alert(
-        "LEGv8 Simulator Help\n\nUse the controls to assemble and run your code.",
+        "LEGv8 Simulator Help\n\nUse the controls to assemble and run your code."
     );
 };
 
@@ -47,8 +47,6 @@ document.getElementById("saveCodeBtn").addEventListener("click", saveCode);
 document.getElementById("clearCodeBtn").addEventListener("click", clearCode);
 
 // configLoader = new InstructionConfigLoader();
-// configLoader.loadConfig(); 
+// configLoader.loadConfig();
 
-// InstructionFactory.initialize(configLoader); 
-
-
+// InstructionFactory.initialize(configLoader);

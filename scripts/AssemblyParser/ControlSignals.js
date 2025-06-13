@@ -14,7 +14,20 @@ class ControlSignals {
      * @param {string} regWrite - Register write control signal
      * @param {number} operation - Operation control signal
      */
-    constructor(reg2Loc, uncondBranch, flagBranch, zeroBranch, memRead, memToReg, memWrite, flagWrite, aluSrc, aluOp, regWrite, operation) {
+    constructor(
+        reg2Loc,
+        uncondBranch,
+        flagBranch,
+        zeroBranch,
+        memRead,
+        memToReg,
+        memWrite,
+        flagWrite,
+        aluSrc,
+        aluOp,
+        regWrite,
+        operation
+    ) {
         this.reg2Loc = reg2Loc;
         this.uncondBranch = uncondBranch;
         this.flagBranch = flagBranch;
@@ -32,22 +45,34 @@ class ControlSignals {
     // Static constants equivalent to Java's static final fields
     static get NOP() {
         return new ControlSignals(
-            '0', '0', '0', '0',
-            '0', '0', '0',
-            '0',
-            '0', 0,
-            '0',
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            0,
+            "0",
             0
         );
     }
 
     static get HALT() {
         return new ControlSignals(
-            '1', '1', '1', '1',
-            '1', '1', '1',
-            '1',
-            '1', 0,
-            '1',
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            0,
+            "1",
             0
         );
     }

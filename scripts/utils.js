@@ -1,42 +1,49 @@
 function add4ToHexAddress(hexAddressString) {
-    const cleanHex = hexAddressString.startsWith("0x") ? hexAddressString.slice(2) : hexAddressString;
+    const cleanHex = hexAddressString.startsWith("0x")
+        ? hexAddressString.slice(2)
+        : hexAddressString;
 
     let addressAsBigInt;
     try {
         let value = BigInt(`0x${cleanHex}`);
         // Chuyển thành signed nếu bit cao là 1 (two's complement 64-bit)
-        if (value >= (1n << 63n)) {
-            value -= (1n << 64n);
+        if (value >= 1n << 63n) {
+            value -= 1n << 64n;
         }
         addressAsBigInt = value;
     } catch (error) {
-        console.error("Invalid hexadecimal address string:", hexAddressString, error);
+        console.error(
+            "Invalid hexadecimal address string:",
+            hexAddressString,
+            error
+        );
         return "Invalid Address";
     }
 
     const newAddressAsBigInt = addressAsBigInt + 4n;
 
     // Chuyển lại two's complement hex string
-    const resultBigInt = newAddressAsBigInt < 0n
-        ? (1n << 64n) + newAddressAsBigInt
-        : newAddressAsBigInt;
+    const resultBigInt =
+        newAddressAsBigInt < 0n
+            ? (1n << 64n) + newAddressAsBigInt
+            : newAddressAsBigInt;
 
-    return `0x${resultBigInt.toString(16).toUpperCase().padStart(16, '0')}`;
+    return `0x${resultBigInt.toString(16).toUpperCase().padStart(16, "0")}`;
 }
 
 function addHexStrings(hexStr1, hexStr2) {
     const hexRegex = /^(0x)?[0-9a-fA-F]+$/;
 
     const normalizeHex = (str) => {
-        if (typeof str !== 'string' || !hexRegex.test(str)) {
+        if (typeof str !== "string" || !hexRegex.test(str)) {
             throw new Error(`Invalid hexadecimal string: '${str}'.`);
         }
-        return str.startsWith('0x') ? str.slice(2) : str;
+        return str.startsWith("0x") ? str.slice(2) : str;
     };
 
     const toSignedBigInt = (hex) => {
         let val = BigInt(`0x${hex}`);
-        return val >= (1n << 63n) ? val - (1n << 64n) : val;
+        return val >= 1n << 63n ? val - (1n << 64n) : val;
     };
 
     const hex1 = normalizeHex(hexStr1);
@@ -44,11 +51,9 @@ function addHexStrings(hexStr1, hexStr2) {
 
     const sum = toSignedBigInt(hex1) + toSignedBigInt(hex2);
 
-    const result = sum < 0n
-        ? (1n << 64n) + sum
-        : sum;
+    const result = sum < 0n ? (1n << 64n) + sum : sum;
 
-    return `0x${result.toString(16).toUpperCase().padStart(16, '0')}`;
+    return `0x${result.toString(16).toUpperCase().padStart(16, "0")}`;
 }
 
 function toExactBinary(decimalNum, n_bits) {
@@ -64,7 +69,7 @@ function toExactBinary(decimalNum, n_bits) {
     }
 
     // Nếu chuỗi nhị phân ngắn hơn, thêm 0 vào đầu
-    return binaryString.padStart(n_bits, '0');
+    return binaryString.padStart(n_bits, "0");
 }
 
 function toExactSignBinary(decimalNum, n_bits) {
@@ -73,11 +78,13 @@ function toExactSignBinary(decimalNum, n_bits) {
     }
 
     const maxPositive = Math.pow(2, n_bits - 1) - 1; // Giá trị dương lớn nhất có thể biểu diễn
-    const minNegative = -Math.pow(2, n_bits - 1);   // Giá trị âm nhỏ nhất có thể biểu diễn
+    const minNegative = -Math.pow(2, n_bits - 1); // Giá trị âm nhỏ nhất có thể biểu diễn
 
     if (decimalNum > maxPositive || decimalNum < minNegative) {
         // Tùy chọn: ném lỗi hoặc trả về một giá trị đặc biệt nếu số nằm ngoài phạm vi biểu diễn
-        console.warn(`Cảnh báo: Số ${decimalNum} nằm ngoài phạm vi biểu diễn của ${n_bits} bit bù 2.`);
+        console.warn(
+            `Cảnh báo: Số ${decimalNum} nằm ngoài phạm vi biểu diễn của ${n_bits} bit bù 2.`
+        );
         // Đối với ví dụ này, chúng ta sẽ cho phép nó bị cắt bớt hoặc tràn số theo hành vi bù 2
         // nếu sử dụng phép toán bitwise 32-bit mặc định của JS.
     }
@@ -88,7 +95,7 @@ function toExactSignBinary(decimalNum, n_bits) {
         // Thêm padding và đảm bảo độ dài là n_bits.
         // Nếu binaryString dài hơn n_bits, padStart sẽ không cắt bớt,
         // do đó cần slice ở cuối để đảm bảo đúng n_bits.
-        return binaryString.padStart(n_bits, '0').slice(-n_bits);
+        return binaryString.padStart(n_bits, "0").slice(-n_bits);
     } else {
         // Xử lý số âm (sử dụng bù 2)
         // Lưu ý: JavaScript thực hiện các phép toán bitwise trên số 32-bit có dấu.
@@ -125,22 +132,26 @@ function getBits(bitStr, startBit, endBit) {
 
 function jumpToAddress(PC, lst, address) {
     const obj = PC.getObjectAtAddress(address);
-    if (obj.definition.format == 'R') {
-        lst.push(new RFormat(obj, PC))
+    if (!obj) {
+        return;
     }
-    else if (obj.definition.format == 'I') {
-        lst.push(new IFormat(obj, PC))
-    }
-    else if (obj.definition.format == 'D' && ins[i].definition.mnemonic == 'STUR') {
-        lst.push(new Store(obj, PC))
-    }
-    else if (obj.definition.format == 'D' && ins[i].definition.mnemonic == 'LDUR') {
-        lst.push(new Load(obj, PC))
-    }
-    else if (obj.definition.format == 'C') {
-        lst.push(new CBFormat(obj, PC))
-    }
-    else if (obj.definition.format == 'B') {
-        lst.push(new BFormat(obj, PC))
+    if (obj.definition.format == "R") {
+        lst.push(new RFormat(obj, PC));
+    } else if (obj.definition.format == "I") {
+        lst.push(new IFormat(obj, PC));
+    } else if (
+        obj.definition.format == "D" &&
+        obj.definition.mnemonic == "STUR"
+    ) {
+        lst.push(new Store(obj, PC));
+    } else if (
+        obj.definition.format == "D" &&
+        obj.definition.mnemonic == "LDUR"
+    ) {
+        lst.push(new Load(obj, PC));
+    } else if (obj.definition.format == "C") {
+        lst.push(new CBFormat(obj, PC));
+    } else if (obj.definition.format == "B") {
+        lst.push(new BFormat(obj, PC));
     }
 }

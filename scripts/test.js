@@ -37,7 +37,7 @@ myDiv.addEventListener("click", (e) => {
     if (prevClick.length < 1) {
         prevClick.push({ x, y }); // lưu tọa độ click
         console.log(
-            `Tọa độ click đầu tiên: (${x.toFixed(0)}, ${y.toFixed(0)})`,
+            `Tọa độ click đầu tiên: (${x.toFixed(0)}, ${y.toFixed(0)})`
         );
     } else {
         // thay đổi đường đi của tag svg, path với 2 tọa độ click

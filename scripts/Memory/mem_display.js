@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Remove active class from all buttons and tabs
             tabButtons.forEach((btn) =>
-                btn.classList.remove("active", "bg-gray-700"),
+                btn.classList.remove("active", "bg-gray-700")
             );
             document
                 .querySelectorAll(".tab-content")
@@ -19,10 +19,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-
     // Initialize registers display
     const registersContainer = document.querySelector(
-        "#registers .grid.grid-cols-3.gap-1",
+        "#registers .grid.grid-cols-3.gap-1"
     );
     const registerTemplate =
         document.getElementById("registerTemplate").content;
@@ -39,7 +38,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         registersContainer.appendChild(registerClone);
     }
-
 
     const stackContainer = document.querySelector(".stack-view");
 
@@ -71,5 +69,4 @@ document.addEventListener("DOMContentLoaded", function () {
         valueCell.id = `${address}`;
         stackContainer.appendChild(valueCell);
     }
-
-})
+});

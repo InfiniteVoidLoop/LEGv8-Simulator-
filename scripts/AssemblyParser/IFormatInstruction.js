@@ -2,7 +2,6 @@
  * Represents an I-Format (Immediate) instruction in an ARM-like architecture.
  */
 class IFormatInstruction extends Instruction {
-
     // In JavaScript, `#` denotes a private field, the direct equivalent of `private` in Java.
     // JavaScript doesn't have `final`, but making these private and only setting them in the
     // constructor achieves the same goal of making them immutable from the outside.
@@ -29,13 +28,14 @@ class IFormatInstruction extends Instruction {
      */
     disassemble() {
         const mnemonic = this.definition.getMnemonic();
-        
+
         // Use the static Extractor utility to sign-extend the 12-bit immediate value.
         const signExtendedImm = Extractor.extend(this.immediate, 12);
-        
+
         // Use a template literal for clean and readable string formatting.
         // `padEnd(6)` achieves the `%-6s` effect from Java's String.format.
-        return `${mnemonic.padEnd(6)} X${this.rd}, X${this.rn}, #${signExtendedImm}`;
+        return `${mnemonic.padEnd(6)} X${this.rd}, X${
+            this.rn
+        }, #${signExtendedImm}`;
     }
 }
-

@@ -13,7 +13,7 @@ class InstructionDefinition {
         this.format = format;
 
         // Handle both constructor signatures
-        if (typeof opcodeOrString === 'string') {
+        if (typeof opcodeOrString === "string") {
             // String constructor - parse binary string to integer
             this.opcode = parseInt(opcodeOrString, 2);
         } else {
