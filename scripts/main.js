@@ -36,11 +36,13 @@ const assemble = () => {
     }
     PC.setAddress(ProgramCounter.BASE_ADDRESS); // Reset PC to base address
     jumpToAddress(PC, vec, PC.getCurrentAddress());
+    alert("Compile success")
 };
 
 startBtn.onclick = async () => {
     resetBtn.click(); // Reset trước khi bắt đầu
     running = true;
+    isStep = false;
     for (let i = 0; i < vec.length; i++) {
         document.getElementById(
             "pcValue"
