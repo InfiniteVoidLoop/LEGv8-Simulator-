@@ -3,6 +3,7 @@ const textInput = { value: "0101010" };
 const startBtn = document.getElementById("runBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const resetBtn = document.getElementById("resetBtn");
+const stepBtn = document.getElementById("stepBtn");
 
 const speedInput = document.querySelector(
     'input[type="range"][min="1"][max="10"]'
@@ -20,7 +21,8 @@ speedInput.addEventListener("input", () => {
 
 let running = false;
 let resumeCallbacks = [];
-
+let stepCallbacks = [];
+let isStep = false;
 function nextFrame() {
     return new Promise((r) => requestAnimationFrame(r));
 }
@@ -30,8 +32,16 @@ function waitForGlobalResume() {
         resumeCallbacks.push(resolve);
     });
 }
+function waitForGlobalStep() {
+    return new Promise((resolve) => {
+        stepCallbacks.push(resolve);
+    });
+}
 
 async function run(text, pathId) {
+    if (isStep) {
+        await waitForGlobalResume();
+    }
     // add text to path
     const pathElement = document.getElementById(pathId);
 
@@ -78,36 +88,6 @@ async function run(text, pathId) {
     console.log(`✅ run() hoàn tất trên path ${pathId}`);
 }
 
-// async function pc(instruction) {
-//     console.log("=== ⏯️ Bắt đầu bigrun ===");
-
-//     // turn assemblyInstructions into a string
-
-//     // const text = assemblyInstructions[address].toString();
-//     const text = instruction.toString();
-
-//     const pathIds = ["pc-alu", "pc-ins-mem", "pc-add-4"];
-
-//     const allRuns = pathIds.map((pathId) => run(text, pathId));
-
-//     await Promise.all(allRuns);
-
-//     console.log("✅ ✅ ✅ Kết thúc bigrun: tất cả run() xong");
-// }
-
-// startBtn.onclick = async () => {
-//     resetBtn.click(); // Reset trước khi bắt đầu
-//     running = true;
-//     // running each instruction step by step in array assemblyInstructions
-//     for (let i = 0; i < assemblyInstructions.length; i++) {
-//         const instruction = assemblyInstructions[i];
-//         console.log(
-//             `🔄 Bắt đầu chạy lệnh ${instruction} (${i + 1}/${assemblyInstructions.length})`,
-//         );
-//         await pc(instruction);
-//     }
-// };
-
 pauseBtn.onclick = () => {
     if (!running) {
         running = true;
@@ -139,3 +119,10 @@ resetBtn.onclick = () => {
     // const texts = document.querySelectorAll("text");
     // texts.forEach((text) => text.remove());
 };
+
+stepBtn.onclick = () => {
+    isStep = true;
+    stepCallbacks.forEach((resolve) => resolve());
+    const timestamp = performance.now();
+    resumeCallbacks.forEach((resolve) => resolve(timestamp));
+}
