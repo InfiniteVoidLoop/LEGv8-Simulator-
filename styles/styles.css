@@ -1,0 +1,351 @@
+body {
+    font-family: "Roboto", sans-serif;
+}
+
+.main-grid {
+    grid-template-areas:
+        "header header header"
+        "sidebar sim panel"
+        "footer footer footer";
+}
+
+#header {
+    grid-area: header;
+}
+#sidebar {
+    grid-area: sidebar;
+}
+#simulator-area {
+    grid-area: sim;
+}
+#right-panel {
+    grid-area: panel;
+}
+#footer {
+    grid-area: footer;
+}
+
+@media (max-width: 1024px) {
+    .main-grid {
+        grid-template-areas:
+            "header"
+            "sidebar"
+            "sim"
+            "panel"
+            "footer";
+    }
+
+    #sidebar {
+        flex-direction: row !important;
+        width: 100% !important;
+        height: 60px !important;
+    }
+
+    #right-panel {
+        width: 100% !important;
+    }
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 3px;
+}
+
+.component {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+    border: 2px solid #000;
+    background-color: white;
+    /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); */
+    transition: all 0.2s ease;
+}
+
+.component:hover {
+    transform: scale(1.05);
+    z-index: 10;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.rectangle {
+    border-radius: 0.25rem;
+}
+
+.oval {
+    border-radius: 50%;
+}
+
+.adder {
+    border-radius: 0.25rem;
+    clip-path: polygon(0% 25%, 50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%);
+}
+
+.mux {
+    border-radius: 9999px; /* full pill shape */
+    /* border-radius: 0.25rem; */
+    /* clip-path: polygon(0% 25%, 50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%); */
+}
+
+.and-gate {
+    border-radius: 0 2rem 2rem 0;
+    /* clip-path: polygon(0% 0%, 60% 0%, 100% 50%, 60% 100%, 0% 100%); */
+    /* border-radius: 50%; */
+    /* width: 1.5rem; */
+    /* height: 1.5rem; */
+    /* font-size: 0.6rem; */
+}
+.or-gate {
+    border-radius: 0 2rem 2rem 0;
+    padding-left: 0.5rem;
+}
+.cutout-or-gate {
+    position: absolute;
+    border-style: solid;
+    border-color: #000;
+    border-width: 2px 2px 2px 0px;
+    background-color: white;
+    border-radius: 0 1rem 1rem 0;
+    left: 0;
+    top: 50%;
+    width: 30%;
+    height: 110%;
+    transform: translateY(-50%);
+}
+.gate {
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.6rem;
+}
+
+.path {
+    position: absolute;
+    background-color: black;
+    z-index: 1;
+}
+
+.control-path {
+    position: absolute;
+    background-color: #3b82f6;
+    z-index: 1;
+}
+
+.control-connector {
+    position: absolute;
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: #3b82f6;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.canvas-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 75%;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .component {
+        font-size: 0.5rem;
+    }
+}
+.code-editor {
+    font-family: "Courier New", monospace;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.register-cell {
+    transition: background-color 0.3s;
+}
+
+.register-cell.changed {
+    background-color: #fef08a;
+}
+
+.memory-cell {
+    transition: background-color 0.3s;
+}
+
+.memory-cell.changed {
+    background-color: #fef08a;
+}
+
+.memory-cell.active {
+    background-color: #dbeafe;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.pc-display {
+    font-size: 1.25rem;
+    color: #1d4ed8;
+}
+
+/* COMPONENTS */
+
+.instruction-memory {
+    width: 120px;
+    height: 200px;
+    border: 2px solid BLACK;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #acb1b3;
+}
+.register-handler {
+    width: 170px;
+    height: 270px;
+    background-color: #acb1b3;
+    border: 2px solid BLACK;
+}
+.ellipse {
+    width: 70px;
+    height: 100px;
+    background-color: #acb1b3;
+    border-radius: 50%;
+    border: 2px solid BLACK;
+}
+.mux {
+    width: 30px;
+    height: 90px;
+    background-color: #acb1b3;
+    border: 2px solid BLACK;
+    border-radius: 9999px; /* Makes the top and bottom perfectly round */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column; /* stack characters vertically */
+}
+
+.data-memory {
+    width: 150px;
+    height: 200px;
+    background-color: #acb1b3;
+    border: 2px solid BLACK;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.Small_Ellipse {
+    width: 65px;
+    /* Horizontal size (major axis) */
+    height: 80px;
+    /* Vertical size (minor axis) */
+    border-radius: 50%;
+    /* This makes the div rounded */
+    background-color: #acb1b3;
+
+    border: 2px solid black;
+    margin: 20px auto;
+}
+.Small_Ellipse p {
+    font-weight: bold;
+    color: BLACK;
+    text-align: center;
+    margin: 0;
+}
+
+.big-ellipse {
+    width: 80px;
+    /* Horizontal size (major axis) */
+    height: 200px;
+    /* Vertical size (minor axis) */
+    border-radius: 50%;
+    background-color: #acb1b3;
+
+    /* This makes the div rounded */
+    border: 2px solid black;
+    margin: 20px auto;
+}
+
+.big-ellipse p {
+    font-weight: bold;
+    color: BLACK; /* gray-700 */
+    text-align: center;
+    margin: 0;
+}
+
+.pc_rect {
+    width: 50px;
+    height: 100px;
+    background-color: #acb1b3;
+    border-radius: 10px;
+    border: 2px solid black;
+    margin: 20px auto;
+}
+
+.center-text {
+    display: flex;
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    /* height: 200px;            Đặt chiều cao cho div */
+}
+
+.instruction-memory p {
+    font-weight: bold;
+    color: #374151; /* gray-700 */
+    text-align: center;
+}
+
+.pc-component {
+    width: 40px;
+    height: 100px;
+    border: 2px solid black;
+    border-radius: 0;
+    background-color: #acb1b3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pc-component p {
+    font-weight: bold;
+    color: black; /* gray-700 */
+    text-align: center;
+    margin: 0;
+}
+
+.text_style {
+    font-weight: bold;
+    color: black;
+    margin: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+#moving-data {
+    position: absolute;
+    transition: all 0.1s linear;
+    pointer-events: none;
+}
+
+.intersection-node {
+    fill: #007bff; /* Màu đen cho chấm tròn */
+    r: 4; /* Bán kính của chấm tròn (điều chỉnh cho phù hợp) */
+    stroke: #007bff; /* Viền trắng nhẹ để nổi bật trên nền đậm */
+    stroke-width: 0.5; /* Độ dày viền */
+}

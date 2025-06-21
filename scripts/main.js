@@ -44,16 +44,12 @@ startBtn.onclick = async () => {
     running = true;
     isStep = false;
     for (let i = 0; i < vec.length; i++) {
-        document.getElementById(
-            "pcValue"
-        ).textContent = `0x${PC.getCurrentAddress()
+        pcValue.textContent = `0x${PC.getCurrentAddress()
             .toString(16)
             .padStart(8, "0")
             .toUpperCase()}`;
         await vec[i].run();
-        document.getElementById(
-            "pcValue"
-        ).textContent = `0x${PC.getCurrentAddress()
+        pcValue.textContent = `0x${PC.getCurrentAddress()
             .toString(16)
             .padStart(8, "0")
             .toUpperCase()}`;

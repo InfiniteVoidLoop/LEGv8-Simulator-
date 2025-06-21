@@ -4,7 +4,7 @@ const startBtn = document.getElementById("runBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const resetBtn = document.getElementById("resetBtn");
 const stepBtn = document.getElementById("stepBtn");
-
+const assemblyCode = document.getElementById("assemblyCode");
 const speedInput = document.querySelector(
     'input[type="range"][min="1"][max="10"]'
 );

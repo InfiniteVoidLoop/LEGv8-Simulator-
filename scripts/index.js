@@ -1,52 +1,118 @@
-const simulatorState = document.getElementById("simulatorState");
 const pcValue = document.getElementById("pcValue");
-const cycleCount = document.getElementById("cycleCount");
 const executionSpeedInput = document.getElementById("executionSpeed");
-const cursorPosition = document.getElementById("cursorPosition");
-const assemblyCode = document.getElementById("assemblyCode");
 
-document.getElementById("main-display").style.width = "1500px";
+// Zoom
+let zoomLevel = 1;
+const zoomStep = 0.1;
+const zoomWrapper = document.getElementById("main-display");
 
-let currentLine = 1;
-let currentCol = 1;
+function zoomIn() {
+    zoomLevel += zoomStep;
+    applyZoom();
+}
 
-const updateCursorPosition = () => {
-    const cursorPos = assemblyCode.selectionStart;
-    const textLines = assemblyCode.value.substr(0, cursorPos).split("\n");
-    currentLine = textLines.length;
-    currentCol = textLines[textLines.length - 1].length + 1;
-    cursorPosition.textContent = `Line: ${currentLine}, Col: ${currentCol}`;
+function zoomOut() {
+    zoomLevel = Math.max(zoomStep, zoomLevel - zoomStep);
+    applyZoom();
+}
+
+function resetZoom() {
+    zoomLevel = 1;
+    applyZoom();
+}
+
+function applyZoom() {
+    zoomWrapper.style.transform = `scale(${zoomLevel})`;
+}
+
+// Tab switching functionality
+function switchTab(tabName) {
+    // Update tab buttons
+    if (tabName === "registers") {
+        document
+            .getElementById("registers-tab")
+            .classList.add("active", "bg-gray-100");
+        document
+            .getElementById("stack-tab")
+            .classList.remove("active", "bg-gray-100");
+        document
+            .getElementById("registers-content")
+            .classList.remove("hidden");
+        document
+            .getElementById("stack-content")
+            .classList.add("hidden");
+    } else {
+        document
+            .getElementById("stack-tab")
+            .classList.add("active", "bg-gray-100");
+        document
+            .getElementById("registers-tab")
+            .classList.remove("active", "bg-gray-100");
+        document
+            .getElementById("stack-content")
+            .classList.remove("hidden");
+        document
+            .getElementById("registers-content")
+            .classList.add("hidden");
+    }
+}
+
+// Generate register items
+function generateRegisters() {
+    const container = document.getElementById("registers-content");
+
+    for (let i = 0; i < 28; i++) {
+        const regName = `X${i}`;
+        const value = `0x${Math.floor(0)
+            .toString(16)
+            .padStart(8, "0")
+            .toUpperCase()}`;
+
+        const regElement = document.createElement("div");
+        regElement.className =
+            "bg-white border border-gray-200 p-1 text-xs text-center";
+        regElement.innerHTML = `<span class="font-semibold">${regName}</span><br><span class="font-mono">${value}</span>`;
+        regElement.id = `register-${regName}`;
+        container.appendChild(regElement);
+    }
+}
+
+// Generate stack items
+function generateStack() {
+    const container = document.getElementById("stack-content");
+
+    // Add header row
+    for (let i = 0; i < 30; i++) {
+        const address = `0x${(0x40000000 + i * 4).toString(16).toUpperCase()}`;
+        const value = `0x${Math.floor(Math.random() * 100000000)
+            .toString(16)
+            .padStart(8, "0")
+            .toUpperCase()}`;
+
+        const addressElement = document.createElement("div");
+        addressElement.className =
+            "p-1 text-xs font-mono border-b border-gray-100";
+        addressElement.textContent = address;
+
+        const valueElement = document.createElement("div");
+        valueElement.className =
+            "p-1 text-xs font-mono border-b border-gray-100";
+        valueElement.textContent = value;
+        valueElement.id = `stack-${address}`;
+
+        container.appendChild(addressElement);
+        container.appendChild(valueElement);
+    }
+}
+
+// Initialize when page loads
+window.onload = function() {
+    generateRegisters();
+    generateStack();
+
+    // Set default active tab
+    document
+        .getElementById("registers-tab")
+        .classList.add("bg-gray-100");
+    document.querySelector(".active").classList.add("bg-gray-100");
 };
-
-const loadCode = () => {
-    assemblyCode.value = `// Sample LEGv8 code
-ADD X0, X1, X2
-SUB X3, X4, X5
-LDUR X6, [X7, #0]
-STUR X8, [X9, #8]`;
-};
-
-const saveCode = () => {
-    alert("Code saved (simulated)");
-};
-
-const clearCode = () => {
-    assemblyCode.value = "";
-};
-
-const showHelp = () => {
-    alert(
-        "LEGv8 Simulator Help\n\nUse the controls to assemble and run your code."
-    );
-};
-
-assemblyCode.addEventListener("input", updateCursorPosition);
-
-document.getElementById("loadCodeBtn").addEventListener("click", loadCode);
-document.getElementById("saveCodeBtn").addEventListener("click", saveCode);
-document.getElementById("clearCodeBtn").addEventListener("click", clearCode);
-
-// configLoader = new InstructionConfigLoader();
-// configLoader.loadConfig();
-
-// InstructionFactory.initialize(configLoader);
