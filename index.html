@@ -1212,8 +1212,9 @@
                     id="footer"
                     class="border-t border-gray-200 flex flex-col"
                 >
+                    <div class="footer-drag-handle"></div>
                     <!-- Tab Header -->
-                    <div class="flex">
+                    <div class="flex mt-1">
                         <button
                             id="registers-tab"
                             class="flex-1 py-2 bg-gray-200 text-gray-700 font-medium border-r border-gray-300 hover:bg-gray-300 active"
@@ -1222,7 +1223,7 @@
                             Registers
                         </button>
                         <button
-                            id="stack-tab"
+                            id="stack-tab" 
                             class="flex-1 py-2 bg-gray-200 text-gray-700 font-medium hover:bg-gray-300"
                             onclick="switchTab('stack')"
                         >
@@ -1299,6 +1300,7 @@
         <script src="scripts/AssemblyParser/CBFormatInstruction.js"></script>
 
         <script src="scripts/main.js"></script>
+        <script src="scripts/footer.js"></script>
         <!-- <script src="scripts/Draggable.js"></script> -->
         <!-- <script src="scripts/Memory/mem_display.js"></script> -->
     </body>
