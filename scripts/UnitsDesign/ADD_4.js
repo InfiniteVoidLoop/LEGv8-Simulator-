@@ -9,21 +9,18 @@ ctx.beginPath();
 ctx.moveTo(initialPosX, initialPosY);
 
 // Draw a line to the second point
-ctx.lineTo(initialPosX, initialPosY + 50); // 10   60
+ctx.lineTo(initialPosX, initialPosY + 30); // Giảm từ 50 xuống 30
 
 // Draw a line to the third point
-ctx.lineTo(initialPosX + 20, initialPosY + 70); // 30  80
-ctx.lineTo(initialPosX, initialPosY + 90); // 10  100
-ctx.lineTo(initialPosX, initialPosY + 140); // 10  150
-ctx.lineTo(initialPosX + 65, initialPosY + 100); // 60  110
-ctx.lineTo(initialPosX + 65, initialPosY + 40); // 60  50
-ctx.lineTo(initialPosX, initialPosY); // 10  10
-
-// Close the path by connecting back to the starting point
-// ctx.closePath();
+ctx.lineTo(initialPosX + 15, initialPosY + 45); // Giảm từ 20,70 xuống 15,45
+ctx.lineTo(initialPosX, initialPosY + 60); // Giảm từ 90 xuống 60
+ctx.lineTo(initialPosX, initialPosY + 90); // Giảm từ 140 xuống 90
+ctx.lineTo(initialPosX + 45, initialPosY + 65); // Giảm từ 65,100 xuống 45,65
+ctx.lineTo(initialPosX + 45, initialPosY + 25); // Giảm từ 65,40 xuống 45,25
+ctx.lineTo(initialPosX, initialPosY);
 
 // Set the color of the shape's outline
-ctx.lineWidth = 5; // thicker stroke
+ctx.lineWidth = 3; // Giảm độ dày từ 5 xuống 3
 ctx.strokeStyle = "black";
 
 // Draw the shape outline
@@ -32,8 +29,8 @@ ctx.stroke();
 ctx.fillStyle = "#acb1b3"; // background color for this shape
 ctx.fill();
 
-ctx.font = "bold 17px Arial";
+ctx.font = "bold 14px Arial"; // Giảm font size từ 17px xuống 14px
 ctx.fillStyle = "black";
 ctx.fontweight = "bold";
-ctx.fillText("Add", initialPosX + 25, initialPosY + 75); // Adjust the position as needed
+ctx.fillText("Add", initialPosX + 15, initialPosY + 50); // Điều chỉnh vị trí text cho phù hợp với kích thước mới
 console.log("ADD-4");

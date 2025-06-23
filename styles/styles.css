@@ -240,18 +240,24 @@ body {
 }
 
 .data-memory {
-    width: 150px;
-    height: 200px;
+    width: 120px;
+    height: 160px;
     background-color: #acb1b3;
     border: 2px solid BLACK;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+}
+
+.data-memory span {
+    position: absolute;
+    font-size: 12px;
 }
 .Small_Ellipse {
-    width: 65px;
+    width: 50px;
     /* Horizontal size (major axis) */
-    height: 80px;
+    height: 60px;
     /* Vertical size (minor axis) */
     border-radius: 50%;
     /* This makes the div rounded */
@@ -262,15 +268,16 @@ body {
 }
 .Small_Ellipse p {
     font-weight: bold;
+    font-size: 12px;
     color: BLACK;
     text-align: center;
     margin: 0;
 }
 
 .big-ellipse {
-    width: 80px;
+    width: 90px;
     /* Horizontal size (major axis) */
-    height: 200px;
+    height: 220px;
     /* Vertical size (minor axis) */
     border-radius: 50%;
     background-color: #acb1b3;
@@ -285,6 +292,7 @@ body {
     color: BLACK; /* gray-700 */
     text-align: center;
     margin: 0;
+    font-size: 16px;
 }
 
 .pc_rect {
@@ -348,6 +356,14 @@ body {
     r: 4; /* Bán kính của chấm tròn (điều chỉnh cho phù hợp) */
     stroke: #007bff; /* Viền trắng nhẹ để nổi bật trên nền đậm */
     stroke-width: 0.5; /* Độ dày viền */
+}
+
+/* Flag labels styling */
+.flag-label {
+    font-size: 12px;
+    font-weight: bold;
+    text-anchor: middle;
+    dominant-baseline: middle;
 }
 
 /* Footer Styles */
@@ -458,4 +474,27 @@ body {
 
 #footer .custom-scrollbar::-webkit-scrollbar-track {
     background-color: #f1f5f9;
+}
+
+.nzcv-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    width: 100px;
+    height: 25px;
+    border: 2px solid #000;
+    background-color: #acb1b3;
+}
+
+.nzcv-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid #000;
+    font-weight: bold;
+    color: black;
+    font-size: 14px;
+}
+
+.nzcv-cell:last-child {
+    border-right: none;
 }
