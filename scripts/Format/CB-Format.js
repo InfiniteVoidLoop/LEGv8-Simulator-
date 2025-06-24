@@ -59,10 +59,12 @@ class CBFormat {
                 pathId: "control-ALU-op",
                 data: this.controlSignals.ALUOp1 + this.controlSignals.ALUOp0,
             },
+            { pathId: "control-flag-branch", data: this.controlSignals.FlagBranch },
             { pathId: "control-mem-write", data: this.controlSignals.MemWrite },
             { pathId: "control-ALU-src", data: this.controlSignals.ALUSrc },
             { pathId: "control-reg-write", data: this.controlSignals.RegWrite },
             { pathId: "control-branch", data: this.controlSignals.Branch },
+            { pathId: "control-flag-write", data: this.controlSignals.FlagWrite },
         ];
         const allControlRuns = controlPathAndData.map(({ pathId, data }) =>
             run(data, pathId)
@@ -122,7 +124,6 @@ class CBFormat {
     }
 
     async memoryAccess() {
-        const instruction = this.opcode + this.address + this.Rd; // Concatenate all parts to form the instruction
         const add4Address = add4ToHexAddress(this.address_instruction);
         const register2_hexan = LEGv8Registers.binaryToHex(
             registers.readByBinary(this.Rd)
@@ -138,20 +139,30 @@ class CBFormat {
         const addressShifted_decimal = Number(
             LEGv8Registers.binaryToBigInt(addressShifted_bin)
         ); // Convert to decimal for comparison
-        const cbzEqualZero =
-            LEGv8Registers.binaryToBigInt(registers.readByBinary(this.Rd)) ===
-            BigInt(0)
-                ? 1
-                : 0; // Check if the register value is zero
-
+        var cbzEqualZero = 0;
+        if (this.opcode === "10110100") { // Check if the opcode is for CBZ
+            // CBZ instruction
+            cbzEqualZero =
+                LEGv8Registers.binaryToBigInt(registers.readByBinary(this.Rd)) ===
+                BigInt(0) ? 1 : 0; // Check if the register value is zero
+        }
+        else if (this.opcode === "10110101") { // Check if the opcode is for CBNZ
+            // CBNZ instruction
+            cbzEqualZero =
+                LEGv8Registers.binaryToBigInt(registers.readByBinary(this.Rd)) !==
+                BigInt(0) ? 1 : 0; // Check if the register value is not zero
+        }
         if (cbzEqualZero) {
-            PC.setAddress(PC.getCurrentAddress() + addressShifted_decimal); // Update Program Counter
-        } else PC.setAddress(PC.getCurrentAddress() + 4); // Increment PC by 4 if not zero
-        jumpToAddress(PC, vec, PC.getCurrentAddress()); // Update the address in the UI
+                PC.setAddress(PC.getCurrentAddress() + addressShifted_decimal); // Update Program Counter
+            } else PC.setAddress(PC.getCurrentAddress() + 4); // Increment PC by 4 if not zero
+
+        jumpToAddress(PC, vec, PC.getCurrentAddress()); 
+
         const pathAndData = [
             { pathId: "read-data-2-write-data", data: register2_hexan },
             { pathId: "ALU-mux", data: "0x0" }, // 4-0 bits
             { pathId: "ALU-address", data: "0x0" }, // 4-0 bits !!!!
+            { pathId: "alu-to-nzcv", data: "0000"},
             { pathId: "alu-add-4-mux", data: add4Address }, // 4-0 bits  !!!
             {
                 pathId: "ALU-add-mux",
@@ -159,7 +170,7 @@ class CBFormat {
                     this.address_instruction,
                     addressShifted_hexan
                 ),
-            }, // 4-0 bits
+            }, 
             { pathId: "ALU-and-gate", data: String(cbzEqualZero) }, // 4-0 bits
         ];
         const allRuns = pathAndData.map(({ pathId, data }) =>
@@ -171,6 +182,7 @@ class CBFormat {
         const anotherPathAndData = [
             { pathId: "read-data-mux", data: "0x0" }, // 4-0 bits  !!!!!
             { pathId: "and-gate-or-gate", data: cbzEqualZero },
+            { pathId: "add-2-or-gate", data: "0"},
         ];
         const anotherRuns = anotherPathAndData.map(({ pathId, data }) =>
             run(data, pathId)

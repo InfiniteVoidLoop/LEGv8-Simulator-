@@ -62,10 +62,12 @@ class BFormat {
                 pathId: "control-ALU-op",
                 data: this.controlSignals.ALUOp1 + this.controlSignals.ALUOp0,
             },
+            { pathId: "control-flag-branch", data: this.controlSignals.FlagBranch },
             { pathId: "control-mem-write", data: this.controlSignals.MemWrite },
             { pathId: "control-ALU-src", data: this.controlSignals.ALUSrc },
             { pathId: "control-reg-write", data: this.controlSignals.RegWrite },
             { pathId: "control-branch", data: this.controlSignals.Branch },
+            { pathId: "contorl-flag-write", data: this.controlSignals.FlagWrite },
         ];
         const allControlRuns = controlPathAndData.map(({ pathId, data }) =>
             run(data, pathId)
@@ -144,6 +146,7 @@ class BFormat {
             { pathId: "read-data-2-write-data", data: register2_hexan }, // 20-16 bits
             { pathId: "ALU-mux", data: "0x0" }, // 4-0 bits
             { pathId: "ALU-address", data: "0x0" }, // 4-0 bits !!!!
+            { pathId: "alu-to-nzxc", data: "0000" },
             { pathId: "alu-add-4-mux", data: add4Address }, // 4-0 bits  !!!
             {
                 pathId: "ALU-add-mux",
@@ -163,6 +166,7 @@ class BFormat {
         const anotherPathAndData = [
             { pathId: "read-data-mux", data: "0x0" }, // 4-0 bits  !!!!!
             { pathId: "and-gate-or-gate", data: 0 },
+            { pathId: "add-2-or-gate", data: "0" }, // 4-0 bits
         ];
         const anotherRuns = anotherPathAndData.map(({ pathId, data }) =>
             run(data, pathId)

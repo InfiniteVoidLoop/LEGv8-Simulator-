@@ -7,9 +7,8 @@ class Load {
         this.Rd = toExactBinary(DFormatInstruction.rt, 5); // 5 bits
         this.address_instruction = LEGv8Registers.binaryToHex(
             LEGv8Registers.valueTo64BitBinary(PC.getCurrentAddress())
-        ); // Program Counter address
+        ); 
 
-        // ALU CONTROL
         this.aluControl = toExactBinary(
             DFormatInstruction.definition.controlSignals.operation,
             4
@@ -92,7 +91,7 @@ class Load {
     }
 
     async execute() {
-        const instruction = this.opcode + this.Rn + this.address + this.Rd; // Concatenate all parts to form the instruction
+        const instruction = this.opcode + this.Rn + this.address + this.Rd; 
         const register1_hexan = LEGv8Registers.binaryToHex(
             registers.readByBinary(this.Rn)
         ); // 9-5 bits
