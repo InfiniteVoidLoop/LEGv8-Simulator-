@@ -5,9 +5,6 @@ class BFormat {
         this.address_instruction = LEGv8Registers.binaryToHex(
             LEGv8Registers.valueTo64BitBinary(PC.getCurrentAddress())
         ); // Program Counter address
-        // Address in hexadecimal format
-
-        // ALU CONTROL
         this.aluControl = toExactBinary(
             BFormatInstruction.definition.controlSignals.operation,
             4
