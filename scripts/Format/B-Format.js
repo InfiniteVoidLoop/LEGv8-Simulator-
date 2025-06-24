@@ -143,7 +143,7 @@ class BFormat {
             { pathId: "read-data-2-write-data", data: register2_hexan }, // 20-16 bits
             { pathId: "ALU-mux", data: "0x0" }, // 4-0 bits
             { pathId: "ALU-address", data: "0x0" }, // 4-0 bits !!!!
-            { pathId: "alu-to-nzxc", data: "0000" },
+            { pathId: "alu-to-nzcv", data: "0000" },
             { pathId: "alu-add-4-mux", data: add4Address }, // 4-0 bits  !!!
             {
                 pathId: "ALU-add-mux",
