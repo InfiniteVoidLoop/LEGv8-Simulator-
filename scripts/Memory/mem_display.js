@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const registerTemplate =
         document.getElementById("registerTemplate").content;
 
-    for (let i = 0; i <= 27; i++) {
+    for (let i = 0; i <= 0; i++) {
         const registerClone = registerTemplate.cloneNode(true);
         const registerDiv = registerClone.querySelector(".register-cell");
         const registerName = registerDiv.querySelector("span:first-child");

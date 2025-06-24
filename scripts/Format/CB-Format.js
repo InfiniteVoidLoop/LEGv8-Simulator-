@@ -1,17 +1,20 @@
+var cbzEqualZero;   // Variable to store the result of CBZ/CBNZ condition check
 class CBFormat {
     constructor(CBFormatInstruction, PC) {
+        this.bcond = CBFormatInstruction.definition.getMnemonic();
         this.opcode = toExactBinary(CBFormatInstruction.definition.opcode, 8); // 8 bits
         this.address = toExactBinary(CBFormatInstruction.addressOffset, 19); // 9 bits
         this.Rd = toExactBinary(CBFormatInstruction.rt, 5); // 5 bits
         this.address_instruction = LEGv8Registers.binaryToHex(
             LEGv8Registers.valueTo64BitBinary(PC.getCurrentAddress())
-        ); // Program Counter address
+        ); 
 
         this.aluControl = toExactBinary(
             CBFormatInstruction.definition.controlSignals.operation,
             4
         ); // Placeholder for ALU control, will be set in execute method
         this.controlSignals = getControlSignals(CBFormatInstruction);
+        this.controlSignals.FlagBranch = 1;
     }
 
     async instructionFetch() {
@@ -127,19 +130,20 @@ class CBFormat {
         const add4Address = add4ToHexAddress(this.address_instruction);
         const register2_hexan = LEGv8Registers.binaryToHex(
             registers.readByBinary(this.Rd)
-        ); // 20-16 bits
+        ); 
 
         const addressShifted_bin = LEGv8Registers.valueTo64BitBinary(
             LEGv8Registers.binaryToBigInt(
                 LEGv8Registers.signExtend(this.address)
             ) << BigInt(2)
         );
+
         const addressShifted_hexan =
             LEGv8Registers.binaryToHex(addressShifted_bin); // Shift left by 2 bits
         const addressShifted_decimal = Number(
             LEGv8Registers.binaryToBigInt(addressShifted_bin)
-        ); // Convert to decimal for comparison
-        var cbzEqualZero = 0;
+        ); 
+
         if (this.opcode === "10110100") { // Check if the opcode is for CBZ
             // CBZ instruction
             cbzEqualZero =
@@ -152,12 +156,52 @@ class CBFormat {
                 LEGv8Registers.binaryToBigInt(registers.readByBinary(this.Rd)) !==
                 BigInt(0) ? 1 : 0; // Check if the register value is not zero
         }
+        else if (this.bcond == "B.EQ"){
+            cbzEqualZero = (pstate.Z == 1) ? 1 : 0; // Check if Z flag is set
+        }
+        else if (this.bcond == "B.BE"){
+            cbzEqualZero = (pstate.Z == 0) ? 1 : 0;
+        }
+        else if (this.bcond == "B.LT"){
+            cbzEqualZero = (pstate.N != pstate.V) ? 1 : 0; // Check if N and V flags are different
+        }
+        else if (this.bcond == "B.LE"){
+            cbzEqualZero = (pstate.Z == 1 || pstate.N != pstate.V) ? 1 : 0; // Check if Z flag is set or N and V flags are different
+        }
+        else if (this.bcond == "B.GT"){
+            cbzEqualZero = (pstate.Z == 0 && pstate.N == pstate.V) ? 1 : 0; // Check if Z flag is not set and N and V flags are equal
+        }
+        else if (this.bcond == "B.GE"){
+            cbzEqualZero = (pstate.N == pstate.V) ? 1 : 0; // Check if N and V flags are equal
+        }
+        else if (this.bcond == "B.LO"){
+            cbzEqualZero = (pstate.C == 0) ? 1 : 0; // Check if C flag is not set
+        }
+        else if (this.bcond == "B.LS"){
+            cbzEqualZero = (pstate.Z == 1 || pstate.C == 0) ? 1 : 0; // Check if Z flag is set or C flag is not set
+        }
+        else if (this.bcond == "B.HI"){
+            cbzEqualZero = (pstate.Z == 0 && pstate.C == 1) ? 1 : 0; // Check if Z flag is not set and C flag is set
+        }
+        else if (this.bcond == "B.HS"){
+            cbzEqualZero = (pstate.C == 1) ? 1 : 0; // Check if C flag is set
+        }
         if (cbzEqualZero) {
                 PC.setAddress(PC.getCurrentAddress() + addressShifted_decimal); // Update Program Counter
         } else PC.setAddress(PC.getCurrentAddress() + 4); // Increment PC by 4 if not zero
 
         jumpToAddress(PC, vec, PC.getCurrentAddress()); 
 
+        var BFlag;
+        var CBFlag;
+        if (this.bcond != "CBZ" && this.bcond != "CBNZ") {
+            BFlag = 0;
+            CBFlag = cbzEqualZero;
+        }
+        else {
+            BFlag = cbzEqualZero;
+            CBFlag = 0;
+        }
         const pathAndData = [
             { pathId: "read-data-2-write-data", data: register2_hexan },
             { pathId: "ALU-mux", data: "0x0" }, // 4-0 bits
@@ -171,25 +215,25 @@ class CBFormat {
                     addressShifted_hexan
                 ),
             }, 
-            { pathId: "ALU-and-gate", data: String(cbzEqualZero) }, // 4-0 bits
+            { pathId: "ALU-and-gate", data: CBFlag}, // 4-0 bits
         ];
         const allRuns = pathAndData.map(({ pathId, data }) =>
             run(data, pathId)
         );
         await Promise.all(allRuns);
-
+       
         // This is the part where read address register in memory
         const anotherPathAndData = [
             { pathId: "read-data-mux", data: "0x0" }, // 4-0 bits  !!!!!
-            { pathId: "and-gate-or-gate", data: cbzEqualZero },
-            { pathId: "add-2-or-gate", data: "0"},
+            { pathId: "and-gate-or-gate", data: CBFlag },
+            { pathId: "add-2-or-gate", data: BFlag},
         ];
         const anotherRuns = anotherPathAndData.map(({ pathId, data }) =>
             run(data, pathId)
         );
         await Promise.all(anotherRuns);
         const orToMux = [
-            { pathId: "or-gate-mux", data: cbzEqualZero }, // 4-0 bits
+            { pathId: "or-gate-mux", data: CBFlag | BFlag }, // 4-0 bits
         ];
         const orRuns = orToMux.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(orRuns);
@@ -198,9 +242,7 @@ class CBFormat {
 
     async registerWrite() {
         let backAddress;
-        const cbzEqualZero =
-            LEGv8Registers.binaryToBigInt(registers.readByBinary(this.Rd)) ===
-            BigInt(0);
+       
         if (cbzEqualZero) {
             const addressShifted_bin = LEGv8Registers.valueTo64BitBinary(
                 LEGv8Registers.binaryToBigInt(

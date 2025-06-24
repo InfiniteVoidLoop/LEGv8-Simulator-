@@ -214,7 +214,8 @@ class RFormat {
             run(data, pathId)
         );
         await Promise.all(allRuns);
-        const pos = LEGv8Registers.binaryToBigInt(this.Rd); 
+        const pos = binaryToUnsignedDecimal(this.Rd);
+        console.log("Position of Rd:", pos);
         document
             .getElementById(`register-X${pos}`)
             .querySelector("span:last-child").textContent =

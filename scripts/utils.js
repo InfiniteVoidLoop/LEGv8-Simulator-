@@ -177,3 +177,24 @@ function getControlSignals(instruction) {
     };
 }
 
+/**
+ * Converts a binary string to unsigned decimal number
+ * @param {string} binaryString - The binary string to convert
+ * @returns {number} The decimal value
+ */
+function binaryToUnsignedDecimal(binaryString) {
+    // Remove any spaces or other characters
+    binaryString = binaryString.replace(/[^01]/g, '');
+    
+    let decimal = 0;
+    
+    // Convert each bit from right to left
+    for (let i = binaryString.length - 1, power = 0; i >= 0; i--, power++) {
+        if (binaryString[i] === '1') {
+            decimal += Math.pow(2, power);
+        }
+    }
+    
+    return decimal;
+}
+
