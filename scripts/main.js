@@ -1,3 +1,11 @@
+// Khởi tạo biến pstate để lưu trạng thái NZCV
+var pstate = {
+    N: "0",
+    Z: "0", 
+    C: "0",
+    V: "0"
+};
+
 configloader = new InstructionConfigLoader();
 configloader.loadConfig();
 InstructionFactory.initialize(configloader);
@@ -5,6 +13,7 @@ const PC = new ProgramCounter();
 ass = new Assembler(PC.getCurrentAddress());
 const memory = new MemoryStorage();
 const registers = new LEGv8Registers();
+
 vec = [];
 const assemble = () => {
     const code = assemblyCode.value;

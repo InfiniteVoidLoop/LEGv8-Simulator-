@@ -11,23 +11,7 @@ class CBFormat {
             CBFormatInstruction.definition.controlSignals.operation,
             4
         ); // Placeholder for ALU control, will be set in execute method
-        this.controlSignals = {
-            Reg2Loc: CBFormatInstruction.definition.controlSignals.reg2Loc,
-            UncondBranch:
-                CBFormatInstruction.definition.controlSignals.uncondBranch,
-            MemRead: CBFormatInstruction.definition.controlSignals.memRead,
-            MemtoReg: CBFormatInstruction.definition.controlSignals.memToReg,
-            ALUOp1: LEGv8Registers.valueTo64BitBinary(
-                CBFormatInstruction.definition.controlSignals.aluOp
-            ).slice(-2, -1), // ALUOp1 is the second last bit of ALUOp
-            ALUOp0: String(
-                CBFormatInstruction.definition.controlSignals.aluOp % 2
-            ),
-            MemWrite: CBFormatInstruction.definition.controlSignals.memWrite,
-            ALUSrc: CBFormatInstruction.definition.controlSignals.aluSrc,
-            RegWrite: CBFormatInstruction.definition.controlSignals.regWrite,
-            Branch: CBFormatInstruction.definition.controlSignals.flagBranch,
-        };
+        this.controlSignals = getControlSignals(CBFormatInstruction);
     }
 
     async instructionFetch() {

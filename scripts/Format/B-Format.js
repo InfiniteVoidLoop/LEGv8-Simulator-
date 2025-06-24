@@ -12,24 +12,7 @@ class BFormat {
             BFormatInstruction.definition.controlSignals.operation,
             4
         ); // Placeholder for ALU control, will be set in execute method
-        this.controlSignals = {
-            Reg2Loc: BFormatInstruction.definition.controlSignals.reg2Loc,
-            UncondBranch:
-                BFormatInstruction.definition.controlSignals.uncondBranch,
-            MemRead: BFormatInstruction.definition.controlSignals.memRead,
-            MemtoReg: BFormatInstruction.definition.controlSignals.memToReg,
-            ALUOp1: LEGv8Registers.valueTo64BitBinary(
-                BFormatInstruction.definition.controlSignals.aluOp
-            ).slice(-2, -1), // ALUOp1 is the second last bit of ALUOp
-            ALUOp0: String(
-                BFormatInstruction.definition.controlSignals.aluOp % 2
-            ),
-            MemWrite: BFormatInstruction.definition.controlSignals.memWrite,
-            ALUSrc: BFormatInstruction.definition.controlSignals.aluSrc,
-            RegWrite: BFormatInstruction.definition.controlSignals.regWrite,
-            Branch: BFormatInstruction.definition.controlSignals.flagBranch,
-        };
-        this.controlSignals.Reg2Loc = "1"; // B-format instructions always use the second register location
+        this.controlSignals = getControlSignals(BFormatInstruction);
     }
 
     async instructionFetch() {

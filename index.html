@@ -304,15 +304,12 @@
                     <!-- AND COMPONENT 2 -->
                     <canvas id="AND-GATE-2" width="60" height="70" class="absolute top-[445px] left-[1170px]"></canvas>                    
                     <!-- NZCV Component -->
-                    <div class="absolute top-[465px] left-[950px] nzcv-container">
+                    <div class="absolute top-[465px] left-[950px] nzcv-container" id = "nzcv-container">
                         <div class="nzcv-cell" id="flag-n">N</div>
                         <div class="nzcv-cell" id="flag-z">Z</div>
                         <div class="nzcv-cell" id="flag-c">C</div>
                         <div class="nzcv-cell" id="flag-v">V</div>
                     </div>
-
-
-
                     <!-- ADD 4  COMPONENT -->
                     <canvas id="ADD-4" width="80" height="150" class="absolute top-[50px] left-[250px]"></canvas>
                     <div class="absolute top-[135px] left-[207px]">
@@ -601,9 +598,12 @@
                             <tr>
                                 <td class="py-1.5 text-gray-600 text-sm">
                                     N Z C V
-                                </td>
-                                <td class="py-1.5 text-gray-900 font-medium text-right">
-                                    0 0 0 0
+                                </td>                                
+                                <td class="py-1.5 text-gray-900 font-medium text-right flex justify-end space-x-2">
+                                    <span id="flag-status-n">0</span>
+                                    <span id="flag-status-z">0</span>
+                                    <span id="flag-status-c">0</span>
+                                    <span id="flag-status-v">0</span>
                                 </td>
                             </tr>
                         </tbody>

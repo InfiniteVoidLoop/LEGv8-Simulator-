@@ -353,4 +353,57 @@ class LEGv8Registers {
         // The modulo operation already handles this conversion to a positive equivalent.
         return binaryString.padStart(64, "0");
     }
+
+    /**
+     * Calculate and return the NZCV flags based on the result of an operation
+     * @param {string} result - The 64-bit binary result
+     * @param {string} operand1 - The 64-bit binary first operand
+     * @param {string} operand2 - The 64-bit binary second operand
+     * @param {string} operation - The operation type ('ADD', 'SUB', etc.)
+     * @returns {Object} Object containing the NZCV flags as strings ("0" or "1")
+     */
+    getStatusFlags(result, operand1, operand2, operation) {
+        // Convert binary strings to BigInt for calculations
+        const resultValue = BigInt('0b' + result);
+        const op1Value = BigInt('0b' + operand1);
+        const op2Value = BigInt('0b' + operand2);
+        
+        // Calculate Negative and Zero flags
+        const isNegative = result[0] === '1';
+        const isZero = resultValue === 0n;
+        
+        // Initialize Carry and Overflow
+        let isCarry = false;
+        let isOverflow = false;
+        
+        if (operation === 'ADD') {
+            // Carry: Set if unsigned addition produces a carry
+            const maxUnsigned = BigInt('0b' + '1'.repeat(64));
+            isCarry = (op1Value + op2Value) > maxUnsigned;
+            
+            // Overflow: Set if signed addition produces a wrong sign
+            const op1Negative = operand1[0] === '1';
+            const op2Negative = operand2[0] === '1';
+            const resultNegative = result[0] === '1';
+            isOverflow = (op1Negative === op2Negative) && (op1Negative !== resultNegative);
+        } 
+        else if (operation === 'SUB') {
+            // For subtraction, carry is set if there's no borrow
+            isCarry = op1Value >= op2Value;
+            
+            // Overflow: Set if signed subtraction produces a wrong sign
+            const op1Negative = operand1[0] === '1';
+            const op2Negative = operand2[0] === '1';
+            const resultNegative = result[0] === '1';
+            isOverflow = (op1Negative !== op2Negative) && (op1Negative !== resultNegative);
+        }
+        
+        // Return flags as strings "0" or "1"
+        return {
+            N: isNegative ? "1" : "0",  // Negative
+            Z: isZero ? "1" : "0",      // Zero
+            C: isCarry ? "1" : "0",     // Carry
+            V: isOverflow ? "1" : "0"   // Overflow
+        };
+    }
 }

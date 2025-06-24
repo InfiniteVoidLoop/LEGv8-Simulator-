@@ -155,3 +155,25 @@ function jumpToAddress(PC, lst, address) {
         lst.push(new BFormat(obj, PC));
     }
 }
+
+function getControlSignals(instruction) {
+    return {
+        Reg2Loc: instruction.definition.controlSignals.reg2Loc,
+        UncondBranch: instruction.definition.controlSignals.uncondBranch,
+        MemRead: instruction.definition.controlSignals.memRead,
+        MemtoReg: instruction.definition.controlSignals.memToReg,
+        ALUOp1: LEGv8Registers.valueTo64BitBinary(
+            instruction.definition.controlSignals.aluOp
+        ).slice(-2, -1),
+        ALUOp0: String(
+            instruction.definition.controlSignals.aluOp % 2
+        ),
+        MemWrite: instruction.definition.controlSignals.memWrite,
+        ALUSrc: instruction.definition.controlSignals.aluSrc,
+        RegWrite: instruction.definition.controlSignals.regWrite,
+        Branch: instruction.definition.controlSignals.zeroBranch,
+        FlagBranch: instruction.definition.controlSignals.flagBranch,
+        FlagWrite: instruction.definition.controlSignals.flagWrite,
+    };
+}
+

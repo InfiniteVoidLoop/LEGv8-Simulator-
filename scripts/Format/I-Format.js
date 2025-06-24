@@ -6,34 +6,12 @@ class IFormat {
         this.Rd = toExactBinary(IFormatInstruction.rd, 5);
         this.address = LEGv8Registers.binaryToHex(
             LEGv8Registers.valueTo64BitBinary(PC.getCurrentAddress())
-        ); // Program Counter address
-        // ALU CONTROL
+        ); 
         this.aluControl = toExactBinary(
             IFormatInstruction.definition.controlSignals.operation,
             4
-        ); // Placeholder for ALU control, will be set in execute method
-
-        this.controlSignals = {
-            Reg2Loc: IFormatInstruction.definition.controlSignals.reg2Loc,
-            UncondBranch:
-                IFormatInstruction.definition.controlSignals.uncondBranch,
-            MemRead: IFormatInstruction.definition.controlSignals.memRead,
-            MemtoReg: IFormatInstruction.definition.controlSignals.memToReg,
-            ALUOp1: LEGv8Registers.valueTo64BitBinary(
-                IFormatInstruction.definition.controlSignals.aluOp
-            ).slice(-2, -1), // ALUOp1 is the second last bit of ALUOp
-            ALUOp0: String(
-                IFormatInstruction.definition.controlSignals.aluOp % 2
-            ),
-            MemWrite: IFormatInstruction.definition.controlSignals.memWrite,
-            ALUSrc: IFormatInstruction.definition.controlSignals.aluSrc,
-            RegWrite: IFormatInstruction.definition.controlSignals.regWrite,
-            Branch: IFormatInstruction.definition.controlSignals.flagBranch,
-        };
-        console.log(
-            "IFormat Instruction Control Signals:",
-            this.controlSignals
-        );
+        ); 
+        this.controlSignals = getControlSignals(IFormatInstruction);
     }
 
     async instructionFetch() {
@@ -81,18 +59,21 @@ class IFormat {
                 pathId: "control-ALU-op",
                 data: this.controlSignals.ALUOp1 + this.controlSignals.ALUOp0,
             },
+            { pathId: "control-flag-branch", data: this.controlSignals.FlagBranch },
             { pathId: "control-mem-write", data: this.controlSignals.MemWrite },
             { pathId: "control-ALU-src", data: this.controlSignals.ALUSrc },
             { pathId: "control-reg-write", data: this.controlSignals.RegWrite },
             { pathId: "control-branch", data: this.controlSignals.Branch },
+            { pathId: "control-flag-write", data: this.controlSignals.FlagWrite }, 
+
         ];
         const allControlRuns = controlPathAndData.map(({ pathId, data }) =>
             run(data, pathId)
         );
         await Promise.all(allControlRuns);
+
         document.getElementById("mux0_0").style.color = "#007BFF";
         document.getElementById("mux1_1").style.color = "#007BFF";
-        document.getElementById("mux2_0").style.color = "#007BFF";
         document.getElementById("mux3_0").style.color = "#007BFF";
         document.getElementById("register-handler").style.borderColor =
             "#007BFF";
@@ -186,6 +167,7 @@ class IFormat {
             { pathId: "read-data-2-write-data", data: register2_hexan },
             { pathId: "ALU-mux", data: newRegisterValue_hexan }, // 4-0 bits
             { pathId: "ALU-address", data: newRegisterValue_hexan }, // 4-0 bits !!!!
+            { pathId: "alu-to-nzcv", data: "0000" }, // 4-0 bits
             { pathId: "alu-add-4-mux", data: add4Address }, // 4-0 bits  !!!
             {
                 pathId: "ALU-add-mux",
@@ -202,6 +184,7 @@ class IFormat {
         const anotherPathAndData = [
             { pathId: "read-data-mux", data: "0x0000" }, // 4-0 bits  !!!!!
             { pathId: "and-gate-or-gate", data: "0" },
+            { pathId: "add-2-or-gate", data: "0" }, // 4-0 bits
         ];
         const anotherRuns = anotherPathAndData.map(({ pathId, data }) =>
             run(data, pathId)
@@ -212,6 +195,8 @@ class IFormat {
         ];
         const orRuns = orToMux.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(orRuns);
+        document.getElementById("mux2_0").style.color = "#007BFF";
+
     }
     async registerWrite() {
         const newRegister_hexan = LEGv8Registers.binaryToHex(

@@ -1,4 +1,3 @@
-// const { memo } = require("react");
 class Load {
     constructor(DFormatInstruction, PC) {
         this.opcode = toExactBinary(DFormatInstruction.definition.opcode, 11); // 11 bits
@@ -15,23 +14,7 @@ class Load {
             DFormatInstruction.definition.controlSignals.operation,
             4
         ); // Placeholder for ALU control, will be set in execute method
-        this.controlSignals = {
-            Reg2Loc: DFormatInstruction.definition.controlSignals.reg2Loc,
-            UncondBranch:
-                DFormatInstruction.definition.controlSignals.uncondBranch,
-            MemRead: DFormatInstruction.definition.controlSignals.memRead,
-            MemtoReg: DFormatInstruction.definition.controlSignals.memToReg,
-            ALUOp1: LEGv8Registers.valueTo64BitBinary(
-                DFormatInstruction.definition.controlSignals.aluOp
-            ).slice(-2, -1), // ALUOp1 is the second last bit of ALUOp
-            ALUOp0: String(
-                DFormatInstruction.definition.controlSignals.aluOp % 2
-            ),
-            MemWrite: DFormatInstruction.definition.controlSignals.memWrite,
-            ALUSrc: DFormatInstruction.definition.controlSignals.aluSrc,
-            RegWrite: DFormatInstruction.definition.controlSignals.regWrite,
-            Branch: DFormatInstruction.definition.controlSignals.flagBranch,
-        };
+        this.controlSignals = getControlSignals(DFormatInstruction);
     }
 
     async instructionFetch() {
@@ -77,10 +60,12 @@ class Load {
                 pathId: "control-ALU-op",
                 data: this.controlSignals.ALUOp1 + this.controlSignals.ALUOp0,
             },
+            { pathId: "control-flag-branch", data: this.controlSignals.FlagBranch },
             { pathId: "control-mem-write", data: this.controlSignals.MemWrite },
             { pathId: "control-ALU-src", data: this.controlSignals.ALUSrc },
             { pathId: "control-reg-write", data: this.controlSignals.RegWrite },
             { pathId: "control-branch", data: this.controlSignals.Branch },
+            { pathId: "control-flag-write", data: this.controlSignals.FlagWrite},
         ];
         const allControlRuns = controlPathAndData.map(({ pathId, data }) =>
             run(data, pathId)
@@ -89,7 +74,6 @@ class Load {
         // change document here
         document.getElementById("mux0_0").style.color = "#007BFF";
         document.getElementById("mux1_1").style.color = "#007BFF";
-        document.getElementById("mux2_0").style.color = "#007BFF";
         document.getElementById("mux3_1").style.color = "#007BFF";
         document.getElementById("register-handler").style.borderColor =
             "#007BFF";
@@ -192,6 +176,7 @@ class Load {
             { pathId: "read-data-2-write-data", data: register2_hexan },
             { pathId: "ALU-mux", data: memoryAddress_hexan }, // 4-0 bits
             { pathId: "ALU-address", data: memoryAddress_hexan }, // 4-0 bits !!!!
+            { pathId: "alu-to-nzcv", data: "0000" }, // 4-0 bits
             { pathId: "alu-add-4-mux", data: add4Address }, // 4-0 bits  !!!
             {
                 pathId: "ALU-add-mux",
@@ -210,6 +195,7 @@ class Load {
         // This is the part where read address register in memory
         const anotherPathAndData = [
             { pathId: "read-data-mux", data: newRegisterValue_hexan },
+            { pathId: "add-2-or-gate", data: "0" }, // 4-0 bits
             { pathId: "and-gate-or-gate", data: "0" },
         ];
         const anotherRuns = anotherPathAndData.map(({ pathId, data }) =>
@@ -221,6 +207,7 @@ class Load {
         ];
         const orRuns = orToMux.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(orRuns);
+        document.getElementById("mux2_0").style.color = "#007BFF"; 
     }
 
     async registerWrite() {
@@ -276,29 +263,11 @@ class Store {
             LEGv8Registers.valueTo64BitBinary(PC.getCurrentAddress())
         ); // Program Counter address
 
-        // ALU CONTROL
         this.aluControl = toExactBinary(
             DFormatInstruction.definition.controlSignals.operation,
             4
         ); // Placeholder for ALU control, will be set in execute method
-        this.controlSignals = {
-            Reg2Loc: DFormatInstruction.definition.controlSignals.reg2Loc,
-            UncondBranch:
-                DFormatInstruction.definition.controlSignals.uncondBranch,
-            MemRead: DFormatInstruction.definition.controlSignals.memRead,
-            MemtoReg: DFormatInstruction.definition.controlSignals.memToReg,
-            ALUOp1: LEGv8Registers.valueTo64BitBinary(
-                DFormatInstruction.definition.controlSignals.aluOp
-            )[1],
-            ALUOp0: String(
-                DFormatInstruction.definition.controlSignals.aluOp % 2
-            ),
-            MemWrite: DFormatInstruction.definition.controlSignals.memWrite,
-            ALUSrc: DFormatInstruction.definition.controlSignals.aluSrc,
-            RegWrite: DFormatInstruction.definition.controlSignals.regWrite,
-            Branch: DFormatInstruction.definition.controlSignals.flagBranch,
-        };
-        this.controlSignals.MemtoReg = "1";
+        this.controlSignals = getControlSignals(DFormatInstruction);
     }
 
     async instructionFetch() {
@@ -345,10 +314,12 @@ class Store {
                 pathId: "control-ALU-op",
                 data: this.controlSignals.ALUOp1 + this.controlSignals.ALUOp0,
             },
+            { pathId: "control-flag-branch", data: this.controlSignals.FlagBranch },
             { pathId: "control-mem-write", data: this.controlSignals.MemWrite },
             { pathId: "control-ALU-src", data: this.controlSignals.ALUSrc },
             { pathId: "control-reg-write", data: this.controlSignals.RegWrite },
             { pathId: "control-branch", data: this.controlSignals.Branch },
+            { pathId: "control-flag-write", data: this.controlSignals.FlagWrite},
         ];
         const allControlRuns = controlPathAndData.map(({ pathId, data }) =>
             run(data, pathId)
@@ -357,7 +328,6 @@ class Store {
 
         document.getElementById("mux0_1").style.color = "#007BFF";
         document.getElementById("mux1_1").style.color = "#007BFF";
-        document.getElementById("mux2_0").style.color = "#007BFF";
         document.getElementById("mux3_0").style.color = "#007BFF";
 
         document.getElementById("memory-handler").style.borderColor = "#007BFF";
@@ -372,7 +342,6 @@ class Store {
     }
 
     async execute() {
-        const instruction = this.opcode + this.Rn + this.address + this.Rd; // Concatenate all parts to form the instruction
         const register1_hexan = LEGv8Registers.binaryToHex(
             registers.readByBinary(this.Rn)
         ); // 9-5 bits
@@ -452,6 +421,7 @@ class Store {
             { pathId: "read-data-2-write-data", data: registerSource_hexan },
             { pathId: "ALU-mux", data: memoryAddress_hexan }, // 4-0 bits
             { pathId: "ALU-address", data: memoryAddress_hexan }, // 4-0 bits !!!!
+            { pathId: "alu-to-nzcv", data: "0000" }, // 4-0 bits
             { pathId: "alu-add-4-mux", data: add4Address }, // 4-0 bits  !!!
             {
                 pathId: "ALU-add-mux",
@@ -471,6 +441,7 @@ class Store {
         const anotherPathAndData = [
             { pathId: "read-data-mux", data: "0x0000" }, // 4-0 bits  !!!!!
             { pathId: "and-gate-or-gate", data: "0" },
+            { pathId: "add-2-or-gate", data: "0" }, // 4-0 bits
         ];
         const anotherRuns = anotherPathAndData.map(({ pathId, data }) =>
             run(data, pathId)
@@ -490,6 +461,8 @@ class Store {
                     )
                 );
         }
+        document.getElementById("mux2_0").style.color = "#007BFF";
+
     }
 
     async registerWrite() {
