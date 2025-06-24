@@ -7,7 +7,7 @@ class CBFormat {
         this.Rd = toExactBinary(CBFormatInstruction.rt, 5); // 5 bits
         this.address_instruction = LEGv8Registers.binaryToHex(
             LEGv8Registers.valueTo64BitBinary(PC.getCurrentAddress())
-        ); 
+        );
 
         this.aluControl = toExactBinary(
             CBFormatInstruction.definition.controlSignals.operation,
@@ -130,7 +130,7 @@ class CBFormat {
         const add4Address = add4ToHexAddress(this.address_instruction);
         const register2_hexan = LEGv8Registers.binaryToHex(
             registers.readByBinary(this.Rd)
-        ); 
+        );
 
         const addressShifted_bin = LEGv8Registers.valueTo64BitBinary(
             LEGv8Registers.binaryToBigInt(
@@ -142,55 +142,55 @@ class CBFormat {
             LEGv8Registers.binaryToHex(addressShifted_bin); // Shift left by 2 bits
         const addressShifted_decimal = Number(
             LEGv8Registers.binaryToBigInt(addressShifted_bin)
-        ); 
+        );
 
         if (this.opcode === "10110100") { // Check if the opcode is for CBZ
             // CBZ instruction
             cbzEqualZero =
                 LEGv8Registers.binaryToBigInt(registers.readByBinary(this.Rd)) ===
-                BigInt(0) ? 1 : 0; // Check if the register value is zero
+                    BigInt(0) ? 1 : 0; // Check if the register value is zero
         }
         else if (this.opcode === "10110101") { // Check if the opcode is for CBNZ
             // CBNZ instruction
             cbzEqualZero =
                 LEGv8Registers.binaryToBigInt(registers.readByBinary(this.Rd)) !==
-                BigInt(0) ? 1 : 0; // Check if the register value is not zero
+                    BigInt(0) ? 1 : 0; // Check if the register value is not zero
         }
-        else if (this.bcond == "B.EQ"){
+        else if (this.bcond == "B.EQ") {
             cbzEqualZero = (pstate.Z == 1) ? 1 : 0; // Check if Z flag is set
         }
-        else if (this.bcond == "B.BE"){
+        else if (this.bcond == "B.BE") {
             cbzEqualZero = (pstate.Z == 0) ? 1 : 0;
         }
-        else if (this.bcond == "B.LT"){
+        else if (this.bcond == "B.LT") {
             cbzEqualZero = (pstate.N != pstate.V) ? 1 : 0; // Check if N and V flags are different
         }
-        else if (this.bcond == "B.LE"){
+        else if (this.bcond == "B.LE") {
             cbzEqualZero = (pstate.Z == 1 || pstate.N != pstate.V) ? 1 : 0; // Check if Z flag is set or N and V flags are different
         }
-        else if (this.bcond == "B.GT"){
+        else if (this.bcond == "B.GT") {
             cbzEqualZero = (pstate.Z == 0 && pstate.N == pstate.V) ? 1 : 0; // Check if Z flag is not set and N and V flags are equal
         }
-        else if (this.bcond == "B.GE"){
+        else if (this.bcond == "B.GE") {
             cbzEqualZero = (pstate.N == pstate.V) ? 1 : 0; // Check if N and V flags are equal
         }
-        else if (this.bcond == "B.LO"){
+        else if (this.bcond == "B.LO") {
             cbzEqualZero = (pstate.C == 0) ? 1 : 0; // Check if C flag is not set
         }
-        else if (this.bcond == "B.LS"){
+        else if (this.bcond == "B.LS") {
             cbzEqualZero = (pstate.Z == 1 || pstate.C == 0) ? 1 : 0; // Check if Z flag is set or C flag is not set
         }
-        else if (this.bcond == "B.HI"){
+        else if (this.bcond == "B.HI") {
             cbzEqualZero = (pstate.Z == 0 && pstate.C == 1) ? 1 : 0; // Check if Z flag is not set and C flag is set
         }
-        else if (this.bcond == "B.HS"){
+        else if (this.bcond == "B.HS") {
             cbzEqualZero = (pstate.C == 1) ? 1 : 0; // Check if C flag is set
         }
         if (cbzEqualZero) {
-                PC.setAddress(PC.getCurrentAddress() + addressShifted_decimal); // Update Program Counter
+            PC.setAddress(PC.getCurrentAddress() + addressShifted_decimal); // Update Program Counter
         } else PC.setAddress(PC.getCurrentAddress() + 4); // Increment PC by 4 if not zero
 
-        jumpToAddress(PC, vec, PC.getCurrentAddress()); 
+        jumpToAddress(PC, vec, PC.getCurrentAddress());
 
         var BFlag;
         var CBFlag;
@@ -206,7 +206,7 @@ class CBFormat {
             { pathId: "read-data-2-write-data", data: register2_hexan },
             { pathId: "ALU-mux", data: "0x0" }, // 4-0 bits
             { pathId: "ALU-address", data: "0x0" }, // 4-0 bits !!!!
-            { pathId: "alu-to-nzcv", data: "0000"},
+            { pathId: "alu-to-nzcv", data: "0000" },
             { pathId: "alu-add-4-mux", data: add4Address }, // 4-0 bits  !!!
             {
                 pathId: "ALU-add-mux",
@@ -214,19 +214,19 @@ class CBFormat {
                     this.address_instruction,
                     addressShifted_hexan
                 ),
-            }, 
-            { pathId: "ALU-and-gate", data: CBFlag}, // 4-0 bits
+            },
+            { pathId: "ALU-and-gate", data: CBFlag }, // 4-0 bits
         ];
         const allRuns = pathAndData.map(({ pathId, data }) =>
             run(data, pathId)
         );
         await Promise.all(allRuns);
-       
+
         // This is the part where read address register in memory
         const anotherPathAndData = [
             { pathId: "read-data-mux", data: "0x0" }, // 4-0 bits  !!!!!
             { pathId: "and-gate-or-gate", data: CBFlag },
-            { pathId: "add-2-or-gate", data: BFlag},
+            { pathId: "add-2-or-gate", data: BFlag },
         ];
         const anotherRuns = anotherPathAndData.map(({ pathId, data }) =>
             run(data, pathId)
@@ -242,7 +242,7 @@ class CBFormat {
 
     async registerWrite() {
         let backAddress;
-       
+
         if (cbzEqualZero) {
             const addressShifted_bin = LEGv8Registers.valueTo64BitBinary(
                 LEGv8Registers.binaryToBigInt(

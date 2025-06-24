@@ -39,9 +39,6 @@ function waitForGlobalStep() {
 }
 
 async function run(text, pathId) {
-    if (isStep) {
-        await waitForGlobalResume();
-    }
     // add text to path
     const pathElement = document.getElementById(pathId);
 
@@ -85,12 +82,17 @@ async function run(text, pathId) {
         textPath.setAttribute("startOffset", `${progress * 100}%`);
     }
 
+    if (isStep) {
+        await waitForGlobalResume();
+    }
+
     console.log(`✅ run() hoàn tất trên path ${pathId}`);
 }
 
 pauseBtn.onclick = () => {
     if (!running) {
         running = true;
+        currentState.textContent = "Running"
         const timestamp = performance.now();
         // Resolve tất cả callbacks đang chờ
         resumeCallbacks.forEach((resolve) => resolve(timestamp));
@@ -101,6 +103,7 @@ pauseBtn.onclick = () => {
         pauseBtn.classList.remove("bg-green-600", "hover:bg-green-700");
         pauseBtn.classList.add("bg-red-600", "hover:bg-red-700");
     } else {
+        currentState.textContent = "Paused"
         running = false;
         pauseBtn.innerHTML = '<i class="fas fa-play mr-2"></i> Continue';
         pauseBtn.classList.remove("bg-red-600", "hover:bg-red-700");
@@ -120,9 +123,27 @@ resetBtn.onclick = () => {
     // texts.forEach((text) => text.remove());
 };
 
-stepBtn.onclick = () => {
-    isStep = true;
-    stepCallbacks.forEach((resolve) => resolve());
-    const timestamp = performance.now();
-    resumeCallbacks.forEach((resolve) => resolve(timestamp));
+stepBtn.onclick = async () => {
+    currentState.textContent = "Running Step"
+    if (running == false) {
+        resetBtn.click(); // Reset trước khi bắt đầu
+        running = true;
+        isStep = true;
+        for (let i = 0; i < vec.length; i++) {
+            pcValue.textContent = `0x${PC.getCurrentAddress()
+                .toString(16)
+                .padStart(8, "0")
+                .toUpperCase()}`;
+            await vec[i].run();
+            pcValue.textContent = `0x${PC.getCurrentAddress()
+                .toString(16)
+                .padStart(8, "0")
+                .toUpperCase()}`;
+        }
+    } else {
+        isStep = true;
+        stepCallbacks.forEach((resolve) => resolve());
+        const timestamp = performance.now();
+        resumeCallbacks.forEach((resolve) => resolve(timestamp));
+    }
 }

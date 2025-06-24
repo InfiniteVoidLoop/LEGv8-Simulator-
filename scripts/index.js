@@ -1,6 +1,10 @@
 const pcValue = document.getElementById("pcValue");
 const executionSpeedInput = document.getElementById("executionSpeed");
-
+const currentState = document.getElementById("currentState")
+const flagN = document.getElementById("flag-status-n")
+const flagZ = document.getElementById("flag-status-z")
+const flagV = document.getElementById("flag-status-v")
+const flagC = document.getElementById("flag-status-c")
 // Zoom
 let zoomLevel = 1;
 const zoomStep = 0.1;
@@ -63,14 +67,14 @@ function generateRegisters() {
 
     const registerMap = {
         16: "IP0",
-        17: "IP1", 
+        17: "IP1",
         28: "SP",  // Stack Pointer
         29: "FP",  // Frame Pointer
         30: "LR",  // Link Register
         31: "XZR"  // Zero Register
     };
 
-    for (let i = 0; i <= 31; i++) {        
+    for (let i = 0; i <= 31; i++) {
         const regName = `X${i}`; // Use special name if exists, otherwise X[i]
         const NAME = registerMap[i] || `X${i}`;
         const value = `0x${Math.floor(0)
@@ -81,7 +85,7 @@ function generateRegisters() {
         const regElement = document.createElement("div");
         regElement.className =
             "bg-white border border-gray-200 p-1 text-xs text-center hover:bg-blue-50 transition-colors";
-          regElement.innerHTML = `<span class="font-semibold text-blue-700">${NAME}</span><br><span class="font-mono">${value}</span>`;
+        regElement.innerHTML = `<span class="font-semibold text-blue-700">${NAME}</span><br><span class="font-mono">${value}</span>`;
         regElement.id = `register-${regName}`;
         container.appendChild(regElement);
     }

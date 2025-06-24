@@ -1,7 +1,7 @@
 // Khởi tạo biến pstate để lưu trạng thái NZCV
 var pstate = {
     N: "0",
-    Z: "0", 
+    Z: "0",
     C: "0",
     V: "0"
 };
@@ -16,6 +16,7 @@ const registers = new LEGv8Registers();
 
 vec = [];
 const assemble = () => {
+    currentState.textContent = "Compiling"
     const code = assemblyCode.value;
     const lines = code
         .split("\n")
@@ -46,12 +47,13 @@ const assemble = () => {
     PC.setAddress(ProgramCounter.BASE_ADDRESS); // Reset PC to base address
     jumpToAddress(PC, vec, PC.getCurrentAddress());
     alert("Compile success")
+    currentState.textContent = "Compile success"
 };
 
 startBtn.onclick = async () => {
+    currentState.textContent = "Running"
     resetBtn.click(); // Reset trước khi bắt đầu
     running = true;
-    isStep = false;
     for (let i = 0; i < vec.length; i++) {
         pcValue.textContent = `0x${PC.getCurrentAddress()
             .toString(16)
@@ -63,6 +65,7 @@ startBtn.onclick = async () => {
             .padStart(8, "0")
             .toUpperCase()}`;
     }
+    currentState.textContent = "Done Running"
 };
 
 const assembleButton = document.getElementById("assembleBtn");

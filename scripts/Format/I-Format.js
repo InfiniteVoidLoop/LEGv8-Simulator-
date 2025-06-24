@@ -6,11 +6,11 @@ class IFormat {
         this.Rd = toExactBinary(IFormatInstruction.rd, 5);
         this.address = LEGv8Registers.binaryToHex(
             LEGv8Registers.valueTo64BitBinary(PC.getCurrentAddress())
-        ); 
+        );
         this.aluControl = toExactBinary(
             IFormatInstruction.definition.controlSignals.operation,
             4
-        ); 
+        );
         this.controlSignals = getControlSignals(IFormatInstruction);
     }
 
@@ -64,7 +64,7 @@ class IFormat {
             { pathId: "control-ALU-src", data: this.controlSignals.ALUSrc },
             { pathId: "control-reg-write", data: this.controlSignals.RegWrite },
             { pathId: "control-branch", data: this.controlSignals.Branch },
-            { pathId: "control-flag-write", data: this.controlSignals.FlagWrite }, 
+            { pathId: "control-flag-write", data: this.controlSignals.FlagWrite },
 
         ];
         const allControlRuns = controlPathAndData.map(({ pathId, data }) =>

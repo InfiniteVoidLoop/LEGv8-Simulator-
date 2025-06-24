@@ -7,7 +7,7 @@ class Load {
         this.Rd = toExactBinary(DFormatInstruction.rt, 5); // 5 bits
         this.address_instruction = LEGv8Registers.binaryToHex(
             LEGv8Registers.valueTo64BitBinary(PC.getCurrentAddress())
-        ); 
+        );
 
         this.aluControl = toExactBinary(
             DFormatInstruction.definition.controlSignals.operation,
@@ -64,7 +64,7 @@ class Load {
             { pathId: "control-ALU-src", data: this.controlSignals.ALUSrc },
             { pathId: "control-reg-write", data: this.controlSignals.RegWrite },
             { pathId: "control-branch", data: this.controlSignals.Branch },
-            { pathId: "control-flag-write", data: this.controlSignals.FlagWrite},
+            { pathId: "control-flag-write", data: this.controlSignals.FlagWrite },
         ];
         const allControlRuns = controlPathAndData.map(({ pathId, data }) =>
             run(data, pathId)
@@ -91,7 +91,7 @@ class Load {
     }
 
     async execute() {
-        const instruction = this.opcode + this.Rn + this.address + this.Rd; 
+        const instruction = this.opcode + this.Rn + this.address + this.Rd;
         const register1_hexan = LEGv8Registers.binaryToHex(
             registers.readByBinary(this.Rn)
         ); // 9-5 bits
@@ -206,7 +206,7 @@ class Load {
         ];
         const orRuns = orToMux.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(orRuns);
-        document.getElementById("mux2_0").style.color = "#007BFF"; 
+        document.getElementById("mux2_0").style.color = "#007BFF";
     }
 
     async registerWrite() {
@@ -318,7 +318,7 @@ class Store {
             { pathId: "control-ALU-src", data: this.controlSignals.ALUSrc },
             { pathId: "control-reg-write", data: this.controlSignals.RegWrite },
             { pathId: "control-branch", data: this.controlSignals.Branch },
-            { pathId: "control-flag-write", data: this.controlSignals.FlagWrite},
+            { pathId: "control-flag-write", data: this.controlSignals.FlagWrite },
         ];
         const allControlRuns = controlPathAndData.map(({ pathId, data }) =>
             run(data, pathId)
@@ -459,7 +459,7 @@ class Store {
         ];
         const orRuns = orToMux.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(orRuns);
-       
+
         document.getElementById("mux2_0").style.color = "#007BFF";
 
     }
