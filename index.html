@@ -56,10 +56,9 @@
             </header>
 
             <!-- Simulator Area -->
-            <main id="simulator-area" class="bg-gray-100 overflow-auto p-4 custom-scrollbar">
-                <div id="main-display"
+            <main id="simulator-area" class="bg-gray-100 overflow-auto p-4 custom-scrollbar">                <div id="main-display"
                     class="relative clearfix flex-1 rounded-lg flex items-center justify-center text-gray-500"
-                    style="width: 1500px; height: 974px">
+                    style="width: 1500px; height: 974px; position: relative; transform-origin: center center; touch-action: none; user-select: none;">
                     <svg id="svg" class="absolute w-full h-full border-gray-300">
                         <defs>
                             <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6"
@@ -609,37 +608,36 @@
                         </tbody>
                     </table>
                 </div>
-            </section>
-
-            <!-- Footer -->
-            <footer id="footer" class="border-t border-gray-200 flex flex-col">
-                <div class="footer-drag-handle"></div>
+            </section>            <!-- Footer -->
+            <footer id="footer" class="border-t border-blue-200 flex flex-col bg-gradient-to-b from-white to-blue-50">
+                <div class="footer-drag-handle bg-blue-100 h-1 hover:bg-blue-200 transition-colors cursor-row-resize"></div>
                 <!-- Tab Header -->
-                <div class="flex mt-1">
+                <div class="flex mt-1 bg-gradient-to-r from-blue-50 to-indigo-50 p-1 rounded-t-lg mx-1">
                     <button id="registers-tab"
-                        class="flex-1 py-2 bg-gray-200 text-gray-700 font-medium border-r border-gray-300 hover:bg-gray-300 active"
+                        class="flex-1 py-2 bg-white text-blue-700 font-medium border-r border-blue-100 hover:bg-blue-50 active transition-all duration-200 rounded-l-md shadow-sm"
                         onclick="switchTab('registers')">
                         Registers
                     </button>
-                    <button id="stack-tab" class="flex-1 py-2 bg-gray-200 text-gray-700 font-medium hover:bg-gray-300"
+                    <button id="stack-tab" 
+                        class="flex-1 py-2 bg-white text-blue-700 font-medium hover:bg-blue-50 transition-all duration-200 rounded-r-md shadow-sm"
                         onclick="switchTab('stack')">
                         Stack
                     </button>
                 </div>
 
                 <!-- Tab Content Area -->
-                <div class="flex-1 overflow-auto custom-scrollbar">
+                <div class="flex-1 overflow-auto custom-scrollbar bg-white mx-1 rounded-b-lg shadow-inner">
                     <!-- Registers Grid -->
-                    <div id="registers-content" class="grid grid-cols-3 p-2 h-full">
+                    <div id="registers-content" class="grid grid-cols-3 gap-2 p-3 h-full">
                         <!-- Will be populated by JavaScript -->
                     </div>
 
                     <!-- Stack Grid -->
-                    <div id="stack-content" class="hidden grid grid-cols-2 p-2 h-full">
-                        <div class="font-semibold text-center py-1 bg-gray-100">
+                    <div id="stack-content" class="hidden grid grid-cols-2 gap-1 p-3 h-full">
+                        <div class="font-semibold text-center py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-tl-md text-blue-800">
                             Address
                         </div>
-                        <div class="font-semibold text-center py-1 bg-gray-100">
+                        <div class="font-semibold text-center py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-tr-md text-blue-800">
                             Value
                         </div>
                         <!-- Will be populated by JavaScript -->
@@ -658,7 +656,7 @@
     <script src="scripts/UnitsDesign/AND.js"></script>
     <script src="scripts/UnitsDesign/AND2.js"></script>
     <script src="scripts/UnitsDesign/OR.js"></script>
-    <script src="scripts/test.js"></script>
+    <!-- <script src="scripts/test.js"></script> -->
 
     <script src="scripts/Memory/MEM.js"></script>
     <script src="scripts/Memory/registers.js"></script>
@@ -685,7 +683,8 @@
     <script src="scripts/AssemblyParser/DFormatInstruction.js"></script>
     <script src="scripts/AssemblyParser/BFormatInstruction.js"></script>
     <script src="scripts/AssemblyParser/CBFormatInstruction.js"></script>
-
+    
+    <script src="scripts/drag-handler.js"></script>
     <script src="scripts/main.js"></script>
     <script src="scripts/footer.js"></script>
     <!-- <script src="scripts/Draggable.js"></script> -->
