@@ -74,8 +74,7 @@ class InstructionFactory {
                 this.configLoader.getDefinitionByMnemonic(bCondMnemonic);
 
             console.log(
-                `ℹ Factory Debug: B.cond detected. Mnem='${bCondMnemonic}'. Definition found: ${
-                    definition ? definition.getMnemonic() : "NULL"
+                `ℹ Factory Debug: B.cond detected. Mnem='${bCondMnemonic}'. Definition found: ${definition ? definition.getMnemonic() : "NULL"
                 }`
             );
 
@@ -163,8 +162,7 @@ class InstructionFactory {
             }
         } catch (error) {
             throw new InvalidInstructionException(
-                `Error creating instruction object for ${definition.getMnemonic()}: ${
-                    error.message
+                `Error creating instruction object for ${definition.getMnemonic()}: ${error.message
                 }`,
                 error
             );
@@ -523,11 +521,11 @@ class InstructionFactory {
         symbolTable,
         currentAddr
     ) {
-        const ops = this.splitOperands(operands, 2);
         let rt_or_cond;
         let targetStr;
 
         if (mnemonic.startsWith("B.")) {
+            let ops = this.splitOperands(operands, 2);
             if (ops.length !== 1) {
                 throw new AssemblyException(
                     `${mnemonic} requires 1 operand: target`
@@ -536,6 +534,7 @@ class InstructionFactory {
             rt_or_cond = this.parseConditionCode(mnemonic);
             targetStr = ops[0];
         } else {
+            let ops = this.splitOperands(operands, 2);
             // CBZ/CBNZ Rt, target
             if (ops.length !== 2) {
                 throw new AssemblyException(
@@ -688,8 +687,7 @@ class InstructionFactory {
         // Check for empty operands
         if (parts.length === 1 && parts[0] === "") {
             throw new AssemblyException(
-                `Expected ${count} operand${
-                    count > 1 ? "s" : ""
+                `Expected ${count} operand${count > 1 ? "s" : ""
                 }, but got empty string.`
             );
         }
@@ -710,8 +708,7 @@ class InstructionFactory {
                     );
                 } else {
                     throw new AssemblyException(
-                        `Empty operand detected at position ${
-                            i + 1
+                        `Empty operand detected at position ${i + 1
                         } in '${operands}'`
                     );
                 }
