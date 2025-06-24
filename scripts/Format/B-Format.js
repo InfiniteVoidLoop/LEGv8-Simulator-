@@ -64,7 +64,7 @@ class BFormat {
             { pathId: "control-ALU-src", data: this.controlSignals.ALUSrc },
             { pathId: "control-reg-write", data: this.controlSignals.RegWrite },
             { pathId: "control-branch", data: this.controlSignals.Branch },
-            { pathId: "contorl-flag-write", data: this.controlSignals.FlagWrite },
+            { pathId: "control-flag-write", data: this.controlSignals.FlagWrite },
         ];
         const allControlRuns = controlPathAndData.map(({ pathId, data }) =>
             run(data, pathId)

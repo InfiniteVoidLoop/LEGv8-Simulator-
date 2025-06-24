@@ -23,21 +23,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const registersContainer = document.querySelector(
         "#registers .grid.grid-cols-3.gap-1"
     );
-    const registerTemplate =
-        document.getElementById("registerTemplate").content;
 
-    for (let i = 0; i <= 0; i++) {
-        const registerClone = registerTemplate.cloneNode(true);
-        const registerDiv = registerClone.querySelector(".register-cell");
-        const registerName = registerDiv.querySelector("span:first-child");
-        const registerValue = registerDiv.querySelector("span:last-child");
-
-        registerName.textContent = `X${i}`;
-        registerValue.textContent = `0x${(0).toString(16).padStart(8, "0")}`;
-        registerDiv.id = `register-X${i}`;
-
-        registersContainer.appendChild(registerClone);
-    }
+    generateRegisters();
 
     const stackContainer = document.querySelector(".stack-view");
 

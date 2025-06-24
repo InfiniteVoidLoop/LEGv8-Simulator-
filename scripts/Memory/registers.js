@@ -330,8 +330,6 @@ class LEGv8Registers {
         const TWO_POWER_63 = 1n << 63n; // 2^63
         const TWO_POWER_64 = 1n << 64n; // 2^64
 
-        // Clamp the value to the 64-bit two's complement range, handling overflow/underflow
-        // This simulates the wrapping behavior of fixed-width registers
         if (bigIntValue >= 0n) {
             bigIntValue = bigIntValue % TWO_POWER_64;
         } else {
@@ -345,12 +343,6 @@ class LEGv8Registers {
 
         let binaryString = bigIntValue.toString(2);
 
-        // Ensure the string is exactly 64 bits.
-        // For values that fit in fewer bits, pad with leading zeros.
-        // For values that wrapped around, the toString(2) might naturally be 64 bits or less.
-        // If it's a negative 64-bit number, its BigInt representation (e.g., -1n) will be small,
-        // but its two's complement equivalent (2^64 - 1) will be a large positive number.
-        // The modulo operation already handles this conversion to a positive equivalent.
         return binaryString.padStart(64, "0");
     }
 

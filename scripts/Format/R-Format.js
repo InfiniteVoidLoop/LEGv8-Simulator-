@@ -1,3 +1,5 @@
+var getFlags = "0000"; // Initialize getFlags to a default value
+var flags;
 class RFormat {
     constructor(RFormatInstruction, PC) {
         this.opcode = toExactBinary(RFormatInstruction.definition.opcode, 11);
@@ -112,6 +114,16 @@ class RFormat {
             newRegisterValue[this.aluControl] || 0n
         );
         registers.writeByBinary(this.Rd, newRegister_bin); // 4-0 bits
+        var operation;
+        if (this.aluControl === "0010") {
+            operation = "ADD";
+        } else if (this.aluControl === "0110") {
+            operation = "SUB";
+        }
+
+        flags = registers.getStatusFlags(newRegister_bin, registers.readByBinary(this.Rn), registers.readByBinary(this.Rm), operation);
+        getFlags = flags.N + flags.Z + flags.C + flags.V; // 4-0 bits
+
         const pathAndData = [
             { pathId: "read-1-alu", data: register1_hexan },
             { pathId: "read-data-2-mux", data: register2_hexan },
@@ -143,16 +155,7 @@ class RFormat {
         const newRegister_hexan = LEGv8Registers.binaryToHex(
             registers.readByBinary(this.Rd)
         ); // 4-0 bits
-        var operation;
-        if (this.aluControl === "0010") {
-            operation = "ADD";
-        } else if (this.aluControl === "0110") {
-            operation = "SUB";
-        }
-        const newRegister_bin = registers.readByBinary(this.Rd); // 4-0 bits
-        const flags = registers.getStatusFlags(newRegister_bin, registers.readByBinary(this.Rn), registers.readByBinary(this.Rm), operation);
-        const getFlags = flags.N + flags.Z + flags.C + flags.V; // 4-0 bits
-        console.log(this.controlSignals.FlagWrite);
+       
         if (this.controlSignals.FlagWrite == 1){
             document.getElementById("flag-status-n").textContent = flags.N;
             document.getElementById("flag-status-z").textContent = flags.Z;
