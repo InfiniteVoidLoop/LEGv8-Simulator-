@@ -154,7 +154,7 @@ class CBFormat {
         }
         if (cbzEqualZero) {
                 PC.setAddress(PC.getCurrentAddress() + addressShifted_decimal); // Update Program Counter
-            } else PC.setAddress(PC.getCurrentAddress() + 4); // Increment PC by 4 if not zero
+        } else PC.setAddress(PC.getCurrentAddress() + 4); // Increment PC by 4 if not zero
 
         jumpToAddress(PC, vec, PC.getCurrentAddress()); 
 
