@@ -435,7 +435,15 @@ class Store {
             run(data, pathId)
         );
         await Promise.all(allRuns);
-
+        const memPoss = Number(memPos);
+        for (let i = 0; i < 8; i++) {
+            document.getElementById(`stack-${memPoss + i}`).textContent =
+                LEGv8Registers.binaryToHex(
+                    LEGv8Registers.valueTo64BitBinary(
+                        memory.readByte(memPoss + i)
+                    )
+                );
+        }
         // This is the part where read address register in memory
         const anotherPathAndData = [
             { pathId: "read-data-mux", data: "0x0000" }, // 4-0 bits  !!!!!
@@ -451,15 +459,7 @@ class Store {
         ];
         const orRuns = orToMux.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(orRuns);
-        const memPoss = Number(memPos);
-        for (let i = 0; i < 8; i++) {
-            document.getElementById(`${memPoss + i}`).textContent =
-                LEGv8Registers.binaryToHex(
-                    LEGv8Registers.valueTo64BitBinary(
-                        memory.readByte(memPoss + i)
-                    )
-                );
-        }
+       
         document.getElementById("mux2_0").style.color = "#007BFF";
 
     }
