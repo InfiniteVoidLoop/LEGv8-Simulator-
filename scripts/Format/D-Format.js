@@ -438,7 +438,7 @@ class Store {
         const memPoss = Number(memPos);
         for (let i = 0; i < 8; i++) {
             document.getElementById(`stack-${memPoss + i}`).textContent =
-                LEGv8Registers.binaryToHex(
+                LEGv8Registers.binaryToMinimalHex(
                     LEGv8Registers.valueTo64BitBinary(
                         memory.readByte(memPoss + i)
                     )

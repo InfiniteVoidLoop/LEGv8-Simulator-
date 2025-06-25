@@ -242,8 +242,45 @@ class LEGv8Registers {
         const hexBigInt =
             signedBigInt < 0n ? (1n << 64n) + signedBigInt : signedBigInt;
 
-        const hexStr = hexBigInt.toString(16).toUpperCase().padStart(16, "0");
+        // Chuyển sang hex và bỏ các số 0 không có nghĩa ở đầu
+        let hexStr = hexBigInt.toString(16).toUpperCase();
+        
+        // Nếu số là 0 thì trả về "0x0"
+        if (hexStr === "0") {
+            return "0x0";
+        }
+        
+        return `0x${hexStr}`;
+    }
 
+    /**
+     * Chuyển một chuỗi nhị phân 64-bit sang chuỗi hex với số 0 tối thiểu.
+     * Khác với binaryToHex, hàm này sẽ bỏ các số 0 không có nghĩa ở đầu.
+     * Ví dụ: "0x0" thay vì "0x0000000000000000"
+     * @param {string} binStr - Chuỗi nhị phân cần chuyển đổi.
+     * @returns {string} Chuỗi hex với định dạng "0x" + các chữ số có nghĩa.
+     */
+    static binaryToMinimalHex(binStr) {
+        if (!/^[01]+$/.test(binStr) || binStr.length === 0) {
+            throw new Error(
+                `Invalid binary string: ${binStr}. Must contain only '0' or '1' and not be empty.`
+            );
+        }
+
+        // Sign-extend nếu độ dài < 64
+        if (binStr.length !== 64) {
+            binStr = LEGv8Registers.signExtend(binStr, 64);
+        }
+
+        const signedBigInt = LEGv8Registers.binaryToBigInt(binStr);
+
+        // Nếu là số âm, cần cộng 2^64 để lấy two's complement unsigned hex
+        const hexBigInt =
+            signedBigInt < 0n ? (1n << 64n) + signedBigInt : signedBigInt;
+
+        // Chuyển sang hex và đảm bảo luôn có ít nhất 2 chữ số
+        let hexStr = hexBigInt.toString(16).toUpperCase().padStart(2, "0");
+        
         return `0x${hexStr}`;
     }
 

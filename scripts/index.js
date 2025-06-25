@@ -96,11 +96,11 @@ function generateStack() {
     const container = document.getElementById("stack-content");
 
     // Add header row
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 100; i++) {
         const address = `0x${(i).toString(16).padStart(8, '0').toUpperCase()}`;
-        const value = `0x${Math.floor(Math.random() * 100000000)
+        const value = `0x${Math.floor(Math.random() * 256)  // Random từ 0-255 (1 byte)
             .toString(16)
-            .padStart(8, "0")
+            .padStart(2, "0")  // Luôn hiển thị 2 ký tự hex
             .toUpperCase()}`;
 
         const addressElement = document.createElement("div");
