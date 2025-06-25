@@ -1,11 +1,3 @@
-// Khởi tạo biến pstate để lưu trạng thái NZCV
-var pstate = {
-    N: "0",
-    Z: "0",
-    C: "0",
-    V: "0",
-};
-
 configloader = new InstructionConfigLoader();
 configloader.loadConfig();
 InstructionFactory.initialize(configloader);
