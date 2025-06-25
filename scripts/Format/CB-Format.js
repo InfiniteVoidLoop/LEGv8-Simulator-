@@ -221,7 +221,6 @@ class CBFormat {
             run(data, pathId)
         );
         await Promise.all(allRuns);
-
         // This is the part where read address register in memory
         const anotherPathAndData = [
             { pathId: "read-data-mux", data: "0x0" }, // 4-0 bits  !!!!!

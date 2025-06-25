@@ -73,7 +73,7 @@ class RFormat {
             run(data, pathId)
         );
         await Promise.all(allControlRuns);
-        if (this.controlSignals.flagWrite == 1) {
+        if (this.controlSignals.FlagWrite == "1") {
             document.getElementById("nzcv-container").style.borderColor = "#007BFF";
         }
         document.getElementById("mux0_0").style.color = "#007BFF";
@@ -157,17 +157,6 @@ class RFormat {
             registers.readByBinary(this.Rd)
         ); // 4-0 bits
 
-        if (this.controlSignals.FlagWrite == 1) {
-            document.getElementById("flag-status-n").textContent = flags.N;
-            document.getElementById("flag-status-z").textContent = flags.Z;
-            document.getElementById("flag-status-c").textContent = flags.C;
-            document.getElementById("flag-status-v").textContent = flags.V;
-            pstate.N = flags.N - '0';
-            pstate.Z = flags.Z - '0';
-            pstate.C = flags.C - '0';
-            pstate.V = flags.V - '0';
-        }
-
         const pathAndData = [
             { pathId: "read-data-2-write-data", data: register2_hexan }, // 20-16 bits
             { pathId: "ALU-mux", data: newRegister_hexan }, // 4-0 bits
@@ -182,6 +171,25 @@ class RFormat {
         );
         await Promise.all(allRuns);
 
+           if (this.controlSignals.FlagWrite == 1) {
+            document.getElementById("flag-status-n").textContent = flags.N;
+            document.getElementById("flag-status-z").textContent = flags.Z;
+            document.getElementById("flag-status-c").textContent = flags.C;
+            document.getElementById("flag-status-v").textContent = flags.V;
+            pstate.N = flags.N - '0';
+            pstate.Z = flags.Z - '0';
+            pstate.C = flags.C - '0';
+            pstate.V = flags.V - '0';
+            if (pstate.N == 1) document.getElementById("flag-n").style.color = "#007BFF";
+            else document.getElementById("flag-n").style.color = "black";
+            if (pstate.Z == 1) document.getElementById("flag-z").style.color = "#007BFF";
+            else document.getElementById("flag-z").style.color = "black";
+            if (pstate.C == 1) document.getElementById("flag-c").style.color = "#007BFF";
+            else document.getElementById("flag-c").style.color = "black";
+            if (pstate.V == 1) document.getElementById("flag-v").style.color = "#007BFF";
+            else document.getElementById("flag-v").style.color = "black";
+        }
+        
         const anotherPathAndData = [
             { pathId: "read-data-mux", data: "0x0000" }, // 4-0 bits  !!!!!
             { pathId: "and-gate-or-gate", data: "0" },

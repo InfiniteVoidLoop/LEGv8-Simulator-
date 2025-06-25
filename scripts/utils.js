@@ -97,28 +97,14 @@ function toExactSignBinary(decimalNum, n_bits) {
         // do đó cần slice ở cuối để đảm bảo đúng n_bits.
         return binaryString.padStart(n_bits, "0").slice(-n_bits);
     } else {
-        // Xử lý số âm (sử dụng bù 2)
-        // Lưu ý: JavaScript thực hiện các phép toán bitwise trên số 32-bit có dấu.
-        // Điều này có thể gây ra kết quả không mong muốn nếu n_bits > 32.
-        // Để linh hoạt hơn với n_bits bất kỳ, chúng ta sẽ mô phỏng thủ công.
-
-        // Bước 1: Lấy giá trị tuyệt đối của số âm, sau đó trừ đi 1
-        // (Đây là một mẹo để xử lý bù 2 thủ công dễ hơn)
-        // Ví dụ: -5 => 4. Chúng ta cần tính 2^n - |num|
+       
         const absoluteVal = Math.abs(decimalNum);
 
-        // Giá trị tương ứng trong biểu diễn bù 2 cho số âm
-        // Là (2^n_bits - |decimalNum|)
-        // Ví dụ: -5 (4 bit) => 2^4 - 5 = 16 - 5 = 11 (thập phân) => 1011 (nhị phân)
-        // Hoặc: -5 (8 bit) => 2^8 - 5 = 256 - 5 = 251 (thập phân) => 11111011 (nhị phân)
         const twoComplementVal = Math.pow(2, n_bits) - absoluteVal;
 
         // Chuyển đổi giá trị này sang nhị phân
         let binaryString = twoComplementVal.toString(2);
 
-        // Đảm bảo chuỗi nhị phân có đúng n_bits
-        // Nếu n_bits quá nhỏ so với số âm, binaryString có thể dài hơn n_bits,
-        // ví dụ: -1 (4 bit) -> 1111. Nếu tính ra 8 bit -> 11111111. slice(-n_bits) sẽ cắt đúng.
         return binaryString.slice(-n_bits);
     }
 }
