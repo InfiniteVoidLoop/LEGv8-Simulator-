@@ -49,16 +49,22 @@ const assemble = () => {
     alert("Compile success");
     currentState.textContent = "Compile success";
 };
-
 startBtn.onclick = async () => {
+    // check if vec is empty then alert there are no compiled instruction
+    if (vec.length == 0) {
+        alert("There no compiled instruction");
+        return;
+    }
     currentState.textContent = "Running";
     running = true;
-    for (let i = 0; i < vec.length; i++) {
+    let vec1 = vec;
+    vec = [];
+    for (let i = 0; i < vec1.length; i++) {
         pcValue.textContent = `0x${PC.getCurrentAddress()
             .toString(16)
             .padStart(8, "0")
             .toUpperCase()}`;
-        await vec[i].run();
+        await vec1[i].run();
         pcValue.textContent = `0x${PC.getCurrentAddress()
             .toString(16)
             .padStart(8, "0")

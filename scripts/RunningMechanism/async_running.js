@@ -150,6 +150,19 @@ resetBtn.onclick = () => {
     // Xoá tất cả element co class la instruction-text đã thêm
     const instructionTexts = document.querySelectorAll(".instruction-text");
     instructionTexts.forEach((text) => text.remove());
+
+    running = true;
+    currentState.textContent = "Running";
+    const timestamp = performance.now();
+    // Resolve tất cả callbacks đang chờ
+    resumeCallbacks.forEach((resolve) => resolve(timestamp));
+    // Reset mảng
+    resumeCallbacks = [];
+
+    pauseBtn.innerHTML = "Pause";
+    pauseBtn.classList.remove("bg-green-600", "hover:bg-green-700");
+    pauseBtn.classList.add("bg-danger", "hover:bg-danger-600");
+
     console.log("🔄 Reset");
 };
 
