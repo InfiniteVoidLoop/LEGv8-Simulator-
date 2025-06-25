@@ -166,21 +166,14 @@ resetBtn.onclick = () => {
         ).innerHTML = `<span class="font-semibold text-blue-700">${NAME}</span><br><span class="font-mono">${value}</span>`;
         document.getElementById(`register-${regName}`);
     }
-    // Xoá tất cả element co class la instruction-text đã thêm
-    const instructionTexts = document.querySelectorAll(".instruction-text");
-    instructionTexts.forEach((text) => text.remove());
-
-    currentState.textContent = "Running";
-    const timestamp = performance.now();
-    // Resolve tất cả callbacks đang chờ
-    resumeCallbacks.forEach((resolve) => resolve(timestamp));
-    // Reset mảng
-    resumeCallbacks = [];
 
     pauseBtn.innerHTML = "Pause";
     pauseBtn.classList.remove("bg-green-600", "hover:bg-green-700");
     pauseBtn.classList.add("bg-danger", "hover:bg-danger-600");
 
+    // Xoá tất cả element co class la instruction-text đã thêm
+    const instructionTexts = document.querySelectorAll(".instruction-text");
+    instructionTexts.forEach((text) => text.remove());
     console.log("🔄 Reset");
 };
 
