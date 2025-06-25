@@ -6,7 +6,6 @@ function add4ToHexAddress(hexAddressString) {
     let addressAsBigInt;
     try {
         let value = BigInt(`0x${cleanHex}`);
-        // Chuyển thành signed nếu bit cao là 1 (two's complement 64-bit)
         if (value >= 1n << 63n) {
             value -= 1n << 64n;
         }
@@ -22,7 +21,6 @@ function add4ToHexAddress(hexAddressString) {
 
     const newAddressAsBigInt = addressAsBigInt + 4n;
 
-    // Chuyển lại two's complement hex string
     const resultBigInt =
         newAddressAsBigInt < 0n
             ? (1n << 64n) + newAddressAsBigInt
@@ -85,16 +83,11 @@ function toExactSignBinary(decimalNum, n_bits) {
         console.warn(
             `Cảnh báo: Số ${decimalNum} nằm ngoài phạm vi biểu diễn của ${n_bits} bit bù 2.`
         );
-        // Đối với ví dụ này, chúng ta sẽ cho phép nó bị cắt bớt hoặc tràn số theo hành vi bù 2
-        // nếu sử dụng phép toán bitwise 32-bit mặc định của JS.
     }
 
     if (decimalNum >= 0) {
         // Xử lý số dương
         let binaryString = decimalNum.toString(2);
-        // Thêm padding và đảm bảo độ dài là n_bits.
-        // Nếu binaryString dài hơn n_bits, padStart sẽ không cắt bớt,
-        // do đó cần slice ở cuối để đảm bảo đúng n_bits.
         return binaryString.padStart(n_bits, "0").slice(-n_bits);
     } else {
        
@@ -102,7 +95,6 @@ function toExactSignBinary(decimalNum, n_bits) {
 
         const twoComplementVal = Math.pow(2, n_bits) - absoluteVal;
 
-        // Chuyển đổi giá trị này sang nhị phân
         let binaryString = twoComplementVal.toString(2);
 
         return binaryString.slice(-n_bits);
