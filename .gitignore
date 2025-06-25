@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+package-lock.json
+package.json
+# Build files
+dist/
+build/
+out/
+release/
+*.exe
+win-unpacked/
+
+# Electron specific
+.electron-builder.*
+electron-builder.yml
+**/electron/dist/**
+**/electron/download/**
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
