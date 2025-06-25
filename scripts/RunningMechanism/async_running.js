@@ -1,4 +1,10 @@
 const namespace = "http://www.w3.org/2000/svg";
+var pstate = {
+    N: "0",
+    Z: "0",
+    C: "0",
+    V: "0",
+};
 const textInput = { value: "0101010" };
 const startBtn = document.getElementById("runBtn");
 const pauseBtn = document.getElementById("pauseBtn");
@@ -123,6 +129,19 @@ resetBtn.onclick = () => {
     ass = new Assembler(PC.getCurrentAddress());
     memory = new MemoryStorage();
     registers = new LEGv8Registers();
+    pstate.N = 0;
+    pstate.C = 0;
+    pstate.V = 0;
+    pstate.Z = 0;
+    document.getElementById("flag-status-n").textContent = 0;
+    document.getElementById("flag-status-z").textContent = 0;
+    document.getElementById("flag-status-c").textContent = 0;
+    document.getElementById("flag-status-v").textContent = 0;
+    document.getElementById("flag-n").style.color = "black";
+    document.getElementById("flag-z").style.color = "black";
+    document.getElementById("flag-c").style.color = "black";
+    document.getElementById("flag-v").style.color = "black";
+    document.getElementById("currentState").textContent = "Idle";
     vec = [];
 
     // reset gia tri cho tat ca cac register
