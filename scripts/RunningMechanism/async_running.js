@@ -92,7 +92,7 @@ async function run(text, pathId) {
 pauseBtn.onclick = () => {
     if (!running) {
         running = true;
-        currentState.textContent = "Running"
+        currentState.textContent = "Running";
         const timestamp = performance.now();
         // Resolve tất cả callbacks đang chờ
         resumeCallbacks.forEach((resolve) => resolve(timestamp));
@@ -103,7 +103,7 @@ pauseBtn.onclick = () => {
         pauseBtn.classList.remove("bg-green-600", "hover:bg-green-700");
         pauseBtn.classList.add("bg-red-600", "hover:bg-red-700");
     } else {
-        currentState.textContent = "Paused"
+        currentState.textContent = "Paused";
         running = false;
         pauseBtn.innerHTML = '<i class="fas fa-play mr-2"></i> Continue';
         pauseBtn.classList.remove("bg-red-600", "hover:bg-red-700");
@@ -112,21 +112,50 @@ pauseBtn.onclick = () => {
 };
 resetBtn.onclick = () => {
     // reset pcvalue
-    pcValue.textContent = "0x00000000";
+    pcValue.textContent = "0x40000000";
     running = false;
-    console.log("🔄 Reset");
     resumeCallbacks = [];
+
+    configloader = new InstructionConfigLoader();
+    configloader.loadConfig();
+    InstructionFactory.initialize(configloader);
+    PC = new ProgramCounter();
+    ass = new Assembler(PC.getCurrentAddress());
+    memory = new MemoryStorage();
+    registers = new LEGv8Registers();
+    vec = [];
+
+    // reset gia tri cho tat ca cac register
+    const registerMap = {
+        16: "IP0",
+        17: "IP1",
+        28: "SP", // Stack Pointer
+        29: "FP", // Frame Pointer
+        30: "LR", // Link Register
+        31: "XZR", // Zero Register
+    };
+
+    for (let i = 0; i <= 31; i++) {
+        const regName = `X${i}`; // Use special name if exists, otherwise X[i]
+        const NAME = registerMap[i] || `X${i}`;
+        const value = `0x${Math.floor(0)
+            .toString(16)
+            .padStart(16, "0")
+            .toUpperCase()}`; // Changed to padStart(16) for 64-bit
+        document.getElementById(
+            `register-${regName}`
+        ).innerHTML = `<span class="font-semibold text-blue-700">${NAME}</span><br><span class="font-mono">${value}</span>`;
+        document.getElementById(`register-${regName}`);
+    }
     // Xoá tất cả element co class la instruction-text đã thêm
     const instructionTexts = document.querySelectorAll(".instruction-text");
     instructionTexts.forEach((text) => text.remove());
-    // const texts = document.querySelectorAll("text");
-    // texts.forEach((text) => text.remove());
+    console.log("🔄 Reset");
 };
 
 stepBtn.onclick = async () => {
-    currentState.textContent = "Running Step"
+    currentState.textContent = "Running Step";
     if (running == false) {
-        resetBtn.click(); // Reset trước khi bắt đầu
         running = true;
         isStep = true;
         for (let i = 0; i < vec.length; i++) {
@@ -146,4 +175,4 @@ stepBtn.onclick = async () => {
         const timestamp = performance.now();
         resumeCallbacks.forEach((resolve) => resolve(timestamp));
     }
-}
+};

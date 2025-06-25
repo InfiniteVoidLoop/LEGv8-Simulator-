@@ -3,20 +3,20 @@ var pstate = {
     N: "0",
     Z: "0",
     C: "0",
-    V: "0"
+    V: "0",
 };
 
 configloader = new InstructionConfigLoader();
 configloader.loadConfig();
 InstructionFactory.initialize(configloader);
-const PC = new ProgramCounter();
+let PC = new ProgramCounter();
 ass = new Assembler(PC.getCurrentAddress());
-const memory = new MemoryStorage();
-const registers = new LEGv8Registers();
-
+let memory = new MemoryStorage();
+let registers = new LEGv8Registers();
 vec = [];
 const assemble = () => {
-    currentState.textContent = "Compiling"
+    currentState.textContent = "Compiling";
+    resetBtn.click();
     const code = assemblyCode.value;
     const lines = code
         .split("\n")
@@ -46,13 +46,12 @@ const assemble = () => {
     }
     PC.setAddress(ProgramCounter.BASE_ADDRESS); // Reset PC to base address
     jumpToAddress(PC, vec, PC.getCurrentAddress());
-    alert("Compile success")
-    currentState.textContent = "Compile success"
+    alert("Compile success");
+    currentState.textContent = "Compile success";
 };
 
 startBtn.onclick = async () => {
-    currentState.textContent = "Running"
-    resetBtn.click(); // Reset trước khi bắt đầu
+    currentState.textContent = "Running";
     running = true;
     for (let i = 0; i < vec.length; i++) {
         pcValue.textContent = `0x${PC.getCurrentAddress()
@@ -65,7 +64,7 @@ startBtn.onclick = async () => {
             .padStart(8, "0")
             .toUpperCase()}`;
     }
-    currentState.textContent = "Done Running"
+    currentState.textContent = "Done Running";
 };
 
 const assembleButton = document.getElementById("assembleBtn");
