@@ -5,6 +5,7 @@ let PC = new ProgramCounter();
 ass = new Assembler(PC.getCurrentAddress());
 let memory = new MemoryStorage();
 let registers = new LEGv8Registers();
+let isStart = false;
 vec = [];
 const assemble = () => {
     currentState.textContent = "Compiling";
@@ -43,26 +44,29 @@ const assemble = () => {
 };
 startBtn.onclick = async () => {
     // check if vec is empty then alert there are no compiled instruction
-    if (vec.length == 0) {
+    if (isStart == true) {
         alert("There no compiled instruction");
         return;
     }
     currentState.textContent = "Running";
     running = true;
-    let vec1 = vec;
-    vec = [];
-    for (let i = 0; i < vec1.length; i++) {
+    isStart = true;
+    // let vec1 = vec;
+    // vec = [];
+    for (let i = 0; i < vec.length; i++) {
         pcValue.textContent = `0x${PC.getCurrentAddress()
             .toString(16)
             .padStart(8, "0")
             .toUpperCase()}`;
-        await vec1[i].run();
+        await vec[i].run();
         pcValue.textContent = `0x${PC.getCurrentAddress()
             .toString(16)
             .padStart(8, "0")
             .toUpperCase()}`;
     }
     currentState.textContent = "Done Running";
+    isStart = false;
+    vec = [];
 };
 
 const assembleButton = document.getElementById("assembleBtn");
