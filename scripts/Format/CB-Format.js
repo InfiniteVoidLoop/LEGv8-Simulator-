@@ -159,7 +159,7 @@ class CBFormat {
         else if (this.bcond == "B.EQ") {
             cbzEqualZero = (pstate.Z == 1) ? 1 : 0; // Check if Z flag is set
         }
-        else if (this.bcond == "B.BE") {
+        else if (this.bcond == "B.NE") {
             cbzEqualZero = (pstate.Z == 0) ? 1 : 0;
         }
         else if (this.bcond == "B.LT") {
@@ -237,6 +237,7 @@ class CBFormat {
         ];
         const orRuns = orToMux.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(orRuns);
+        console.log("CBZ/CBNZ condition check:", cbzEqualZero);
         document.getElementById(`mux2_${cbzEqualZero}`).style.color = "#007BFF";
     }
 
