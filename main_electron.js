@@ -9,7 +9,7 @@ function createWindow() {
       nodeIntegration: true,
       contextIsolation: false
     },
-    icon: path.join(__dirname, 'icon.png') // Thêm đường dẫn tới icon
+    icon: path.join(__dirname, 'asset/icon.png') // Thêm đường dẫn tới icon
   })
 
   win.loadFile('main.html')
