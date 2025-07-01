@@ -150,6 +150,7 @@ class IFormat {
     async memoryAccess() {
         const instruction = this.opcode + this.Rn + this.immediate + this.Rd; // Concatenate all parts to form the instruction
         const add4Address = add4ToHexAddress(this.address);
+        
         const register2_hexan = LEGv8Registers.binaryToHex(
             registers.readByBinary(getBits(instruction, 16, 20))
         ); // 20-16 bits
@@ -182,7 +183,7 @@ class IFormat {
 
         // This is the part where read address register in memory
         const anotherPathAndData = [
-            { pathId: "read-data-mux", data: "0x0000" }, // 4-0 bits  !!!!!
+            { pathId: "read-data-mux", data: "0x000" }, // 4-0 bits  !!!!!
             { pathId: "and-gate-or-gate", data: "0" },
             { pathId: "add-2-or-gate", data: "0" }, // 4-0 bits
         ];

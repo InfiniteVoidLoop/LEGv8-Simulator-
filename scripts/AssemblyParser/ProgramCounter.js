@@ -6,7 +6,6 @@ class ProgramCounter {
 
         // Map lưu thông tin: address (number) -> object
         this.addressMap = new Map();
-
         console.log(
             `Program Counter initialized. PC = 0x${this.currentAddress.toString(
                 16

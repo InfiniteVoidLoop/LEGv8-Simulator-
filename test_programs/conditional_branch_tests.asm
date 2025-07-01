@@ -13,14 +13,14 @@ label1:
 addi x5, xzr, #50    // x5 = 50 (chỉ thực hiện nếu nhảy thành công)
 
 // Test 2: Lệnh B.NE (Branch if Not Equal)  
-// Kiểm tra nhảy khi Z flag = 0
-addi x6, XZR, #15    // x6 = 15
-addi x7, XZR, #20    // x7 = 20
-subs x8, x6, x7      // x8 = x6 - x7 = -5, Z flag = 0
-b.ne label2          // Nhảy đến label2 vì Z = 0
-addi x9, XZR, #88    // Lệnh này sẽ bị bỏ qua
-label2:
-addi x10, XZR, #75   // x10 = 75
+        // Kiểm tra nhảy khi Z flag = 0
+        addi x6, XZR, #15    // x6 = 15
+        addi x7, XZR, #20    // x7 = 20
+        subs x8, x6, x7      // x8 = x6 - x7 = -5, Z flag = 0
+        b.ne label2          // Nhảy đến label2 vì Z = 0
+        addi x9, XZR, #88    // Lệnh này sẽ bị bỏ qua
+        label2:
+        addi x10, XZR, #75   // x10 = 75
 
 // Test 3: Lệnh CBZ (Compare and Branch if Zero)
 // Nhảy nếu giá trị register = 0

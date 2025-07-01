@@ -438,7 +438,7 @@ class Store {
         const memPoss = Number(memPos);
         for (let i = 0; i < 8; i++) {
             document.getElementById(`stack-${memPoss + i}`).textContent =
-                LEGv8Registers.binaryToMinimalHex(
+                LEGv8Registers.binaryToHex(
                     LEGv8Registers.valueTo64BitBinary(
                         memory.readByte(memPoss + i)
                     )
@@ -446,7 +446,7 @@ class Store {
         }
         // This is the part where read address register in memory
         const anotherPathAndData = [
-            { pathId: "read-data-mux", data: "0x0000" }, // 4-0 bits  !!!!!
+            { pathId: "read-data-mux", data: "0x000" }, // 4-0 bits  !!!!!
             { pathId: "and-gate-or-gate", data: "0" },
             { pathId: "add-2-or-gate", data: "0" }, // 4-0 bits
         ];

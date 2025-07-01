@@ -1,57 +1,33 @@
-function add4ToHexAddress(hexAddressString) {
-    const cleanHex = hexAddressString.startsWith("0x")
-        ? hexAddressString.slice(2)
-        : hexAddressString;
-
-    let addressAsBigInt;
-    try {
-        let value = BigInt(`0x${cleanHex}`);
-        if (value >= 1n << 63n) {
-            value -= 1n << 64n;
-        }
-        addressAsBigInt = value;
-    } catch (error) {
-        console.error(
-            "Invalid hexadecimal address string:",
-            hexAddressString,
-            error
-        );
-        return "Invalid Address";
-    }
-
-    const newAddressAsBigInt = addressAsBigInt + 4n;
-
-    const resultBigInt =
-        newAddressAsBigInt < 0n
-            ? (1n << 64n) + newAddressAsBigInt
-            : newAddressAsBigInt;
-
-    return `0x${resultBigInt.toString(16).toUpperCase().padStart(16, "0")}`;
+function add4ToHexAddress(address) {
+    const add4Address = PC.getCurrentAddress() + 4; 
+    return LEGv8Registers.binaryToHex(
+        LEGv8Registers.valueTo64BitBinary(add4Address)
+    );
 }
 
 function addHexStrings(hexStr1, hexStr2) {
-    const hexRegex = /^(0x)?[0-9a-fA-F]+$/;
-
-    const normalizeHex = (str) => {
-        if (typeof str !== "string" || !hexRegex.test(str)) {
-            throw new Error(`Invalid hexadecimal string: '${str}'.`);
+    // Hàm nội bộ để chuyển đổi một chuỗi hex (có thể có "0x") thành BigInt
+    const hexToBigInt = (hex) => {
+        if (typeof hex !== 'string' || !/^(0x)?[0-9a-fA-F]+$/.test(hex)) {
+            throw new Error(`Invalid hexadecimal string provided: ${hex}`);
         }
-        return str.startsWith("0x") ? str.slice(2) : str;
+        return BigInt(hex.startsWith('0x') ? hex : `0x${hex}`);
     };
 
-    const toSignedBigInt = (hex) => {
-        let val = BigInt(`0x${hex}`);
-        return val >= 1n << 63n ? val - (1n << 64n) : val;
-    };
+    const val1 = hexToBigInt(hexStr1);
+    const val2 = hexToBigInt(hexStr2);
 
-    const hex1 = normalizeHex(hexStr1);
-    const hex2 = normalizeHex(hexStr2);
+    // Thực hiện phép cộng trên BigInt
+    const sum = val1 + val2;
 
-    const sum = toSignedBigInt(hex1) + toSignedBigInt(hex2);
+    // Tạo một mặt nạ 32-bit (32 bit 1)
+    const mask = (1n << 32n) - 1n;
 
-    const result = sum < 0n ? (1n << 64n) + sum : sum;
+    // Áp dụng mặt nạ để chỉ giữ lại 32 bit cuối cùng, mô phỏng tràn số
+    const result = sum & mask;
 
-    return `0x${result.toString(16).toUpperCase().padStart(16, "0")}`;
+    // Chuyển kết quả về chuỗi hex, đệm 8 ký tự và thêm "0x"
+    return `0x${result.toString(16).toUpperCase().padStart(8, '0')}`;
 }
 
 function toExactBinary(decimalNum, n_bits) {

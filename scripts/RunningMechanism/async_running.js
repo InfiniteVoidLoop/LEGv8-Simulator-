@@ -49,11 +49,22 @@ async function run(text, pathId) {
     const pathElement = document.getElementById(pathId);
 
     const textElement = document.createElementNS(namespace, "text");
-    textElement.setAttribute("font-size", "20");
-    textElement.setAttribute("fill", "#000");
-    // textElement.setAttribute("font-weight", "bold");
+    textElement.setAttribute("font-size", "21"); // Kích thước font
+    textElement.setAttribute("fill", "#black"); // Màu xanh dương cho chữ
+    textElement.setAttribute("font-weight", "bold"); // In đậm
     textElement.setAttribute("class", "instruction-text");
     textElement.setAttribute("font-family", "Courier New, monospace");
+
+    // --- Hiệu ứng "khuôn bao" ---
+    // Vẽ một đường viền dày màu trắng mờ xung quanh text
+    textElement.setAttribute("stroke", "rgba(255, 255, 255, 0.8)");
+    // Độ dày của đường viền
+    textElement.setAttribute("stroke-width", "6");
+    // Đảm bảo đường viền được vẽ phía sau, không che chữ
+    textElement.setAttribute("paint-order", "stroke");
+    // Bo tròn các góc của đường viền
+    textElement.setAttribute("stroke-linejoin", "round");
+
     const textPath = document.createElementNS(namespace, "textPath");
     textPath.setAttributeNS(
         "http://www.w3.org/1999/xlink",
@@ -133,15 +144,8 @@ resetBtn.onclick = () => {
     pstate.C = 0;
     pstate.V = 0;
     pstate.Z = 0;
-    document.getElementById("flag-status-n").textContent = 0;
-    document.getElementById("flag-status-z").textContent = 0;
-    document.getElementById("flag-status-c").textContent = 0;
-    document.getElementById("flag-status-v").textContent = 0;
-    document.getElementById("flag-n").style.color = "black";
-    document.getElementById("flag-z").style.color = "black";
-    document.getElementById("flag-c").style.color = "black";
-    document.getElementById("flag-v").style.color = "black";
-    document.getElementById("currentState").textContent = "Idle";
+    
+    quickColorReset();
     vec = [];
 
     // reset gia tri cho tat ca cac register
@@ -166,11 +170,6 @@ resetBtn.onclick = () => {
         ).innerHTML = `<span class="font-semibold text-blue-700">${NAME}</span><br><span class="font-mono">${value}</span>`;
         document.getElementById(`register-${regName}`);
     }
-
-    pauseBtn.innerHTML = "Pause";
-    pauseBtn.classList.remove("bg-green-600", "hover:bg-green-700");
-    pauseBtn.classList.add("bg-danger", "hover:bg-danger-600");
-
     // Xoá tất cả element co class la instruction-text đã thêm
     const instructionTexts = document.querySelectorAll(".instruction-text");
     instructionTexts.forEach((text) => text.remove());

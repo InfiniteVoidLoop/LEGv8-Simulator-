@@ -6,10 +6,10 @@
 // Sẽ tính 10 số Fibonacci đầu tiên và lưu vào memory
 
 // Khởi tạo
-addi x1, xzr, #1000  // Base address để lưu kết quả
+addi x1, xzr, #0  // Base address để lưu kết quả
 addi x2, xzr, #0     // F(0) = 0
 addi x3, xzr, #1     // F(1) = 1
-addi x4, xzr, #10    // Số lượng số Fibonacci cần tính
+addi x4, xzr, #3    // Số lượng số Fibonacci cần tính
 addi x5, xzr, #0     // Counter = 0
 
 // Lưu F(0) và F(1)
@@ -22,7 +22,7 @@ addi x5, x5, #2      // counter = 2
 // Vòng lặp tính Fibonacci
 loop:
     // Kiểm tra điều kiện dừng
-    subs x6, x5, x4      // x6 = counter - 10
+    subs XZR, x5, x4      // x6 = counter - 10
     b.ge end_loop        // Nếu counter >= 10 thì thoát
 
     // Tính F(n) = F(n-1) + F(n-2)
