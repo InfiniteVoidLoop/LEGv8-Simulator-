@@ -8,18 +8,22 @@ let registers = new LEGv8Registers();
 let isStart = false;
 vec = [];
 const assemble = () => {
-
+    if (running) {
+        alert("Please reset the current execution before compiling new code.");
+        return;
+    }
     isStart = false;
     currentState.textContent = "Compiling";
     resetBtn.click();
     const code = assemblyCode.value;
     const lines = code
         .split("\n")
-        .map((line) => line.trim())
+        .map((line) => line.trim()).filter((line) => line.length > 0);
     if (lines.length === 0) {
         alert("No valid assembly code found.");
         return;
     }
+    assemblyCode.value = lines.join("\n");
     try {
         ins = ass.assemble(lines);
     } catch (e) {
@@ -33,11 +37,14 @@ const assemble = () => {
     PC.setAddress(ProgramCounter.BASE_ADDRESS); // Reset PC to base address
     jumpToAddress(PC, vec, PC.getCurrentAddress());
 
-    // Xoá tất cả element co class la instruction-text đã thêm
-    const instructionTexts = document.querySelectorAll(".animated-data-div");
-    instructionTexts.forEach((text) => text.remove());
     controlUnitDisplay(PC, 0);
+    setTimeout(()=>{}, 700);
+    
+    // Remove all animated data divs at the end of compilation
+    document.querySelectorAll('.animated-data-div').forEach(el => el.remove());
+    
     alert("Compile success");
+    
     currentState.textContent = "Compile success";
 };
 
@@ -88,28 +95,52 @@ const resetInstruction = (vec, i) => {
 }
 
 startBtn.onclick = async () => {
-    // check if vec is empty then alert there are no compiled instruction
-    if (isStart == true || vec.length == 0) {
-        alert("There no compiled instruction");
+    // If an execution is already in progress (started by either run or step)
+    if (isStart) {
+        // This handles transitioning from a paused state (from step or pause button) to a full run.
+        currentState.textContent = "Running";
+        isStep = false; // Ensure we are in continuous mode.
+
+        // Clean up any divs left over from a paused step.
+        remove_after_step.forEach((div) => {
+            if (div.parentNode) {
+                div.parentNode.removeChild(div);
+            }
+        });
+        remove_after_step = [];
+
+        // If `running` is false, it means the pause button was used. We need to resume.
+        if (!running) {
+            running = true;
+            pauseBtn.innerHTML = '<i class="fas fa-pause mr-2"></i> Pause';
+            pauseBtn.classList.remove("bg-green-600", "hover:bg-green-700");
+            pauseBtn.classList.add("bg-danger-600", "hover:bg-danger-700");
+        }
+
+        // Un-pause the execution.
+        const timestamp = performance.now();
+        resumeCallbacks.forEach((resolve) => resolve(timestamp));
+        resumeCallbacks = [];
+
+        return; // The existing loop (from stepBtn) will now run to completion.
+    }
+
+    // --- If no execution is in progress, start a new one. ---
+    if (vec.length === 0) {
+        alert("There are no compiled instructions.");
         return;
     }
 
-    remove_after_step.forEach((div) => {
-        if (div.parentNode) {
-            div.parentNode.removeChild(div);
-        }
-    });
+    isStep = false;
     currentState.textContent = "Running";
     running = true;
     isStart = true;
-    // let vec1 = vec;
-    // vec = [];
+
     for (let i = 0; i < vec.length; i++) {
         pcValue.textContent = `0x${PC.getCurrentAddress()
             .toString(16)
             .padStart(8, "0")
             .toUpperCase()}`;
-        // mark text at line vec[i].lineNumber yellow from element textarea with id assemblyCode
         markLines("assemblyCode", vec[i].lineNumber);
         await vec[i].run();
         resetInstruction(vec, i);
@@ -118,8 +149,10 @@ startBtn.onclick = async () => {
             .padStart(8, "0")
             .toUpperCase()}`;
     }
+
     currentState.textContent = "Done Running";
     isStart = false;
+    running = false;
     vec = [];
 };
 

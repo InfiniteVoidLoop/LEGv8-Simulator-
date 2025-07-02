@@ -60,6 +60,7 @@ async function run(text, pathId) {
 
     const originalColor = pathElement.getAttribute("stroke");
     const originalStrokeWidth = pathElement.getAttribute("stroke-width");
+    restore_path.push({pathId, originalColor, originalStrokeWidth});
 
     // Change path color and width for animation
     // only change if the path id not start with "control-"
@@ -92,6 +93,9 @@ async function run(text, pathId) {
         container.appendChild(divElement);
     } else {
         document.body.appendChild(divElement); // Fallback to body
+    }
+    if (isStep) {
+        remove_after_step.push(divElement);
     }
 
     const pathLength = pathElement.getTotalLength();
@@ -146,18 +150,14 @@ async function run(text, pathId) {
 
     // Wait for 1 second at the end of the path before removing the div
     if (!isStep) {
-        await new Promise(resolve => setTimeout(resolve, 700));
+        await new Promise(resolve => setTimeout(resolve, 600));
     }
     // Remove the div element after the effect is complete
     if (divElement.parentNode && !isStep) {
         divElement.parentNode.removeChild(divElement);
-    } else {
-        // store to a vec this action and remove it later
-        remove_after_step.push(divElement);
     }
 
     // Restore original path color and width
-    restore_path.push({pathId, originalColor, originalStrokeWidth});
     // pathElement.setAttribute("stroke", originalColor);
     // pathElement.setAttribute("stroke-width", originalStrokeWidth);
 
@@ -190,7 +190,9 @@ pauseBtn.onclick = () => {
     }
 };
 resetBtn.onclick = () => {
-    
+    for (let i = 0; i < vec.length; i++) {
+        resetInstruction(vec, i);
+    }
     pauseBtn.innerHTML = 'Pause';
     pauseBtn.classList.remove("bg-green-600", "hover:bg-green-700");
     pauseBtn.classList.add("bg-danger-600", "hover:bg-danger-700");
@@ -210,8 +212,9 @@ resetBtn.onclick = () => {
     pstate.C = 0;
     pstate.V = 0;
     pstate.Z = 0;
-
+    isStart = false;
     isStep = false;
+    running = false;
     quickColorReset();
     vec = [];
 
@@ -260,6 +263,7 @@ stepBtn.onclick = async () => {
         alert("There no compiled instruction");
         return;
     }
+    isStart = true;
     currentState.textContent = "Running Step";
     if (running == false) {
         running = true;

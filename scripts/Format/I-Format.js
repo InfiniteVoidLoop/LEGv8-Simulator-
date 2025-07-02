@@ -78,7 +78,7 @@ class IFormat {
         document.getElementById("mux3_0").style.color = "#007BFF";
         document.getElementById('mux-0').style.background = 'linear-gradient(to bottom, red 50%, #acb1b3 50%)';
         document.getElementById('mux-1').style.background = 'linear-gradient(to bottom,  #acb1b3 50%, red 50%)';
-        document.getElementById('mux-3').style.background = 'linear-gradient(to bottom, red 50%, #acb1b3 50%)';
+        document.getElementById('mux-3').style.background = 'linear-gradient(to bottom,  #acb1b3 50%, red 50%)';
         
         document.getElementById("register-handler").style.borderColor =
             "#007BFF";
