@@ -10,8 +10,8 @@ class Instruction {
         }
 
         this.bytecode = bytecode.slice(); // Assuming bytecode has a clone method.
-        this.definition = definition;
-
+        this.definition = definition[0];
+        this.lineNumber = definition[1];
         if (this.bytecode.length > 32) {
             console.error(
                 `WARNING: Bytecode provided to Instruction constructor has length ${

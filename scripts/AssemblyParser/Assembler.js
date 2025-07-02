@@ -93,7 +93,7 @@ class Assembler {
                     );
                 this.symbolTable.set(label, currentAddress);
             } else {
-                this.processedLines.push(processed);
+                this.processedLines.push([processed, lineNumber]);
                 currentAddress += 4;
             }
         }
@@ -107,7 +107,8 @@ class Assembler {
             count++;
             try {
                 const instr = InstructionFactory.createFromAssembly(
-                    line,
+                    line[0],
+                    line[1],
                     this.symbolTable,
                     addr
                 );

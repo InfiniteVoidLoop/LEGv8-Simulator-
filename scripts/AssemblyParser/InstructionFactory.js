@@ -53,7 +53,7 @@ class InstructionFactory {
      * @throws {Error} if the bytecode is null.
      * @throws {InvalidInstructionException} if the bytecode cannot be decoded or no definition is found.
      */
-    static createFromBytecode(bytecode) {
+    static createFromBytecode(bytecode, lineNumber) {
         if (!this.configLoader) {
             throw new Error("InstructionFactory not initialized.");
         }
@@ -141,9 +141,9 @@ class InstructionFactory {
                 `Could not decode instruction or find definition for bytecode: ${bitsStr}`
             );
         }
-
+        definition = [definition, lineNumber]
         try {
-            switch (definition.getFormat()) {
+            switch (definition[0].getFormat()) {
                 case "R":
                     return new RFormatInstruction(bytecode, definition);
                 case "I":
@@ -224,6 +224,7 @@ class InstructionFactory {
      */
     static createFromAssembly(
         assemblyLine,
+        lineNumber,
         symbolTable,
         currentInstructionAddress
     ) {
@@ -321,7 +322,7 @@ class InstructionFactory {
                     );
             }
 
-            return this.createFromBytecode(bytecode);
+            return this.createFromBytecode(bytecode, lineNumber);
         } catch (error) {
             if (error instanceof AssemblyException) {
                 throw new AssemblyException(

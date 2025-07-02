@@ -11,6 +11,7 @@ class IFormat {
             IFormatInstruction.definition.controlSignals.operation,
             4
         );
+        this.lineNumber = IFormatInstruction.lineNumber; // Line number for debugging
         this.controlSignals = getControlSignals(IFormatInstruction);
     }
 
@@ -71,7 +72,7 @@ class IFormat {
             run(data, pathId)
         );
         await Promise.all(allControlRuns);
-
+        controlUnitDisplay(this.controlSignals, 1);
         document.getElementById("mux0_0").style.color = "#007BFF";
         document.getElementById("mux1_1").style.color = "#007BFF";
         document.getElementById("mux3_0").style.color = "#007BFF";
@@ -225,6 +226,7 @@ class IFormat {
         document.getElementById("mux3_0").style.color = "black";
         document.getElementById("register-handler").style.borderColor = "black";
         document.getElementById("register-handler-write").style.color = "black";
+        controlUnitDisplay(this.controlSignals, 0);
     }
 
     async run() {

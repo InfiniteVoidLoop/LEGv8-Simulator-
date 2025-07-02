@@ -9,6 +9,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="styles/styles.css" />
+    <style>
+        .control-signal-value {
+            font-size: 21px;
+            color: #007BFF;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 6px rgba(255, 255, 255, 0.8), 0 0 6px rgba(255, 255, 255, 0.8), 0 0 6px rgba(255, 255, 255, 0.8), 0 0 6px rgba(255, 255, 255, 0.8);
+        }
+    </style>
     <script>
         tailwind.config = {
             theme: {
@@ -60,7 +69,7 @@
                 <div id="main-display"
                     class="relative clearfix flex-1 rounded-lg flex items-center justify-center text-gray-500"
                     style="width: 1500px; height: 974px; position: relative; transform-origin: center center; touch-action: none; user-select: none;">
-                    <svg id="svg" class="absolute w-full h-full border-gray-300">
+                    <svg id="svg" class="absolute w-full h-full border-gray-300" style="z-index: 10;">
                         <defs>
                             <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6"
                                 markerHeight="6" orient="auto-start-reverse" markerUnits="strokeWidth">
@@ -469,6 +478,18 @@
                             <span class="block" style="color: black" id="mux2_1">1</span>
                         </p>
                     </div>
+                    <!-- Control Signal Values -->
+                    <div id="control-uncond-branch-value" class="absolute top-[245px] left-[1327px] control-signal-value"></div>
+                    <div id="control-flag-branch-value" class="absolute top-[428px] left-[1120px] control-signal-value"></div>
+                    <div id="control-branch-value" class="absolute top-[428px] left-[1189px] control-signal-value"></div>
+                    <div id="control-mem-read-value" class="absolute top-[730px] left-[1235px] control-signal-value"></div>
+                    <div id="control-mem-reg-value" class="absolute top-[558px] left-[1426px] control-signal-value"></div>
+                    <div id="control-mem-write-value" class="absolute top-[535px] left-[1235px] control-signal-value"></div>
+                    <div id="control-flag-write-value" class="absolute top-[441px] left-[1018px] control-signal-value"></div>
+                    <div id="control-alu-src-value" class="absolute top-[588px] left-[920px] control-signal-value"></div>
+                    <div id="control-alu-op-value" class="absolute top-[900px] left-[936px] control-signal-value"></div>
+                    <div id="control-reg-write-value" class="absolute top-[470px] left-[691px] control-signal-value"></div>
+                    <div id="control-reg-2-loc" class="absolute top-[620px] left-[513px] control-signal-value"></div>
                 </div>
             </main>
 
@@ -503,14 +524,17 @@
                         </h3>
                         <div class="flex space-x-2">
                             <button
+                                id="loadAssemblyBtn"
                                 class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded text-xs font-medium transition-colors">
                                 Load
                             </button>
                             <button
+                                id="saveAssemblyBtn"
                                 class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded text-xs font-medium transition-colors">
                                 Save
                             </button>
                             <button
+                                id="clearAssemblyBtn"
                                 class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded text-xs font-medium transition-colors">
                                 Clear
                             </button>
@@ -648,7 +672,7 @@
     <script src="scripts/index.js"></script>
     <script src="scripts/RunningMechanism/async_running.js"></script>
     <script src="scripts/Utils/utils.js"></script>
-    <script src="scripts/Utils/drag-handler.js"></script>
+    <!-- <script src="scripts/Utils/drag-handler.js"></script> -->
     <script src="scripts/Utils/quickColorUpdater.js"></script>
 
     <script src="scripts/UnitsDesign/ADD_ALU_RESULT.js"></script>
@@ -681,8 +705,14 @@
     <script src="scripts/AssemblyParser/DFormatInstruction.js"></script>
     <script src="scripts/AssemblyParser/BFormatInstruction.js"></script>
     <script src="scripts/AssemblyParser/CBFormatInstruction.js"></script>
+    <script src="test_programs/test.js"></script>
     <script src="scripts/main.js"></script>
     <script src="scripts/footer.js"></script>
+
+    <!-- Text area functional-->
+    <script src="scripts/TextAreaFunction/clear.js"></script>
+    <script src="scripts/TextAreaFunction/save.js"></script>
+    <script src="scripts/TextAreaFunction/load.js"></script>
 </body>
 
 </html>

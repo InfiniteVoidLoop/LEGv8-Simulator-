@@ -14,6 +14,7 @@ class RFormat {
             RFormatInstruction.definition.controlSignals.operation,
             4
         );
+        this.lineNumber = RFormatInstruction.lineNumber;
         this.controlSignals = getControlSignals(RFormatInstruction);
     }
 
@@ -72,7 +73,11 @@ class RFormat {
         const allControlRuns = controlPathAndData.map(({ pathId, data }) =>
             run(data, pathId)
         );
+        
         await Promise.all(allControlRuns);
+
+        // Display control signals at their destination
+        controlUnitDisplay(this.controlSignals, 1);
         if (this.controlSignals.FlagWrite == "1") {
             document.getElementById("nzcv-container").style.borderColor = "#007BFF";
         }
@@ -239,6 +244,8 @@ class RFormat {
         document.getElementById("register-handler").style.borderColor = "black";
         document.getElementById("register-handler-write").style.color = "black";
         document.getElementById("nzcv-container").style.borderColor = "black";
+        controlUnitDisplay(this.controlSignals, 0);
+
     }
 
     async run() {

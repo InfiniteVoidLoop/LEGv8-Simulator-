@@ -13,6 +13,7 @@ class Load {
             DFormatInstruction.definition.controlSignals.operation,
             4
         ); // Placeholder for ALU control, will be set in execute method
+        this.lineNumber = DFormatInstruction.lineNumber; // Line number for debugging
         this.controlSignals = getControlSignals(DFormatInstruction);
     }
 
@@ -70,6 +71,7 @@ class Load {
             run(data, pathId)
         );
         await Promise.all(allControlRuns);
+        controlUnitDisplay(this.controlSignals, 1);
         // change document here
         document.getElementById("mux0_0").style.color = "#007BFF";
         document.getElementById("mux1_1").style.color = "#007BFF";
@@ -487,6 +489,7 @@ class Store {
 
         document.getElementById("memory-handler").style.borderColor = "black";
         document.getElementById("memory-handler-write").style.color = "black";
+        controlUnitDisplay(this.controlSignals, 0); // Reset control signals display
     }
     async run() {
         await this.instructionFetch();

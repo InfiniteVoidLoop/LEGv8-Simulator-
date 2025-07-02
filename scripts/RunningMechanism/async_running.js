@@ -64,6 +64,8 @@ async function run(text, pathId) {
     textElement.setAttribute("paint-order", "stroke");
     // Bo tròn các góc của đường viền
     textElement.setAttribute("stroke-linejoin", "round");
+    // z-index để đảm bảo chữ nằm trên đường viền
+    textElement.style.zIndex = "1000";
 
     const textPath = document.createElementNS(namespace, "textPath");
     textPath.setAttributeNS(
@@ -71,6 +73,7 @@ async function run(text, pathId) {
         "href",
         `#${pathId}`
     );
+    textPath.setAttribute("dominant-baseline", "middle");
     textPath.textContent = text;
     textPath.setAttribute("startOffset", `0%`);
     textElement.appendChild(textPath);
@@ -99,6 +102,14 @@ async function run(text, pathId) {
         textPath.setAttribute("startOffset", `${progress * 100}%`);
     }
 
+    // Wait for 2 seconds at the end of the path
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Remove the text element after the delay
+    if (textElement.parentNode) {
+        textElement.parentNode.removeChild(textElement);
+    }
+
     if (isStep) {
         await waitForGlobalResume();
     }
@@ -118,21 +129,23 @@ pauseBtn.onclick = () => {
 
         pauseBtn.innerHTML = '<i class="fas fa-pause mr-2"></i> Pause';
         pauseBtn.classList.remove("bg-green-600", "hover:bg-green-700");
-        pauseBtn.classList.add("bg-red-600", "hover:bg-red-700");
+        pauseBtn.classList.add("bg-danger-600", "hover:bg-danger-700");
     } else {
         currentState.textContent = "Paused";
         running = false;
         pauseBtn.innerHTML = '<i class="fas fa-play mr-2"></i> Continue';
-        pauseBtn.classList.remove("bg-red-600", "hover:bg-red-700");
+        pauseBtn.classList.remove("bg-danger-600", "hover:bg-danger-700");
         pauseBtn.classList.add("bg-green-600", "hover:bg-green-700");
     }
 };
 resetBtn.onclick = () => {
+    pauseBtn.innerHTML = 'Pause';
+    pauseBtn.classList.remove("bg-green-600", "hover:bg-green-700");
+    pauseBtn.classList.add("bg-danger-600", "hover:bg-danger-700");
     // reset pcvalue
     pcValue.textContent = "0x40000000";
     running = false;
     resumeCallbacks = [];
-
     configloader = new InstructionConfigLoader();
     configloader.loadConfig();
     InstructionFactory.initialize(configloader);
@@ -140,6 +153,7 @@ resetBtn.onclick = () => {
     ass = new Assembler(PC.getCurrentAddress());
     memory = new MemoryStorage();
     registers = new LEGv8Registers();
+    controlUnitDisplay(pcValue, 0);
     pstate.N = 0;
     pstate.C = 0;
     pstate.V = 0;
@@ -174,6 +188,14 @@ resetBtn.onclick = () => {
     // Xoá tất cả element co class la instruction-text đã thêm
     const instructionTexts = document.querySelectorAll(".instruction-text");
     instructionTexts.forEach((text) => text.remove());
+
+
+    // remove all markers from assemblyCode
+    const lines = assemblyCode.value.split("\n");
+    lines.forEach((line, index) => {
+        const lineNumber = index + 1; // Line numbers are 1-based
+        removeMarkers("assemblyCode", lineNumber);
+    })
     console.log("🔄 Reset");
 };
 

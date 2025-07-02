@@ -10,6 +10,7 @@ class BFormat {
             4
         ); // Placeholder for ALU control, will be set in execute method
         this.controlSignals = getControlSignals(BFormatInstruction);
+        this.lineNumber = BFormatInstruction.lineNumber; // Line number for debugging
     }
 
     async instructionFetch() {
@@ -70,7 +71,7 @@ class BFormat {
             run(data, pathId)
         );
         await Promise.all(allControlRuns);
-
+        controlUnitDisplay(this.controlSignals, 1); // Display control signals
         document.getElementById("mux0_1").style.color = "#007BFF";
         document.getElementById("mux1_0").style.color = "#007BFF";
         document.getElementById("mux3_0").style.color = "#007BFF";
@@ -203,6 +204,7 @@ class BFormat {
         document.getElementById("mux2_0").style.color = "black";
         document.getElementById("mux3_0").style.color = "black";
         document.getElementById("mux2_1").style.color = "black";
+        controlUnitDisplay(this.controlSignals, 0); // Reset control signals display
     }
     async run() {
         await this.instructionFetch();

@@ -152,3 +152,59 @@ function binaryToUnsignedDecimal(binaryString) {
     return decimal;
 }
 
+function controlUnitDisplay(obj, state){
+    //  controlSignalIds.forEach(id => {
+    //     if (element) {
+    //         element.textContent = state === 1 ? values[id] : "";
+            
+    //         // Apply styles when showing, remove when hiding
+    //         if (state === 1) {
+    //             element.style.fontSize = "21px";
+    //             element.style.color = "#007BFF";
+    //             element.style.fontWeight = "bold";
+    //             element.style.fontFamily = "'Courier New', monospace";
+    //             // Simulate stroke with text-shadow
+    //             element.style.textShadow = 
+    //                 "0 0 6px rgba(255, 255, 255, 0.8), 0 0 6px rgba(255, 255, 255, 0.8), " +
+    //                 "0 0 6px rgba(255, 255, 255, 0.8), 0 0 6px rgba(255, 255, 255, 0.8)";
+    //             element.classList.add("instruction-text");
+    //         } else {
+    //             // Reset styles
+    //             element.style.fontSize = "";
+    //             element.style.color = "";
+    //             element.style.fontWeight = "";
+    //             element.style.fontFamily = "";
+    //             element.style.textShadow = "";
+    //             element.classList.remove("instruction-text");
+    //         }
+    //     }
+    // });
+    
+
+    if (state == 1){
+        document.getElementById("control-uncond-branch-value").textContent = obj.UncondBranch;
+        document.getElementById("control-flag-branch-value").textContent = obj.FlagBranch;
+        document.getElementById("control-branch-value").textContent = obj.Branch;
+        document.getElementById("control-mem-read-value").textContent = obj.MemRead;
+        document.getElementById("control-mem-reg-value").textContent = obj.MemtoReg;
+        document.getElementById("control-mem-write-value").textContent = obj.MemWrite;
+        document.getElementById("control-flag-write-value").textContent = obj.FlagWrite;
+        document.getElementById("control-alu-src-value").textContent = obj.ALUSrc;
+        document.getElementById("control-alu-op-value").textContent = obj.ALUOp1 + obj.ALUOp0;
+        document.getElementById("control-reg-write-value").textContent = obj.RegWrite;
+        document.getElementById("control-reg-2-loc").textContent = obj.Reg2Loc;
+    }
+    else if (state == 0){
+        document.getElementById("control-uncond-branch-value").textContent = "";
+        document.getElementById("control-flag-branch-value").textContent = "";
+        document.getElementById("control-branch-value").textContent = "";
+        document.getElementById("control-mem-read-value").textContent = "";
+        document.getElementById("control-mem-reg-value").textContent = "";
+        document.getElementById("control-mem-write-value").textContent = "";
+        document.getElementById("control-flag-write-value").textContent = "";
+        document.getElementById("control-alu-src-value").textContent = "";
+        document.getElementById("control-alu-op-value").textContent = "";
+        document.getElementById("control-reg-write-value").textContent = "";
+        document.getElementById("control-reg-2-loc").textContent = "";
+    }
+}
