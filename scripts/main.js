@@ -18,7 +18,8 @@ const assemble = () => {
     const code = assemblyCode.value;
     const lines = code
         .split("\n")
-        .map((line) => line.trim()).filter((line) => line.length > 0);
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0);
     if (lines.length === 0) {
         alert("No valid assembly code found.");
         return;
@@ -38,52 +39,56 @@ const assemble = () => {
     jumpToAddress(PC, vec, PC.getCurrentAddress());
 
     controlUnitDisplay(PC, 0);
-    setTimeout(()=>{}, 700);
-    
+    setTimeout(() => {}, 700);
+
     // Remove all animated data divs at the end of compilation
-    document.querySelectorAll('.animated-data-div').forEach(el => el.remove());
-    
+    document
+        .querySelectorAll(".animated-data-div")
+        .forEach((el) => el.remove());
+
     alert("Compile success");
-    
+
     currentState.textContent = "Compile success";
 };
 
 const markLines = (textareaId, lineNumber) => {
     const textarea = document.getElementById(textareaId);
-    const lines = textarea.value.split('\n');
+    const lines = textarea.value.split("\n");
 
     if (lineNumber < 1 || lineNumber > lines.length) return;
 
     // Avoid adding marker multiple times
     if (!lines[lineNumber - 1].startsWith("🔴")) {
-        lines[lineNumber - 1] = "🔴" + ' ' + lines[lineNumber - 1];
+        lines[lineNumber - 1] = "🔴" + " " + lines[lineNumber - 1];
     }
 
-    textarea.value = lines.join('\n');
-}
+    textarea.value = lines.join("\n");
+};
 const removeMarkers = (textareaId, lineNumber) => {
     const textarea = document.getElementById(textareaId);
-    const lines = textarea.value.split('\n');
+    const lines = textarea.value.split("\n");
 
     if (lineNumber < 1 || lineNumber > lines.length) return;
 
     // Remove marker if it exists
-    const pattern = new RegExp('^' + "🔴".replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*');
-    lines[lineNumber - 1] = lines[lineNumber - 1].replace(pattern, '');
+    const pattern = new RegExp(
+        "^" + "🔴".replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*",
+    );
+    lines[lineNumber - 1] = lines[lineNumber - 1].replace(pattern, "");
 
-    textarea.value = lines.join('\n');
-}
+    textarea.value = lines.join("\n");
+};
 const resetInstruction = (vec, i) => {
     removeMarkers("assemblyCode", vec[i].lineNumber);
-    document.getElementById('mux-0').style.background = ' #acb1b3';
-    document.getElementById('mux-2').style.background = ' #acb1b3';
-    document.getElementById('mux-1').style.background = ' #acb1b3';
-    document.getElementById('mux-3').style.background = ' #acb1b3';
+    document.getElementById("mux-0").style.background = " #acb1b3";
+    document.getElementById("mux-2").style.background = " #acb1b3";
+    document.getElementById("mux-1").style.background = " #acb1b3";
+    document.getElementById("mux-3").style.background = " #acb1b3";
 
-    document.getElementById("flag-z").style.background =  '#acb1b3';
-    document.getElementById("flag-n").style.background =  '#acb1b3';
-    document.getElementById("flag-c").style.background =  '#acb1b3';
-    document.getElementById("flag-v").style.background =  '#acb1b3';
+    document.getElementById("flag-z").style.background = "#acb1b3";
+    document.getElementById("flag-n").style.background = "#acb1b3";
+    document.getElementById("flag-c").style.background = "#acb1b3";
+    document.getElementById("flag-v").style.background = "#acb1b3";
     restore_path.forEach((item) => {
         const pathElement = document.getElementById(item.pathId);
         if (pathElement) {
@@ -92,7 +97,7 @@ const resetInstruction = (vec, i) => {
         }
     });
     restore_path = [];
-}
+};
 
 startBtn.onclick = async () => {
     // If an execution is already in progress (started by either run or step)
@@ -144,6 +149,12 @@ startBtn.onclick = async () => {
         markLines("assemblyCode", vec[i].lineNumber);
         await vec[i].run();
         resetInstruction(vec, i);
+        remove_after_step.forEach((div) => {
+            if (div.parentNode) {
+                div.parentNode.removeChild(div);
+            }
+        });
+        remove_after_step = [];
         pcValue.textContent = `0x${PC.getCurrentAddress()
             .toString(16)
             .padStart(8, "0")

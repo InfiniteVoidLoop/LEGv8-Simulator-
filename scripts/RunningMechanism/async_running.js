@@ -12,7 +12,7 @@ const resetBtn = document.getElementById("resetBtn");
 const stepBtn = document.getElementById("stepBtn");
 const assemblyCode = document.getElementById("assemblyCode");
 const speedInput = document.querySelector(
-    'input[type="range"][min="1"][max="10"]'
+    'input[type="range"][min="1"][max="10"]',
 );
 let executionSpeed = speedInput ? parseInt(speedInput.value, 10) : 1;
 
@@ -50,7 +50,7 @@ function waitForGlobalStep() {
  * @param {string} pathId The ID of the SVG path to follow.
  */
 let remove_after_step = [];
-let restore_path= [];
+let restore_path = [];
 async function run(text, pathId) {
     const pathElement = document.getElementById(pathId);
     if (!pathElement) {
@@ -60,7 +60,7 @@ async function run(text, pathId) {
 
     const originalColor = pathElement.getAttribute("stroke");
     const originalStrokeWidth = pathElement.getAttribute("stroke-width");
-    restore_path.push({pathId, originalColor, originalStrokeWidth});
+    restore_path.push({ pathId, originalColor, originalStrokeWidth });
 
     // Change path color and width for animation
     // only change if the path id not start with "control-"
@@ -94,9 +94,7 @@ async function run(text, pathId) {
     } else {
         document.body.appendChild(divElement); // Fallback to body
     }
-    if (isStep) {
-        remove_after_step.push(divElement);
-    }
+    remove_after_step.push(divElement);
 
     const pathLength = pathElement.getTotalLength();
     let elapsedTime = 0;
@@ -140,7 +138,7 @@ async function run(text, pathId) {
         const xPos = point.x + svgRect.left - containerRect.left;
         const yPos = point.y + svgRect.top - containerRect.top;
 
-        // Update the div's position using top/left. 
+        // Update the div's position using top/left.
         // Using transform can be slightly faster, but top/left is more robust with complex layouts.
         // We also center the div on the point.
         const divRect = divElement.getBoundingClientRect();
@@ -150,7 +148,7 @@ async function run(text, pathId) {
 
     // Wait for 1 second at the end of the path before removing the div
     if (!isStep) {
-        await new Promise(resolve => setTimeout(resolve, 600));
+        await new Promise((resolve) => setTimeout(resolve, 600));
     }
     // Remove the div element after the effect is complete
     if (divElement.parentNode && !isStep) {
@@ -193,7 +191,7 @@ resetBtn.onclick = () => {
     for (let i = 0; i < vec.length; i++) {
         resetInstruction(vec, i);
     }
-    pauseBtn.innerHTML = 'Pause';
+    pauseBtn.innerHTML = "Pause";
     pauseBtn.classList.remove("bg-green-600", "hover:bg-green-700");
     pauseBtn.classList.add("bg-danger-600", "hover:bg-danger-700");
     // reset pcvalue
@@ -235,9 +233,8 @@ resetBtn.onclick = () => {
             .toString(16)
             .padStart(16, "0")
             .toUpperCase()}`; // Changed to padStart(16) for 64-bit
-        document.getElementById(
-            `register-${regName}`
-        ).innerHTML = `<span class="font-semibold text-blue-700">${NAME}</span><br><span class="font-mono">${value}</span>`;
+        document.getElementById(`register-${regName}`).innerHTML =
+            `<span class="font-semibold text-blue-700">${NAME}</span><br><span class="font-mono">${value}</span>`;
         document.getElementById(`register-${regName}`);
     }
     // Xoá tất cả element co class la instruction-text đã thêm
@@ -246,15 +243,14 @@ resetBtn.onclick = () => {
 
     // Also remove all animated divs
     const animatedDivs = document.querySelectorAll(".animated-data-div");
-    animatedDivs.forEach(div => div.remove());
-
+    animatedDivs.forEach((div) => div.remove());
 
     // remove all markers from assemblyCode
     const lines = assemblyCode.value.split("\n");
     lines.forEach((line, index) => {
         const lineNumber = index + 1; // Line numbers are 1-based
         removeMarkers("assemblyCode", lineNumber);
-    })
+    });
     console.log("🔄 Reset");
 };
 
@@ -282,6 +278,7 @@ stepBtn.onclick = async () => {
                     div.parentNode.removeChild(div);
                 }
             });
+            remove_after_step = [];
             pcValue.textContent = `0x${PC.getCurrentAddress()
                 .toString(16)
                 .padStart(8, "0")
