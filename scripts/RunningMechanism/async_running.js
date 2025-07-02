@@ -144,7 +144,8 @@ resetBtn.onclick = () => {
     pstate.C = 0;
     pstate.V = 0;
     pstate.Z = 0;
-    
+
+    isStep = false;
     quickColorReset();
     vec = [];
 

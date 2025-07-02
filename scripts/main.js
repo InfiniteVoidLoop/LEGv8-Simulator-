@@ -8,6 +8,7 @@ let registers = new LEGv8Registers();
 let isStart = false;
 vec = [];
 const assemble = () => {
+    isStart = false;
     currentState.textContent = "Compiling";
     resetBtn.click();
     const code = assemblyCode.value;
