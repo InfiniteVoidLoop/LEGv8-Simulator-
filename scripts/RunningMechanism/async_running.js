@@ -260,6 +260,9 @@ stepBtn.onclick = async () => {
         return;
     }
     isStart = true;
+    if (currentState.textContent == "Paused") {
+        pauseBtn.click();
+    }
     currentState.textContent = "Running Step";
     if (running == false) {
         running = true;

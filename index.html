@@ -1269,8 +1269,8 @@ SUBS XZR, X5, X5       // 5 - 5 = 0, Flags: N=0, Z=1
 
 // --- Logical Instructions ---
 // AND: Bitwise AND
-ADDI X6, XZR, #0b1101  // X6 = 13
-ADDI X7, XZR, #0b1011  // X7 = 11
+ADDI X6, XZR, #13 // X6 = 13
+ADDI X7, XZR, #11 // X7 = 11
 AND X8, X6, X7         // X8 = 13 & 11 = 9 (0b1001)
 
 // ORR: Bitwise OR

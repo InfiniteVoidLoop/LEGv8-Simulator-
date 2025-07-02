@@ -32,9 +32,9 @@ ctx.fillStyle = "#acb1b3"; // background color for this shape
 ctx.fill();
 ctx.font = "bold 17px Arial";
 ctx.fillStyle = "black";
-ctx.fillText("Add", initialPosX + 23, initialPosY + 78); // Adjust the position as needed
+ctx.fillText("ALU", initialPosX + 23, initialPosY + 78); // Adjust the position as needed
 ctx.font = "510 17px Arial";
-ctx.fillText("ALU", initialPosX + 63, initialPosY + 84);
+// ctx.fillText("ALU", initialPosX + 63, initialPosY + 84);
 ctx.fillText("result", initialPosX + 54, initialPosY + 99);
 ctx.fillText("Zero", initialPosX + 60, initialPosY + 54);
 
