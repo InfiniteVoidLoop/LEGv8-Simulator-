@@ -437,7 +437,7 @@
                         </p>
                     </div>
                     <!-- Mux 1 -->
-                    <div class="absolute top-[530px] left-[500px] mux">
+                    <div id="mux-0" class="absolute top-[530px] left-[500px] mux">
                         <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
                             <span class="block" style="color: black" id="mux0_0">0</span>
                             <span class="block" style="color: black">M</span>
@@ -447,7 +447,7 @@
                         </p>
                     </div>
                     <!-- Mux 2 -->
-                    <div class="absolute top-[610px] left-[900px] mux">
+                    <div id="mux-1" class="absolute top-[610px] left-[900px] mux">
                         <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
                             <span class="block" style="color: black" id="mux1_0">0</span>
                             <span class="block" style="color: black">M</span>
@@ -457,7 +457,7 @@
                         </p>
                     </div>
                     <!-- Mux 3 -->
-                    <div class="absolute top-[580px] left-[1400px] mux">
+                    <div id = "mux-3" class="absolute top-[580px] left-[1400px] mux">
                         <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
                             <span class="block" style="color: black" id="mux3_1">1</span>
                             <span class="block" style="color: black">M</span>
@@ -469,7 +469,7 @@
                         </p>
                     </div>
                     <!-- Mux 4 -->
-                    <div class="absolute top-[95px] left-[1400px] mux">
+                    <div id="mux-2" class="absolute top-[95px] left-[1400px] mux">
                         <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
                             <span class="block" style="color: black" id="mux2_0">0</span>
                             <span class="block" style="color: black">M</span>
@@ -494,7 +494,8 @@
             </main>
 
             <!-- Right Panel -->
-            <section id="right-panel" class="bg-panel p-4 overflow-y-auto custom-scrollbar border-l border-gray-200">
+            <section id="right-panel" class="relative bg-panel p-4 overflow-y-auto custom-scrollbar border-l border-gray-200">
+                <div id="right-panel-resize-handle" class="absolute top-0 left-0 w-2 h-full cursor-col-resize z-10"></div>
                 <div class="zoom-controls flex space-x-3 mb-3">
                     <div
                         class="flex-1 bg-teal-400 hover:bg-danger-600 text-white py-1 rounded font-medium transition-colors text-center">
@@ -672,6 +673,7 @@
     <script src="scripts/index.js"></script>
     <script src="scripts/RunningMechanism/async_running.js"></script>
     <script src="scripts/Utils/utils.js"></script>
+    <script src="scripts/Utils/right-panel-resize.js"></script>
     <script src="scripts/Utils/drag-handler.js"></script>
     <script src="scripts/Utils/quickColorUpdater.js"></script>
 

@@ -49,6 +49,8 @@ function waitForGlobalStep() {
  * @param {string} text The text content for the div.
  * @param {string} pathId The ID of the SVG path to follow.
  */
+let remove_after_step = [];
+let restore_path= [];
 async function run(text, pathId) {
     const pathElement = document.getElementById(pathId);
     if (!pathElement) {
@@ -60,8 +62,11 @@ async function run(text, pathId) {
     const originalStrokeWidth = pathElement.getAttribute("stroke-width");
 
     // Change path color and width for animation
-    pathElement.setAttribute("stroke", "#DC3545");
-    pathElement.setAttribute("stroke-width", "3");
+    // only change if the path id not start with "control-"
+    if (!pathId.startsWith("control-")) {
+        pathElement.setAttribute("stroke", "#DC3545");
+        pathElement.setAttribute("stroke-width", "3");
+    }
 
     // --- Create an HTML div element instead of SVG text ---
     const divElement = document.createElement("div");
@@ -141,16 +146,20 @@ async function run(text, pathId) {
 
     // Wait for 1 second at the end of the path before removing the div
     if (!isStep) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 700));
     }
     // Remove the div element after the effect is complete
     if (divElement.parentNode && !isStep) {
         divElement.parentNode.removeChild(divElement);
+    } else {
+        // store to a vec this action and remove it later
+        remove_after_step.push(divElement);
     }
 
     // Restore original path color and width
-    pathElement.setAttribute("stroke", originalColor);
-    pathElement.setAttribute("stroke-width", originalStrokeWidth);
+    restore_path.push({pathId, originalColor, originalStrokeWidth});
+    // pathElement.setAttribute("stroke", originalColor);
+    // pathElement.setAttribute("stroke-width", originalStrokeWidth);
 
     if (isStep) {
         await waitForGlobalResume();
@@ -181,6 +190,7 @@ pauseBtn.onclick = () => {
     }
 };
 resetBtn.onclick = () => {
+    
     pauseBtn.innerHTML = 'Pause';
     pauseBtn.classList.remove("bg-green-600", "hover:bg-green-700");
     pauseBtn.classList.add("bg-danger-600", "hover:bg-danger-700");
@@ -246,6 +256,10 @@ resetBtn.onclick = () => {
 };
 
 stepBtn.onclick = async () => {
+    if (vec.length == 0) {
+        alert("There no compiled instruction");
+        return;
+    }
     currentState.textContent = "Running Step";
     if (running == false) {
         running = true;
@@ -255,7 +269,15 @@ stepBtn.onclick = async () => {
                 .toString(16)
                 .padStart(8, "0")
                 .toUpperCase()}`;
+            markLines("assemblyCode", vec[i].lineNumber);
             await vec[i].run();
+            resetInstruction(vec, i);
+            // Remove the animated divs after each step
+            remove_after_step.forEach((div) => {
+                if (div.parentNode) {
+                    div.parentNode.removeChild(div);
+                }
+            });
             pcValue.textContent = `0x${PC.getCurrentAddress()
                 .toString(16)
                 .padStart(8, "0")

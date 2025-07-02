@@ -78,6 +78,9 @@ class CBFormat {
         document.getElementById("mux0_1").style.color = "#007BFF";
         document.getElementById("mux1_0").style.color = "#007BFF";
         document.getElementById("mux3_0").style.color = "#007BFF";
+        document.getElementById('mux-0').style.background = 'linear-gradient(to bottom, #acb1b3 50%, red 50%)';
+        document.getElementById('mux-1').style.background = 'linear-gradient(to bottom, red 50%, #acb1b3 50%)';
+        document.getElementById('mux-3').style.background = 'linear-gradient(to bottom, red 50%, #acb1b3 50%)';
 
         const muxToRegister = [
             { pathId: "mux-read-res-2", data: this.Rd }, // 20-16 bits
@@ -239,6 +242,11 @@ class CBFormat {
         await Promise.all(orRuns);
         console.log("CBZ/CBNZ condition check:", cbzEqualZero);
         document.getElementById(`mux2_${cbzEqualZero}`).style.color = "#007BFF";
+        if (cbzEqualZero) {
+            document.getElementById('mux-2').style.background = 'linear-gradient(to bottom, #acb1b3 50%, red 50%)';
+        } else {
+            document.getElementById('mux-2').style.background = 'linear-gradient(to bottom, red 50%, #acb1b3 50%)';
+        }
     }
 
     async registerWrite() {

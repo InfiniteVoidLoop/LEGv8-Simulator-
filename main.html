@@ -32,12 +32,27 @@
         <p class="text-gray-600 mt-2 text-sm">Trình mô phỏng kiến trúc LEGv8 giúp bạn học tập và mô phỏng dễ dàng</p>
       </div>
 
-      <div class="mt-6 text-left text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg p-4">
-        <p><strong class="text-blue-600">🔁 Nhánh:</strong> B, B.COND, CBZ, CBNZ</p>
-        <p><strong class="text-blue-600">➕ Số học:</strong> ADD, ADDI, SUB, SUBI, ADDS, SUBS</p>
-        <p><strong class="text-blue-600">🔣 Logic:</strong> AND, ORR</p>
-        <p><strong class="text-blue-600">📦 Bộ nhớ:</strong> LDUR, STUR</p>
-      </div>
+     <div class="mt-6 text-left text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg p-4">
+  <p><strong class="text-blue-600">🔁 Nhánh:</strong> B, B.COND, CBZ, CBNZ</p>
+  <pre class="bg-white p-2 mt-1 rounded text-gray-800 font-mono text-xs">   B LABEL         // Nhảy không điều kiện đến LABEL
+   B.EQ LABEL      // Nhảy nếu Zero flag = 1
+   CBZ X1, LABEL   // Nhảy nếu X1 == 0
+   CBNZ X2, LABEL  // Nhảy nếu X2 != 0</pre>
+
+  <p class="mt-3"><strong class="text-blue-600">➕ Số học:</strong> ADD, ADDI, SUB, SUBI, ADDS, SUBS</p>
+  <pre class="bg-white p-2 mt-1 rounded text-gray-800 font-mono text-xs">   ADD X1, X2, X3   // X1 = X2 + X3
+   ADDI X1, X2, #10 // X1 = X2 + 10
+   SUB X4, X5, X6   // X4 = X5 - X6
+   SUBI X7, X8, #4  // X7 = X8 - 4</pre>
+
+  <p class="mt-3"><strong class="text-blue-600">🔣 Logic:</strong> AND, ORR</p>
+  <pre class="bg-white p-2 mt-1 rounded text-gray-800 font-mono text-xs">   AND X1, X2, X3   // X1 = X2 AND X3
+   ORR X4, X5, X6   // X4 = X5 OR X6</pre>
+
+  <p class="mt-3"><strong class="text-blue-600">📦 Bộ nhớ:</strong> LDUR, STUR</p>
+  <pre class="bg-white p-2 mt-1 rounded text-gray-800 font-mono text-xs">   LDUR X1, [X2, #0]  // Tải từ địa chỉ X2 vào X1
+   STUR X3, [X4, #4]  // Lưu X3 vào địa chỉ X4 + 4</pre>
+</div>
 
       <button onclick="navigateToSimulator()" class="mt-6 w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all text-lg font-semibold shadow-md">
         Bắt đầu mô phỏng →

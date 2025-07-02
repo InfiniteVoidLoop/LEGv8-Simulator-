@@ -76,6 +76,10 @@ class IFormat {
         document.getElementById("mux0_0").style.color = "#007BFF";
         document.getElementById("mux1_1").style.color = "#007BFF";
         document.getElementById("mux3_0").style.color = "#007BFF";
+        document.getElementById('mux-0').style.background = 'linear-gradient(to bottom, red 50%, #acb1b3 50%)';
+        document.getElementById('mux-1').style.background = 'linear-gradient(to bottom,  #acb1b3 50%, red 50%)';
+        document.getElementById('mux-3').style.background = 'linear-gradient(to bottom, red 50%, #acb1b3 50%)';
+        
         document.getElementById("register-handler").style.borderColor =
             "#007BFF";
         document.getElementById("register-handler-write").style.color =
@@ -198,6 +202,7 @@ class IFormat {
         const orRuns = orToMux.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(orRuns);
         document.getElementById("mux2_0").style.color = "#007BFF";
+        document.getElementById('mux-2').style.background = 'linear-gradient(to bottom, red 50%, #acb1b3 50%)';
 
     }
     async registerWrite() {

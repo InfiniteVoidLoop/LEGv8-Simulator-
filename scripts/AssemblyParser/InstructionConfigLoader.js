@@ -418,10 +418,10 @@ class InstructionConfigLoader {
 // }
 
 // Export for use in other modules (Node.js style)
-if (typeof module !== "undefined" && module.exports) {
-    module.exports = {
-        InstructionConfigLoader,
-        InstructionDefinition,
-        ControlSignals,
-    };
-}
+// if (typeof module !== "undefined" && module.exports) {
+//     module.exports = {
+//         InstructionConfigLoader,
+//         InstructionDefinition,
+//         ControlSignals,
+//     };
+// }

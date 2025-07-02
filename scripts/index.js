@@ -123,8 +123,14 @@ function generateStack() {
 window.onload = function() {
     generateRegisters();
     generateStack();
-
+    zoomLevel = 0.8;
+    applyZoom();
     // Set default active tab
+    const el = document.querySelector('simulator-area');
+    const scrollHeight = el.scrollHeight;
+    const clientHeight = el.clientHeight;
+    el.scrollTop = (scrollHeight - clientHeight) / 2;
+
     document
         .getElementById("registers-tab")
         .classList.add("bg-gray-100");

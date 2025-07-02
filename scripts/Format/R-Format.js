@@ -84,7 +84,10 @@ class RFormat {
         document.getElementById("mux0_0").style.color = "#007BFF";
         document.getElementById("mux1_0").style.color = "#007BFF";
         document.getElementById("mux3_0").style.color = "#007BFF";
-
+        document.getElementById('mux-0').style.background = 'linear-gradient(to bottom, red 50%, #acb1b3 50%)';
+        document.getElementById('mux-1').style.background = 'linear-gradient(to bottom, red 50%, #acb1b3 50%)';
+        document.getElementById('mux-3').style.background = 'linear-gradient(to bottom, red 50%, #acb1b3 50%)';
+        
         document.getElementById("register-handler").style.borderColor = "#007BFF";
         document.getElementById("register-handler-write").style.color = "#007BFF";
 
@@ -185,14 +188,34 @@ class RFormat {
             pstate.Z = flags.Z - '0';
             pstate.C = flags.C - '0';
             pstate.V = flags.V - '0';
-            if (pstate.N == 1) document.getElementById("flag-n").style.color = "#007BFF";
-            else document.getElementById("flag-n").style.color = "black";
-            if (pstate.Z == 1) document.getElementById("flag-z").style.color = "#007BFF";
-            else document.getElementById("flag-z").style.color = "black";
-            if (pstate.C == 1) document.getElementById("flag-c").style.color = "#007BFF";
-            else document.getElementById("flag-c").style.color = "black";
-            if (pstate.V == 1) document.getElementById("flag-v").style.color = "#007BFF";
-            else document.getElementById("flag-v").style.color = "black";
+            if (pstate.N == 1) {
+                document.getElementById("flag-n").style.color = "#007BFF";
+                document.getElementById("flag-n").style.background =  'red';
+            }
+            else {
+                document.getElementById("flag-n").style.color = "black";
+            }
+
+            if (pstate.Z == 1) {
+                document.getElementById("flag-z").style.color = "#007BFF";
+                document.getElementById("flag-z").style.background =  'red';
+            } else {
+                document.getElementById("flag-z").style.color = "black";
+            }
+
+            if (pstate.C == 1) {
+                document.getElementById("flag-c").style.color = "#007BFF";
+                document.getElementById("flag-c").style.background =  'red';
+            } else {
+                document.getElementById("flag-c").style.color = "black";
+            }
+
+            if (pstate.V == 1) {
+                document.getElementById("flag-v").style.color = "#007BFF";
+                document.getElementById("flag-v").style.background =  'red';
+            } else {
+                document.getElementById("flag-v").style.color = "black";
+            }
         }
         
         const anotherPathAndData = [
@@ -211,7 +234,7 @@ class RFormat {
         const orRuns = orToMux.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(orRuns);
         document.getElementById("mux2_0").style.color = "#007BFF";
-
+        document.getElementById('mux-2').style.background = 'linear-gradient(to bottom, red 50%, #acb1b3 50%)';
     }
 
     async registerWrite() {

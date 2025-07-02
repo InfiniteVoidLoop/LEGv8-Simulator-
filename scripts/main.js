@@ -16,15 +16,6 @@ const assemble = () => {
     const lines = code
         .split("\n")
         .map((line) => line.trim())
-        .map((line) => {
-            // split the line from the first syntax comment '//', and get the first part
-            const commentIndex = line.indexOf("//");
-            if (commentIndex !== -1) {
-                return line.substring(0, commentIndex).trim();
-            }
-            return line;
-        })
-        .filter((line) => line.length > 0 && !line.startsWith("//"));
     if (lines.length === 0) {
         alert("No valid assembly code found.");
         return;
@@ -43,7 +34,7 @@ const assemble = () => {
     jumpToAddress(PC, vec, PC.getCurrentAddress());
 
     // Xoá tất cả element co class la instruction-text đã thêm
-    const instructionTexts = document.querySelectorAll(".instruction-text");
+    const instructionTexts = document.querySelectorAll(".animated-data-div");
     instructionTexts.forEach((text) => text.remove());
     controlUnitDisplay(PC, 0);
     alert("Compile success");
@@ -75,7 +66,26 @@ const removeMarkers = (textareaId, lineNumber) => {
 
     textarea.value = lines.join('\n');
 }
+const resetInstruction = (vec, i) => {
+    removeMarkers("assemblyCode", vec[i].lineNumber);
+    document.getElementById('mux-0').style.background = ' #acb1b3';
+    document.getElementById('mux-2').style.background = ' #acb1b3';
+    document.getElementById('mux-1').style.background = ' #acb1b3';
+    document.getElementById('mux-3').style.background = ' #acb1b3';
 
+    document.getElementById("flag-z").style.background =  '#acb1b3';
+    document.getElementById("flag-n").style.background =  '#acb1b3';
+    document.getElementById("flag-c").style.background =  '#acb1b3';
+    document.getElementById("flag-v").style.background =  '#acb1b3';
+    restore_path.forEach((item) => {
+        const pathElement = document.getElementById(item.pathId);
+        if (pathElement) {
+            pathElement.setAttribute("stroke", item.originalColor);
+            pathElement.setAttribute("stroke-width", item.originalStrokeWidth);
+        }
+    });
+    restore_path = [];
+}
 
 startBtn.onclick = async () => {
     // check if vec is empty then alert there are no compiled instruction
@@ -83,6 +93,12 @@ startBtn.onclick = async () => {
         alert("There no compiled instruction");
         return;
     }
+
+    remove_after_step.forEach((div) => {
+        if (div.parentNode) {
+            div.parentNode.removeChild(div);
+        }
+    });
     currentState.textContent = "Running";
     running = true;
     isStart = true;
@@ -96,7 +112,7 @@ startBtn.onclick = async () => {
         // mark text at line vec[i].lineNumber yellow from element textarea with id assemblyCode
         markLines("assemblyCode", vec[i].lineNumber);
         await vec[i].run();
-        removeMarkers("assemblyCode", vec[i].lineNumber);
+        resetInstruction(vec, i);
         pcValue.textContent = `0x${PC.getCurrentAddress()
             .toString(16)
             .padStart(8, "0")
@@ -105,7 +121,6 @@ startBtn.onclick = async () => {
     currentState.textContent = "Done Running";
     isStart = false;
     vec = [];
-    resetBtn.click();
 };
 
 const assembleButton = document.getElementById("assembleBtn");
