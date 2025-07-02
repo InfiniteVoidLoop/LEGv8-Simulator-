@@ -1,10 +1,10 @@
 const pcValue = document.getElementById("pcValue");
 const executionSpeedInput = document.getElementById("executionSpeed");
-const currentState = document.getElementById("currentState")
-const flagN = document.getElementById("flag-status-n")
-const flagZ = document.getElementById("flag-status-z")
-const flagV = document.getElementById("flag-status-v")
-const flagC = document.getElementById("flag-status-c")
+const currentState = document.getElementById("currentState");
+const flagN = document.getElementById("flag-status-n");
+const flagZ = document.getElementById("flag-status-z");
+const flagV = document.getElementById("flag-status-v");
+const flagC = document.getElementById("flag-status-c");
 // Zoom
 let zoomLevel = 1;
 const zoomStep = 0.1;
@@ -39,12 +39,8 @@ function switchTab(tabName) {
         document
             .getElementById("stack-tab")
             .classList.remove("active", "bg-gray-100");
-        document
-            .getElementById("registers-content")
-            .classList.remove("hidden");
-        document
-            .getElementById("stack-content")
-            .classList.add("hidden");
+        document.getElementById("registers-content").classList.remove("hidden");
+        document.getElementById("stack-content").classList.add("hidden");
     } else {
         document
             .getElementById("stack-tab")
@@ -52,12 +48,8 @@ function switchTab(tabName) {
         document
             .getElementById("registers-tab")
             .classList.remove("active", "bg-gray-100");
-        document
-            .getElementById("stack-content")
-            .classList.remove("hidden");
-        document
-            .getElementById("registers-content")
-            .classList.add("hidden");
+        document.getElementById("stack-content").classList.remove("hidden");
+        document.getElementById("registers-content").classList.add("hidden");
     }
 }
 
@@ -68,10 +60,10 @@ function generateRegisters() {
     const registerMap = {
         16: "IP0",
         17: "IP1",
-        28: "SP",  // Stack Pointer
-        29: "FP",  // Frame Pointer
-        30: "LR",  // Link Register
-        31: "XZR"  // Zero Register
+        28: "SP", // Stack Pointer
+        29: "FP", // Frame Pointer
+        30: "LR", // Link Register
+        31: "XZR", // Zero Register
     };
 
     for (let i = 0; i <= 31; i++) {
@@ -97,10 +89,10 @@ function generateStack() {
 
     // Add header row
     for (let i = 0; i < 1000; i++) {
-        const address = `0x${(i).toString(16).padStart(8, '0').toUpperCase()}`;
-        const value = `0x${Math.floor(Math.random() * 256)  // Random từ 0-255 (1 byte)
+        const address = `0x${i.toString(16).padStart(8, "0").toUpperCase()}`;
+        const value = `0x${Math.floor(Math.random() * 256) // Random từ 0-255 (1 byte)
             .toString(16)
-            .padStart(3, "0")  // Luôn hiển thị 2 ký tự hex
+            .padStart(1, "0") // Luôn hiển thị 2 ký tự hex
             .toUpperCase()}`;
 
         const addressElement = document.createElement("div");
@@ -120,15 +112,13 @@ function generateStack() {
 }
 
 // Initialize when page loads
-window.onload = function() {
+window.onload = function () {
     generateRegisters();
     generateStack();
     zoomLevel = 0.8;
     applyZoom();
     // Set default active tab
 
-    document
-        .getElementById("registers-tab")
-        .classList.add("bg-gray-100");
+    document.getElementById("registers-tab").classList.add("bg-gray-100");
     document.querySelector(".active").classList.add("bg-gray-100");
 };

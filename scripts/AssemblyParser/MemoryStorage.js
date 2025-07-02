@@ -14,7 +14,7 @@ class MemoryStorage {
         addr = typeof addr === "bigint" ? addr : BigInt(addr);
         if (addr < MemoryStorage.MIN_ADDRESS) {
             const msg = `Access below minimum address 0x${MemoryStorage.MIN_ADDRESS.toString(
-                16
+                16,
             )}`;
             console.error(msg, addr);
             throw new Error(msg);
@@ -64,7 +64,7 @@ class MemoryStorage {
         const bytes = this.readBytes(addr, 2);
         return new DataView(bytes.buffer).getUint16(
             0,
-            MemoryStorage.ENDIANNESS
+            MemoryStorage.ENDIANNESS,
         );
     }
     writeHalfWord(addr, value) {
@@ -72,7 +72,7 @@ class MemoryStorage {
         new DataView(buf).setUint16(
             0,
             value & 0xffff,
-            MemoryStorage.ENDIANNESS
+            MemoryStorage.ENDIANNESS,
         );
         this.writeBytes(addr, new Uint8Array(buf));
     }
@@ -81,7 +81,7 @@ class MemoryStorage {
         const bytes = this.readBytes(addr, 4);
         return new DataView(bytes.buffer).getUint32(
             0,
-            MemoryStorage.ENDIANNESS
+            MemoryStorage.ENDIANNESS,
         );
     }
     writeWord(addr, value) {
@@ -95,7 +95,7 @@ class MemoryStorage {
         return (
             new DataView(bytes.buffer).getBigUint64(
                 0,
-                MemoryStorage.ENDIANNESS
+                MemoryStorage.ENDIANNESS,
             ) & MemoryStorage.VALUE_MASK
         );
     }
@@ -104,7 +104,7 @@ class MemoryStorage {
         new DataView(buf).setBigUint64(
             0,
             BigInt(value) & MemoryStorage.VALUE_MASK,
-            MemoryStorage.ENDIANNESS
+            MemoryStorage.ENDIANNESS,
         );
         this.writeBytes(addr, new Uint8Array(buf));
     }
@@ -158,7 +158,7 @@ class MemoryStorage {
             lines.push(
                 `  0x${a.toString(16).padStart(8, "0")} : 0x${v
                     .toString(16)
-                    .padStart(16, "0")} (${v})`
+                    .padStart(16, "0")} (${v})`,
             );
         }
         console.log("INFO: Memory Contents\n" + lines.join("\n"));
@@ -166,7 +166,7 @@ class MemoryStorage {
 
     toString() {
         const entries = Array.from(this.memory.entries()).sort((a, b) =>
-            a[0] < b[0] ? -1 : 1
+            a[0] < b[0] ? -1 : 1,
         );
         if (!entries.length) return "Data Memory (Initialized Bytes): (Empty)";
         return entries
@@ -174,7 +174,7 @@ class MemoryStorage {
                 ([addr, b]) =>
                     `0x${addr.toString(16).padStart(8, "0")} : 0x${b
                         .toString(16)
-                        .padStart(2, "0")} (${b})`
+                        .padStart(1, "0")} (${b})`,
             )
             .join("\n");
     }
