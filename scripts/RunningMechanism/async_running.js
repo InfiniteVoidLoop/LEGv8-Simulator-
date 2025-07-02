@@ -44,41 +44,52 @@ function waitForGlobalStep() {
     });
 }
 
+/**
+ * Animates an HTML div along an SVG path.
+ * @param {string} text The text content for the div.
+ * @param {string} pathId The ID of the SVG path to follow.
+ */
 async function run(text, pathId) {
-    // add text to path
     const pathElement = document.getElementById(pathId);
+    if (!pathElement) {
+        console.error(`Path with ID "${pathId}" not found.`);
+        return;
+    }
 
-    const textElement = document.createElementNS(namespace, "text");
-    textElement.setAttribute("font-size", "21"); // Kích thước font
-    textElement.setAttribute("fill", "#black"); // Màu xanh dương cho chữ
-    textElement.setAttribute("font-weight", "bold"); // In đậm
-    textElement.setAttribute("class", "instruction-text");
-    textElement.setAttribute("font-family", "Courier New, monospace");
+    const originalColor = pathElement.getAttribute("stroke");
+    const originalStrokeWidth = pathElement.getAttribute("stroke-width");
 
-    // --- Hiệu ứng "khuôn bao" ---
-    // Vẽ một đường viền dày màu trắng mờ xung quanh text
-    textElement.setAttribute("stroke", "rgba(255, 255, 255, 0.8)");
-    // Độ dày của đường viền
-    textElement.setAttribute("stroke-width", "6");
-    // Đảm bảo đường viền được vẽ phía sau, không che chữ
-    textElement.setAttribute("paint-order", "stroke");
-    // Bo tròn các góc của đường viền
-    textElement.setAttribute("stroke-linejoin", "round");
-    // z-index để đảm bảo chữ nằm trên đường viền
-    textElement.style.zIndex = "1000";
+    // Change path color and width for animation
+    pathElement.setAttribute("stroke", "#DC3545");
+    pathElement.setAttribute("stroke-width", "3");
 
-    const textPath = document.createElementNS(namespace, "textPath");
-    textPath.setAttributeNS(
-        "http://www.w3.org/1999/xlink",
-        "href",
-        `#${pathId}`
-    );
-    textPath.setAttribute("dominant-baseline", "middle");
-    textPath.textContent = text;
-    textPath.setAttribute("startOffset", `0%`);
-    textElement.appendChild(textPath);
-    pathElement.parentNode.appendChild(textElement);
+    // --- Create an HTML div element instead of SVG text ---
+    const divElement = document.createElement("div");
+    divElement.textContent = text;
+    divElement.classList.add("animated-data-div"); // Add class for easy cleanup
 
+    // --- Apply CSS styles for a better look ---
+    divElement.style.position = "absolute"; // Crucial for positioning
+    divElement.style.backgroundColor = "rgba(0, 123, 255, 0.9)"; // Blue background
+    divElement.style.color = "white";
+    divElement.style.fontWeight = "bold";
+    divElement.style.fontFamily = "'Courier New', monospace";
+    divElement.style.padding = "2px 8px";
+    divElement.style.borderRadius = "5px";
+    divElement.style.boxShadow = "0 2px 5px rgba(0,0,0,0.3)";
+    divElement.style.zIndex = "9999"; // Ensure it's on top of everything
+    divElement.style.whiteSpace = "nowrap"; // Prevent text from wrapping
+    divElement.style.pointerEvents = "none"; // Prevent div from blocking mouse events
+
+    // The div must be a child of a positioned container (e.g., main-display)
+    const container = document.getElementById("main-display");
+    if (container) {
+        container.appendChild(divElement);
+    } else {
+        document.body.appendChild(divElement); // Fallback to body
+    }
+
+    const pathLength = pathElement.getTotalLength();
     let elapsedTime = 0;
     let lastStartTime = null;
 
@@ -98,23 +109,54 @@ async function run(text, pathId) {
         elapsedTime += delta;
         lastStartTime = now;
 
+        // Calculate linear progress (no acceleration)
         const progress = Math.min(elapsedTime / duration, 1);
-        textPath.setAttribute("startOffset", `${progress * 100}%`);
+
+        const currentLength = progress * pathLength;
+
+        // Get the (x, y) coordinates at the current position on the path
+        const point = pathElement.getPointAtLength(currentLength);
+
+        // --- Coordinate Transformation ---
+        // Get the SVG's position relative to the viewport
+        const svgRect = pathElement.ownerSVGElement.getBoundingClientRect();
+        // Get the container's position relative to the viewport
+        const containerRect = container.getBoundingClientRect();
+
+        // Calculate the correct position for the div
+        // 1. Start with the point in SVG coordinates (point.x, point.y)
+        // 2. Add the SVG's top-left corner position (svgRect.left, svgRect.top)
+        // 3. Subtract the container's top-left corner position (containerRect.left, containerRect.top)
+        // This gives the position of the point relative to the container.
+        const xPos = point.x + svgRect.left - containerRect.left;
+        const yPos = point.y + svgRect.top - containerRect.top;
+
+        // Update the div's position using top/left. 
+        // Using transform can be slightly faster, but top/left is more robust with complex layouts.
+        // We also center the div on the point.
+        const divRect = divElement.getBoundingClientRect();
+        divElement.style.left = `${xPos - divRect.width / 2}px`;
+        divElement.style.top = `${yPos - divRect.height / 2}px`;
     }
 
-    // Wait for 2 seconds at the end of the path
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    // Remove the text element after the delay
-    if (textElement.parentNode) {
-        textElement.parentNode.removeChild(textElement);
+    // Wait for 1 second at the end of the path before removing the div
+    if (!isStep) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
     }
+    // Remove the div element after the effect is complete
+    if (divElement.parentNode && !isStep) {
+        divElement.parentNode.removeChild(divElement);
+    }
+
+    // Restore original path color and width
+    pathElement.setAttribute("stroke", originalColor);
+    pathElement.setAttribute("stroke-width", originalStrokeWidth);
 
     if (isStep) {
         await waitForGlobalResume();
     }
 
-    console.log(`✅ run() hoàn tất trên path ${pathId}`);
+    console.log(`✅ DIV animation completed on path ${pathId}`);
 }
 
 pauseBtn.onclick = () => {
@@ -188,6 +230,10 @@ resetBtn.onclick = () => {
     // Xoá tất cả element co class la instruction-text đã thêm
     const instructionTexts = document.querySelectorAll(".instruction-text");
     instructionTexts.forEach((text) => text.remove());
+
+    // Also remove all animated divs
+    const animatedDivs = document.querySelectorAll(".animated-data-div");
+    animatedDivs.forEach(div => div.remove());
 
 
     // remove all markers from assemblyCode

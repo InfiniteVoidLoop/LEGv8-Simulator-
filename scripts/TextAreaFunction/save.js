@@ -9,7 +9,7 @@ function saveAssemblyCode() {
         // Create a temporary link element to trigger the download
         const link = document.createElement("a");
         link.href = url;
-        link.download = "assembly_code.as"; // Set the desired file name
+        link.download = "assembly_code.asm"; // Set the desired file name
         document.body.appendChild(link);
         link.click(); // Programmatically click the link to trigger the download
         document.body.removeChild(link); // Remove the link after downloading

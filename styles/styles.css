@@ -352,9 +352,9 @@ body {
 }
 
 .intersection-node {
-    fill: #007bff; /* Màu đen cho chấm tròn */
+    fill: black; /* Màu đen cho chấm tròn */
     r: 4; /* Bán kính của chấm tròn (điều chỉnh cho phù hợp) */
-    stroke: #007bff; /* Viền trắng nhẹ để nổi bật trên nền đậm */
+    stroke: black; /* Viền trắng nhẹ để nổi bật trên nền đậm */
     stroke-width: 0.5; /* Độ dày viền */
 }
 
