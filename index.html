@@ -1,370 +1,886 @@
 <!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Computer Architecture Simulator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="styles/styles.css" />
-    <style>
-        .control-signal-value {
-            font-size: 21px;
-            color: #007BFF;
-            font-weight: bold;
-            font-family: 'Courier New', monospace;
-            text-shadow: 0 0 6px rgba(255, 255, 255, 0.8), 0 0 6px rgba(255, 255, 255, 0.8), 0 0 6px rgba(255, 255, 255, 0.8), 0 0 6px rgba(255, 255, 255, 0.8);
-        }
-    </style>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#2563eb",
-                        sidebar: "#1e293b",
-                        panel: "#f8fafc",
-                        success: "#10b981",
-                        warning: "#f59e0b",
-                        danger: "#ef4444",
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Computer Architecture Simulator</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+        <link rel="stylesheet" href="styles/styles.css" />
+        <style>
+            .control-signal-value {
+                font-size: 21px;
+                color: #007bff;
+                font-weight: bold;
+                font-family: "Courier New", monospace;
+                text-shadow:
+                    0 0 6px rgba(255, 255, 255, 0.8),
+                    0 0 6px rgba(255, 255, 255, 0.8),
+                    0 0 6px rgba(255, 255, 255, 0.8),
+                    0 0 6px rgba(255, 255, 255, 0.8);
+            }
+        </style>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: "#2563eb",
+                            sidebar: "#1e293b",
+                            panel: "#f8fafc",
+                            success: "#10b981",
+                            warning: "#f59e0b",
+                            danger: "#ef4444",
+                        },
                     },
                 },
-            },
-        };
-    </script>
-</head>
+            };
+        </script>
+    </head>
 
-<body class="bg-gray-50">
-    <div class="h-screen w-screen flex flex-col overflow-hidden">
-        <!-- Main Grid Container -->
-        <div class="main-grid grid grid-cols-[0px,1fr,320px] grid-rows-[60px,1fr,160px] h-full w-full overflow-hidden">
-            <!-- Header -->
-            <header id="header" class="bg-primary text-white px-4 py-2 flex justify-between items-center">
-                <div class="flex items-center space-x-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    <h1 class="text-xl font-bold">
-                        Computer Architecture Simulator
-                    </h1>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm bg-primary-600 px-2 py-1 rounded">v2.1.5</span>
-                    <button class="bg-primary-600 hover:bg-primary-700 p-2 rounded-full transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd"
-                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
-                                clip-rule="evenodd" />
+    <body class="bg-gray-50">
+        <div class="h-screen w-screen flex flex-col overflow-hidden">
+            <!-- Main Grid Container -->
+            <div
+                class="main-grid grid grid-cols-[0px,1fr,320px] grid-rows-[60px,1fr,160px] h-full w-full overflow-hidden"
+            >
+                <!-- Header -->
+                <header
+                    id="header"
+                    class="bg-primary text-white px-4 py-2 flex justify-between items-center"
+                >
+                    <div class="flex items-center space-x-3">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-7 w-7"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
+                                clip-rule="evenodd"
+                            />
                         </svg>
-                    </button>
-                </div>
-            </header>
-
-            <!-- Simulator Area -->
-            <main id="simulator-area" class="bg-gray-100 overflow-auto p-4 custom-scrollbar">
-                <div id="main-display"
-                    class="relative clearfix flex-1 rounded-lg flex items-center justify-center text-gray-500"
-                    style="width: 1500px; height: 974px; position: relative; transform-origin: center center; touch-action: none; user-select: none;">
-                    <svg id="svg" class="absolute w-full h-full border-gray-300">
-                        <defs>
-                            <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6"
-                                markerHeight="6" orient="auto-start-reverse" markerUnits="strokeWidth">
-                                <path d="M 0 0 L 10 5 L 0 10 z" fill="black"></path>
-                            </marker>
-                        </defs>
-                        <path id="pc-ins-mem" stroke="black" stroke-width="2" fill="none" d="M 140,550 L 200,550"
-                            marker-end="url(#arrowhead)"></path>
-                        <path id="pc-add-4" stroke="black" stroke-width="2" fill="none"
-                            d="M 140,550 L 170,550 L 170,85 L 260,85" marker-end="url(#arrowhead)"></path>
-                        <path id="pc-alu" stroke="black" stroke-width="2" fill="none"
-                            d="M 140,550 L 170,550 L 170,170 L 1108,170" marker-end="url(#arrowhead)"></path>
-                        <path id="shift-add-alu" stroke="black" stroke-width="2" fill="none" d="M 950,223 L 1110,223"
-                            marker-end="url(#arrowhead)"></path>
-                        <path id="read-1-alu" stroke="black" stroke-width="2" fill="none" d="M 768,534 L 959,534"
-                            marker-end="url(#arrowhead)"></path>
-                        <path id="mux-alu" stroke="black" stroke-width="2" fill="none" d="M 927,637 L 959,637"
-                            marker-end="url(#arrowhead)"></path>
-                        <path id="Instruction-[31-21]" stroke="black" stroke-width="2" fill="none"
-                            d="M 320,630 L 360,630 L 360, 360 L 500, 360" marker-end="url(#arrowhead)"></path>
-
-                        <text transform="translate(0, -8)">
-                            <textPath href="#Instruction-[31-21]" startOffset="70%" text-anchor="left"
-                                font-weight="bold" font-family="sans-serif" font-size="13" fill="black">
-                                Instruction [31-21]
-                            </textPath>
-                        </text>
-
-                        <path id="Instruction-[9-5]" stroke="black" stroke-width="2" fill="none"
-                            d="M 320,630 L 360,630 L 360, 520 L 600, 520" marker-end="url(#arrowhead)"></path>
-
-                        <text transform="translate(0, -8)">
-                            <textPath href="#Instruction-[9-5]" startOffset="60%" text-anchor="left" font-weight="bold"
-                                font-family="sans-serif" font-size="13" fill="black">
-                                Instruction [9-5]
-                            </textPath>
-                        </text>
-                        <path id="Instruction-[20-16]" stroke="black" stroke-width="2" fill="none"
-                            d="M 320,630 L 360,630 L 360, 545 L 500, 545" marker-end="url(#arrowhead)"></path>
-                        <text transform="translate(0, 15)">
-                            <textPath href="#Instruction-[20-16]" startOffset="52%" text-anchor="left"
-                                font-weight="bold" font-family="sans-serif" font-size="13" fill="black">
-                                Instruction [20-16]
-                            </textPath>
-                        </text>
-
-                        <path id="Instruction-[31-0]" stroke="black" stroke-width="2" fill="none"
-                            d="M 320,630 L 360,630 L 360, 850 L 650, 850" marker-end="url(#arrowhead)"></path>
-
-                        <text transform="translate(0, -8)">
-                            <textPath href="#Instruction-[31-0]" startOffset="60%" text-anchor="left" font-weight="bold"
-                                font-family="sans-serif" font-size="13" fill="black">
-                                Instruction [31-0]
-                            </textPath>
-                        </text>
-
-                        <path id="Instruction-[31-21]-1" stroke="black" stroke-width="2" fill="none"
-                            d="M 320,630 L 360,630 L 360, 850 L 563 850 L 563 918 L 839 918 L 839 857 L 901 857 "
-                            marker-end="url(#arrowhead)"></path>
-                        <path id="Instruction-[4-0]" stroke="black" stroke-width="2" fill="none"
-                            d="M 320,630 L 360,630 L 360, 655 L 600, 655" marker-end="url(#arrowhead)"></path>
-
-                        <text transform="translate(0, -8)">
-                            <textPath href="#Instruction-[31-21]-1" startOffset="72%" text-anchor="left"
-                                font-weight="bold" font-family="sans-serif" font-size="13" fill="black">
-                                Instruction [31-21]
-                            </textPath>
-                        </text>
-                        <text transform="translate(0, -8)">
-                            <textPath href="#Instruction-[4-0]" startOffset="30%" text-anchor="left" font-weight="bold"
-                                font-family="sans-serif" font-size="13" fill="black">
-                                Instruction [4-0]
-                            </textPath>
-                        </text>
-                        <circle cx="170" cy="170" class="intersection-node"></circle>
-                        <circle cx="170" cy="549" class="intersection-node"></circle>
-                        <circle cx="360" cy="630" class="intersection-node"></circle>
-                        <circle cx="360" cy="520" class="intersection-node"></circle>
-                        <circle cx="360" cy="546" class="intersection-node"></circle>
-                        <circle cx="455" cy="655" class="intersection-node"></circle>
-                        <circle cx="563" cy="850" class="intersection-node"></circle>
-                        <circle cx="797" cy="630" class="intersection-node"></circle>
-                        <circle cx="822" cy="685" class="intersection-node"></circle>
-                        <circle cx="1095" cy="595" class="intersection-node"></circle>
-
-                        <path id="Instruction-[4-0]-1" stroke="black" stroke-width="2" fill="none"
-                            d="M 320,630 L 360,630 L 360, 655 L 455, 655 L 455,610 L 502,610"
-                            marker-end="url(#arrowhead)"></path>
-                        <path id="Sign-extend-shift" stroke="black" stroke-width="2" fill="none"
-                            d="M 716,831 L 822,831 L 822,223 L 901,223" marker-end="url(#arrowhead)"></path>
-                        <path id="Sign-extend-mux" stroke="black" stroke-width="2" fill="none"
-                            d="M 716,831 L 822,831 L 822,686 L 901,686" marker-end="url(#arrowhead)"></path>
-                        <path id="mux-read-res-2" stroke="black" stroke-width="2" fill="none" d="M 530, 590 L 600,590"
-                            marker-end="url(#arrowhead)"></path>
-                        <path id="4-ALU" stroke="black" stroke-width="2" fill="none" d="M 227 140 L 258 140"
-                            marker-end="url(#arrowhead)"></path>
-                        <path id="read-data-2-mux" stroke="black" stroke-width="2" fill="none"
-                            d="M 769 630 L 900 630 " marker-end="url(#arrowhead)"></path>
-                        <path id="read-data-2-write-data" stroke="black" stroke-width="2" fill="none"
-                            d="M 797 629 L 797 705 L 1150 705" marker-end="url(#arrowhead)"></path>
-                        <path id="ALU-add-mux" stroke="black" stroke-width="2" fill="none" d="M 1150 180 L 1402 180"
-                            marker-end="url(#arrowhead)"></path>
-                        <path id="or-gate-mux" stroke="black" stroke-width="2" fill="none"
-                            d="M 1370 293 L 1413 293 L 1413 184 "></path>
-                        <path id="ALU-control-ALU" stroke="black" stroke-width="2" fill="none"
-                            d="M 969.015625 847.0546875 L 1029.015625 847.0546875 L 1029.015625 622.0546875 "
-                            marker-end="url(#arrowhead)"></path>
-                        <path id="ALU-address" stroke="black" stroke-width="2" fill="none" d="M 1067 595 L 1149 595 "
-                            marker-end="url(#arrowhead)"></path>
-                        <path id="ALU-and-gate" stroke="black" stroke-width="2" fill="none"
-                            d="M 1067 559 L 1160 559 L 1160 480 L 1180 480 "></path>
-                        <path id="ALU-mux" stroke="black" stroke-width="2" fill="none"
-                            d="M 1067 595 L 1095 595 L 1095 809 L 1352 809 L 1352 664 L 1400 664 "
-                            marker-end="url(#arrowhead)"></path>
-                        <path id="add-2-or-gate" stroke="black" stroke-width="2" fill="none"
-                            d="M 1142 472 L 1152 472 L 1152 293 L 1325 293 "></path>
-                        <path id="and-gate-or-gate" stroke="black" stroke-width="2" fill="none"
-                            d="M 1213 471 L 1250 471 L 1250 320 L 1317 320 "></path>
-                        <path id="alu-add-4-mux" stroke="black" stroke-width="2" fill="none" d="M 300 105 L 1402 105"
-                            marker-end="url(#arrowhead)"></path>
-                        <path id="ALU-back-PC" stroke="black" stroke-width="2" fill="none"
-                            d="M 1429 140 L 1460 140 L 1460 20 L 50 20 L 50 548 L 100 548" marker-end="url(#arrowhead)">
-                        </path>
-                        <path id="alu-to-nzcv" stroke="black" stroke-width="2" fill="none" d="M 1000 523 L 1000 489"
-                            marker-end="url(#arrowhead)"></path>
-                        <path id="read-data-mux" stroke="black" stroke-width="2" fill="none"
-                            d="M 1268 594 L 1401 594 " marker-end="url(#arrowhead)"></path>
-                        <path id="mux-write-data" stroke="black" stroke-width="2" fill="none"
-                            d="M 1429 626 L 1451 626 L 1451 936 L 618 936 L 618 760 " marker-end="url(#arrowhead)">
-                        </path>
-                        <path id="control-reg-write" stroke="#007BFF" stroke-width="4" fill="none"
-                            d="M 550 476 L 680 476 L 680 490   "></path>
-                        <path id="control-ALU-src" stroke="#007BFF" stroke-width="4" fill="none"
-                            d="M 569 430 L 915 430 L 915 610 "></path>
-                        <path id="control-ALU-op" stroke="#007BFF" stroke-width="4" fill="none"
-                            d="M 550 453 L 858 453 L 858 925 L 929 925 L 929 900 "></path>
-                        <path id="control-mem-write" stroke="#007BFF" stroke-width="4" fill="none"
-                            d="M 576 385 L 1225 385 L 1225 565"></path>
-                        <path id="control-flag-write" stroke="#007BFF" stroke-width="4" fill="none"
-                            d="M 574 408 L 1000 408 L 1000 465"></path>
-                        <path id="control-mem-reg" stroke="#007BFF" stroke-width="4" fill="none"
-                            d="M 578 360 L 1415 360 L 1415 493 L 1415 580 "></path>
-                        <path id="control-mem-read" stroke="#007BFF" stroke-width="4" fill="none"
-                            d="M 576 338 L 1470 338 L 1470 784 L 1222 784 L 1222 720 "></path>
-                        <path id="control-branch" stroke="#007BFF" stroke-width="4" fill="none"
-                            d="M 570 315 L 1166 315 L 1166 460 L 1180 460"></path>
-                        <path id="control-uncond-branch" stroke="#007BFF" stroke-width="4" fill="none"
-                            d="M 559 273 L 1320 273 "></path>
-                        <path id="nzcv-and-gate" stroke="#007BFF" stroke-width="2" fill="none"
-                            d="M 1049 483 L 1110 483 "></path>
-                        <path id="control-flag-branch" stroke="#007BFF" stroke-width="4" fill="none"
-                            d="M 565 295 L 1093 295 L 1093 462 L 1108 462 "></path>
-                        <path id="control-reg-loc" stroke="#007BFF" stroke-width="4" fill="none"
-                            d="M 546 261 L 583 261 L 583 221 L 411 221 L 411 686 L 508 686 L 508 618 "></path>
-                        <!-- Path from ALU to NZCV -->
-                        <path id="linePath0" stroke="#007BFF" stroke-width="2" fill="none" />
-                        <text transform="translate(0, -8)">
-                            <textPath href="#control-flag-branch" startOffset="5.8%" text-anchor="left"
-                                font-weight="bold" font-family="Consolas, monospace" font-size="14" fill="#007BFF">
-                                FlagBranch
-                            </textPath>
-                        </text>
-                        <text transform="translate(0, -8)">
-                            <textPath href="#control-flag-write" startOffset="5.8%" text-anchor="left"
-                                font-weight="bold" font-family="Consolas, monospace" font-size="14" fill="#007BFF">
-                                FlagWrite
-                            </textPath>
-                        </text>
-                        <text transform="translate(0, -8)">
-                            <textPath href="#control-uncond-branch" startOffset="5%" text-anchor="left"
-                                font-weight="bold" font-family="Consolas, monospace" font-size="14" fill="#007BFF">
-                                UncondBranch
-                            </textPath>
-                        </text>
-                        <text transform="translate(16, -9) rotate(180, 520, 222)">
-                            <textPath href="#control-reg-loc" startOffset="15%" text-anchor="left" font-weight="bold"
-                                font-family="Consolas, monospace" font-size="14" fill="#007BFF">
-                                Reg2Loc
-                            </textPath>
-                        </text>
-                        <text transform="translate(0, -8)">
-                            <textPath href="#control-branch" startOffset="5%" text-anchor="left" font-weight="bold"
-                                font-family="Consolas, monospace" font-size="14" fill="#007BFF">
-                                ZeroBranch
-                            </textPath>
-                        </text>
-                        <text transform="translate(0, -8)">
-                            <textPath href="#control-mem-read" startOffset="2%" text-anchor="left" font-weight="bold"
-                                font-family="Consolas, monospace" font-size="14" fill="#007BFF">
-                                MemRead
-                            </textPath>
-                        </text>
-                        <text transform="translate(0, -8)">
-                            <textPath href="#control-reg-write" startOffset="34%" text-anchor="left" font-weight="bold"
-                                font-family="Consolas, monospace" font-size="14" fill="#007BFF">
-                                RegWrite
-                            </textPath>
-                        </text>
-                        <text transform="translate(0, -8)">
-                            <textPath href="#control-ALU-src" startOffset="6.3%" text-anchor="left" font-weight="bold"
-                                font-family="Consolas, monospace" font-size="14" fill="#007BFF">
-                                ALUSrc
-                            </textPath>
-                        </text>
-                        <text transform="translate(0, -8)">
-                            <textPath href="#control-mem-write" startOffset="3.8%" text-anchor="left" font-weight="bold"
-                                font-family="Consolas, monospace" font-size="14" fill="#007BFF">
-                                MemWrite
-                            </textPath>
-                        </text>
-                        <text transform="translate(0, -8)">
-                            <textPath href="#control-ALU-op" startOffset="5.8%" text-anchor="left" font-weight="bold"
-                                font-family="Consolas, monospace" font-size="14" fill="#007BFF">
-                                ALUOp
-                            </textPath>
-                        </text>
-                        <text transform="translate(0, -8)">
-                            <textPath href="#control-mem-reg" startOffset="2.5%" text-anchor="left" font-weight="bold"
-                                font-family="Consolas, monospace" font-size="14" fill="#007BFF">
-                                MemToReg
-                            </textPath>
-                        </text>
-                    </svg>
-                    <!-- ADD ALU RESULT -->
-                    <canvas id="ADD-ALU-RESULT" width="120" height="160"
-                        class="absolute top-[135px] left-[1100px]"></canvas>
-                    <!-- ADD ALU RESULT 1 -->
-                    <canvas id="ADD-ALU-RESULT-1" width="120" height="160"
-                        class="absolute top-[500px] left-[950px]"></canvas>
-                    <!-- OR COMPONENT -->
-                    <canvas id="OR-GATE" width="90" height="80" class="absolute top-[250px] left-[1300px]"></canvas>
-                    <!-- AND COMPONENT -->
-                    <canvas id="AND-GATE" width="60" height="70" class="absolute top-[445px] left-[1100px]"></canvas>
-                    <!-- AND COMPONENT 2 -->
-                    <canvas id="AND-GATE-2" width="60" height="70" class="absolute top-[445px] left-[1170px]"></canvas>
-                    <!-- NZCV Component -->
-                    <div class="absolute top-[465px] left-[950px] nzcv-container" id="nzcv-container">
-                        <div class="nzcv-cell" id="flag-n">N</div>
-                        <div class="nzcv-cell" id="flag-z">Z</div>
-                        <div class="nzcv-cell" id="flag-c">C</div>
-                        <div class="nzcv-cell" id="flag-v">V</div>
+                        <h1 class="text-xl font-bold">
+                            Computer Architecture Simulator
+                        </h1>
                     </div>
-                    <!-- ADD 4  COMPONENT -->
-                    <canvas id="ADD-4" width="80" height="150" class="absolute top-[50px] left-[250px]"></canvas>
-                    <div class="absolute top-[135px] left-[207px]">
-                        <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
-                            <span class="block" style="color: black">4</span>
-                        </p>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm bg-primary-600 px-2 py-1 rounded"
+                            >v2.1.5</span
+                        >
+                        <button
+                            class="bg-primary-600 hover:bg-primary-700 p-2 rounded-full transition-colors"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                        </button>
                     </div>
-                    <!-- CONTROL -->
-                    <div class="absolute top-[240px] left-[500px] center-text big-ellipse">
-                        <p>Control</p>
-                    </div>
-                    <!-- SHIFT LEFT 2 -->
-                    <div class="absolute top-[180px] left-[900px] center-text Small_Ellipse">
-                        <p>Shift Left 2</p>
-                    </div>
+                </header>
 
-                    <!-- PC COMPONENT -->
-                    <div class="absolute top-[500px] left-[100px] pc-component center-text">
-                        <p>PC</p>
-                    </div>
-                    <!-- INSTRUCTION MEMORY -->
-                    <div class="absolute top-[530px] left-[200px] instruction-memory center-text">
-                        <p style="
+                <!-- Simulator Area -->
+                <main
+                    id="simulator-area"
+                    class="bg-gray-100 overflow-auto p-4 custom-scrollbar"
+                >
+                    <div
+                        id="main-display"
+                        class="relative clearfix flex-1 rounded-lg flex items-center justify-center text-gray-500"
+                        style="
+                            width: 1500px;
+                            height: 974px;
+                            position: relative;
+                            transform-origin: center center;
+                            touch-action: none;
+                            user-select: none;
+                        "
+                    >
+                        <svg
+                            id="svg"
+                            class="absolute w-full h-full border-gray-300"
+                        >
+                            <defs>
+                                <marker
+                                    id="arrowhead"
+                                    viewBox="0 0 10 10"
+                                    refX="9"
+                                    refY="5"
+                                    markerWidth="6"
+                                    markerHeight="6"
+                                    orient="auto-start-reverse"
+                                    markerUnits="strokeWidth"
+                                >
+                                    <path
+                                        d="M 0 0 L 10 5 L 0 10 z"
+                                        fill="black"
+                                    ></path>
+                                </marker>
+                            </defs>
+                            <path
+                                id="pc-ins-mem"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 140,550 L 200,550"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="pc-add-4"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 140,550 L 170,550 L 170,85 L 260,85"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="pc-alu"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 140,550 L 170,550 L 170,170 L 1108,170"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="shift-add-alu"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 950,223 L 1110,223"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="read-1-alu"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 768,534 L 959,534"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="mux-alu"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 927,637 L 959,637"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="Instruction-[31-21]"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 320,630 L 360,630 L 360, 360 L 500, 360"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+
+                            <text transform="translate(0, -8)">
+                                <textPath
+                                    href="#Instruction-[31-21]"
+                                    startOffset="70%"
+                                    text-anchor="left"
+                                    font-weight="bold"
+                                    font-family="sans-serif"
+                                    font-size="13"
+                                    fill="black"
+                                >
+                                    Instruction [31-21]
+                                </textPath>
+                            </text>
+
+                            <path
+                                id="Instruction-[9-5]"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 320,630 L 360,630 L 360, 520 L 600, 520"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+
+                            <text transform="translate(0, -8)">
+                                <textPath
+                                    href="#Instruction-[9-5]"
+                                    startOffset="60%"
+                                    text-anchor="left"
+                                    font-weight="bold"
+                                    font-family="sans-serif"
+                                    font-size="13"
+                                    fill="black"
+                                >
+                                    Instruction [9-5]
+                                </textPath>
+                            </text>
+                            <path
+                                id="Instruction-[20-16]"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 320,630 L 360,630 L 360, 545 L 500, 545"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <text transform="translate(0, 15)">
+                                <textPath
+                                    href="#Instruction-[20-16]"
+                                    startOffset="52%"
+                                    text-anchor="left"
+                                    font-weight="bold"
+                                    font-family="sans-serif"
+                                    font-size="13"
+                                    fill="black"
+                                >
+                                    Instruction [20-16]
+                                </textPath>
+                            </text>
+
+                            <path
+                                id="Instruction-[31-0]"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 320,630 L 360,630 L 360, 850 L 650, 850"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+
+                            <text transform="translate(0, -8)">
+                                <textPath
+                                    href="#Instruction-[31-0]"
+                                    startOffset="60%"
+                                    text-anchor="left"
+                                    font-weight="bold"
+                                    font-family="sans-serif"
+                                    font-size="13"
+                                    fill="black"
+                                >
+                                    Instruction [31-0]
+                                </textPath>
+                            </text>
+
+                            <path
+                                id="Instruction-[31-21]-1"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 320,630 L 360,630 L 360, 850 L 563 850 L 563 918 L 839 918 L 839 857 L 901 857 "
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="Instruction-[4-0]"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 320,630 L 360,630 L 360, 655 L 600, 655"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+
+                            <text transform="translate(0, -8)">
+                                <textPath
+                                    href="#Instruction-[31-21]-1"
+                                    startOffset="72%"
+                                    text-anchor="left"
+                                    font-weight="bold"
+                                    font-family="sans-serif"
+                                    font-size="13"
+                                    fill="black"
+                                >
+                                    Instruction [31-21]
+                                </textPath>
+                            </text>
+                            <text transform="translate(0, -8)">
+                                <textPath
+                                    href="#Instruction-[4-0]"
+                                    startOffset="30%"
+                                    text-anchor="left"
+                                    font-weight="bold"
+                                    font-family="sans-serif"
+                                    font-size="13"
+                                    fill="black"
+                                >
+                                    Instruction [4-0]
+                                </textPath>
+                            </text>
+                            <circle
+                                cx="170"
+                                cy="170"
+                                class="intersection-node"
+                            ></circle>
+                            <circle
+                                cx="170"
+                                cy="549"
+                                class="intersection-node"
+                            ></circle>
+                            <circle
+                                cx="360"
+                                cy="630"
+                                class="intersection-node"
+                            ></circle>
+                            <circle
+                                cx="360"
+                                cy="520"
+                                class="intersection-node"
+                            ></circle>
+                            <circle
+                                cx="360"
+                                cy="546"
+                                class="intersection-node"
+                            ></circle>
+                            <circle
+                                cx="455"
+                                cy="655"
+                                class="intersection-node"
+                            ></circle>
+                            <circle
+                                cx="563"
+                                cy="850"
+                                class="intersection-node"
+                            ></circle>
+                            <circle
+                                cx="797"
+                                cy="630"
+                                class="intersection-node"
+                            ></circle>
+                            <circle
+                                cx="822"
+                                cy="685"
+                                class="intersection-node"
+                            ></circle>
+                            <circle
+                                cx="1095"
+                                cy="595"
+                                class="intersection-node"
+                            ></circle>
+
+                            <path
+                                id="Instruction-[4-0]-1"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 320,630 L 360,630 L 360, 655 L 455, 655 L 455,610 L 502,610"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="Sign-extend-shift"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 716,831 L 822,831 L 822,223 L 901,223"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="Sign-extend-mux"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 716,831 L 822,831 L 822,686 L 901,686"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="mux-read-res-2"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 530, 590 L 600,590"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="4-ALU"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 227 140 L 258 140"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="read-data-2-mux"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 769 630 L 900 630 "
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="read-data-2-write-data"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 797 629 L 797 705 L 1150 705"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="ALU-add-mux"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 1150 180 L 1402 180"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="or-gate-mux"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 1370 293 L 1413 293 L 1413 184 "
+                            ></path>
+                            <path
+                                id="ALU-control-ALU"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 969.015625 847.0546875 L 1029.015625 847.0546875 L 1029.015625 622.0546875 "
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="ALU-address"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 1067 595 L 1149 595 "
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="ALU-and-gate"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 1067 559 L 1160 559 L 1160 480 L 1180 480 "
+                            ></path>
+                            <path
+                                id="ALU-mux"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 1067 595 L 1095 595 L 1095 809 L 1352 809 L 1352 664 L 1400 664 "
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="add-2-or-gate"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 1142 472 L 1152 472 L 1152 293 L 1325 293 "
+                            ></path>
+                            <path
+                                id="and-gate-or-gate"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 1213 471 L 1250 471 L 1250 320 L 1317 320 "
+                            ></path>
+                            <path
+                                id="alu-add-4-mux"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 300 105 L 1402 105"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="ALU-back-PC"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 1429 140 L 1460 140 L 1460 20 L 50 20 L 50 548 L 100 548"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="alu-to-nzcv"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 1000 523 L 1000 489"
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="read-data-mux"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 1268 594 L 1401 594 "
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="mux-write-data"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 1429 626 L 1451 626 L 1451 936 L 618 936 L 618 760 "
+                                marker-end="url(#arrowhead)"
+                            ></path>
+                            <path
+                                id="control-reg-write"
+                                stroke="#007BFF"
+                                stroke-width="4"
+                                fill="none"
+                                d="M 550 476 L 680 476 L 680 490   "
+                            ></path>
+                            <path
+                                id="control-ALU-src"
+                                stroke="#007BFF"
+                                stroke-width="4"
+                                fill="none"
+                                d="M 569 430 L 915 430 L 915 610 "
+                            ></path>
+                            <path
+                                id="control-ALU-op"
+                                stroke="#007BFF"
+                                stroke-width="4"
+                                fill="none"
+                                d="M 550 453 L 858 453 L 858 925 L 929 925 L 929 900 "
+                            ></path>
+                            <path
+                                id="control-mem-write"
+                                stroke="#007BFF"
+                                stroke-width="4"
+                                fill="none"
+                                d="M 576 385 L 1225 385 L 1225 565"
+                            ></path>
+                            <path
+                                id="control-flag-write"
+                                stroke="#007BFF"
+                                stroke-width="4"
+                                fill="none"
+                                d="M 574 408 L 1000 408 L 1000 465"
+                            ></path>
+                            <path
+                                id="control-mem-reg"
+                                stroke="#007BFF"
+                                stroke-width="4"
+                                fill="none"
+                                d="M 578 360 L 1415 360 L 1415 493 L 1415 580 "
+                            ></path>
+                            <path
+                                id="control-mem-read"
+                                stroke="#007BFF"
+                                stroke-width="4"
+                                fill="none"
+                                d="M 576 338 L 1470 338 L 1470 784 L 1222 784 L 1222 720 "
+                            ></path>
+                            <path
+                                id="control-branch"
+                                stroke="#007BFF"
+                                stroke-width="4"
+                                fill="none"
+                                d="M 570 315 L 1166 315 L 1166 460 L 1180 460"
+                            ></path>
+                            <path
+                                id="control-uncond-branch"
+                                stroke="#007BFF"
+                                stroke-width="4"
+                                fill="none"
+                                d="M 559 273 L 1320 273 "
+                            ></path>
+                            <path
+                                id="nzcv-and-gate"
+                                stroke="#007BFF"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 1049 483 L 1110 483 "
+                            ></path>
+                            <path
+                                id="control-flag-branch"
+                                stroke="#007BFF"
+                                stroke-width="4"
+                                fill="none"
+                                d="M 565 295 L 1093 295 L 1093 462 L 1108 462 "
+                            ></path>
+                            <path
+                                id="control-reg-loc"
+                                stroke="#007BFF"
+                                stroke-width="4"
+                                fill="none"
+                                d="M 546 261 L 583 261 L 583 221 L 411 221 L 411 686 L 508 686 L 508 618 "
+                            ></path>
+                            <!-- Path from ALU to NZCV -->
+                            <path
+                                id="linePath0"
+                                stroke="#007BFF"
+                                stroke-width="2"
+                                fill="none"
+                            />
+                            <text transform="translate(0, -8)">
+                                <textPath
+                                    href="#control-flag-branch"
+                                    startOffset="5.8%"
+                                    text-anchor="left"
+                                    font-weight="bold"
+                                    font-family="Consolas, monospace"
+                                    font-size="14"
+                                    fill="#007BFF"
+                                >
+                                    FlagBranch
+                                </textPath>
+                            </text>
+                            <text transform="translate(0, -8)">
+                                <textPath
+                                    href="#control-flag-write"
+                                    startOffset="5.8%"
+                                    text-anchor="left"
+                                    font-weight="bold"
+                                    font-family="Consolas, monospace"
+                                    font-size="14"
+                                    fill="#007BFF"
+                                >
+                                    FlagWrite
+                                </textPath>
+                            </text>
+                            <text transform="translate(0, -8)">
+                                <textPath
+                                    href="#control-uncond-branch"
+                                    startOffset="5%"
+                                    text-anchor="left"
+                                    font-weight="bold"
+                                    font-family="Consolas, monospace"
+                                    font-size="14"
+                                    fill="#007BFF"
+                                >
+                                    UncondBranch
+                                </textPath>
+                            </text>
+                            <text
+                                transform="translate(16, -9) rotate(180, 520, 222)"
+                            >
+                                <textPath
+                                    href="#control-reg-loc"
+                                    startOffset="15%"
+                                    text-anchor="left"
+                                    font-weight="bold"
+                                    font-family="Consolas, monospace"
+                                    font-size="14"
+                                    fill="#007BFF"
+                                >
+                                    Reg2Loc
+                                </textPath>
+                            </text>
+                            <text transform="translate(0, -8)">
+                                <textPath
+                                    href="#control-branch"
+                                    startOffset="5%"
+                                    text-anchor="left"
+                                    font-weight="bold"
+                                    font-family="Consolas, monospace"
+                                    font-size="14"
+                                    fill="#007BFF"
+                                >
+                                    ZeroBranch
+                                </textPath>
+                            </text>
+                            <text transform="translate(0, -8)">
+                                <textPath
+                                    href="#control-mem-read"
+                                    startOffset="2%"
+                                    text-anchor="left"
+                                    font-weight="bold"
+                                    font-family="Consolas, monospace"
+                                    font-size="14"
+                                    fill="#007BFF"
+                                >
+                                    MemRead
+                                </textPath>
+                            </text>
+                            <text transform="translate(0, -8)">
+                                <textPath
+                                    href="#control-reg-write"
+                                    startOffset="34%"
+                                    text-anchor="left"
+                                    font-weight="bold"
+                                    font-family="Consolas, monospace"
+                                    font-size="14"
+                                    fill="#007BFF"
+                                >
+                                    RegWrite
+                                </textPath>
+                            </text>
+                            <text transform="translate(0, -8)">
+                                <textPath
+                                    href="#control-ALU-src"
+                                    startOffset="6.3%"
+                                    text-anchor="left"
+                                    font-weight="bold"
+                                    font-family="Consolas, monospace"
+                                    font-size="14"
+                                    fill="#007BFF"
+                                >
+                                    ALUSrc
+                                </textPath>
+                            </text>
+                            <text transform="translate(0, -8)">
+                                <textPath
+                                    href="#control-mem-write"
+                                    startOffset="3.8%"
+                                    text-anchor="left"
+                                    font-weight="bold"
+                                    font-family="Consolas, monospace"
+                                    font-size="14"
+                                    fill="#007BFF"
+                                >
+                                    MemWrite
+                                </textPath>
+                            </text>
+                            <text transform="translate(0, -8)">
+                                <textPath
+                                    href="#control-ALU-op"
+                                    startOffset="5.8%"
+                                    text-anchor="left"
+                                    font-weight="bold"
+                                    font-family="Consolas, monospace"
+                                    font-size="14"
+                                    fill="#007BFF"
+                                >
+                                    ALUOp
+                                </textPath>
+                            </text>
+                            <text transform="translate(0, -8)">
+                                <textPath
+                                    href="#control-mem-reg"
+                                    startOffset="2.5%"
+                                    text-anchor="left"
+                                    font-weight="bold"
+                                    font-family="Consolas, monospace"
+                                    font-size="14"
+                                    fill="#007BFF"
+                                >
+                                    MemToReg
+                                </textPath>
+                            </text>
+                        </svg>
+                        <!-- ADD ALU RESULT -->
+                        <canvas
+                            id="ADD-ALU-RESULT"
+                            width="120"
+                            height="160"
+                            class="absolute top-[135px] left-[1100px]"
+                        ></canvas>
+                        <!-- ADD ALU RESULT 1 -->
+                        <canvas
+                            id="ADD-ALU-RESULT-1"
+                            width="120"
+                            height="160"
+                            class="absolute top-[500px] left-[950px]"
+                        ></canvas>
+                        <!-- OR COMPONENT -->
+                        <canvas
+                            id="OR-GATE"
+                            width="90"
+                            height="80"
+                            class="absolute top-[250px] left-[1300px]"
+                        ></canvas>
+                        <!-- AND COMPONENT -->
+                        <canvas
+                            id="AND-GATE"
+                            width="60"
+                            height="70"
+                            class="absolute top-[445px] left-[1100px]"
+                        ></canvas>
+                        <!-- AND COMPONENT 2 -->
+                        <canvas
+                            id="AND-GATE-2"
+                            width="60"
+                            height="70"
+                            class="absolute top-[445px] left-[1170px]"
+                        ></canvas>
+                        <!-- NZCV Component -->
+                        <div
+                            class="absolute top-[465px] left-[950px] nzcv-container"
+                            id="nzcv-container"
+                        >
+                            <div class="nzcv-cell" id="flag-n">N</div>
+                            <div class="nzcv-cell" id="flag-z">Z</div>
+                            <div class="nzcv-cell" id="flag-c">C</div>
+                            <div class="nzcv-cell" id="flag-v">V</div>
+                        </div>
+                        <!-- ADD 4  COMPONENT -->
+                        <canvas
+                            id="ADD-4"
+                            width="80"
+                            height="150"
+                            class="absolute top-[50px] left-[250px]"
+                        ></canvas>
+                        <div class="absolute top-[135px] left-[207px]">
+                            <p
+                                class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
+                            >
+                                <span class="block" style="color: black"
+                                    >4</span
+                                >
+                            </p>
+                        </div>
+                        <!-- CONTROL -->
+                        <div
+                            class="absolute top-[240px] left-[500px] center-text big-ellipse"
+                        >
+                            <p>Control</p>
+                        </div>
+                        <!-- SHIFT LEFT 2 -->
+                        <div
+                            class="absolute top-[180px] left-[900px] center-text Small_Ellipse"
+                        >
+                            <p>Shift Left 2</p>
+                        </div>
+
+                        <!-- PC COMPONENT -->
+                        <div
+                            class="absolute top-[500px] left-[100px] pc-component center-text"
+                        >
+                            <p>PC</p>
+                        </div>
+                        <!-- INSTRUCTION MEMORY -->
+                        <div
+                            class="absolute top-[530px] left-[200px] instruction-memory center-text"
+                        >
+                            <p
+                                style="
                                     position: absolute;
                                     top: 0;
                                     left: 0;
                                     margin: 0;
                                     font-size: 15px;
                                     color: black;
-                                ">
-                            Read
-                        </p>
-                        <p style="
+                                "
+                            >
+                                Read
+                            </p>
+                            <p
+                                style="
                                     position: absolute;
                                     top: 20px;
                                     left: 0;
                                     margin: 0;
                                     font-size: 15px;
                                     color: black;
-                                ">
-                            &nbsp;&nbsp;address
-                        </p>
-                        <p style="
+                                "
+                            >
+                                &nbsp;&nbsp;address
+                            </p>
+                            <p
+                                style="
                                     position: absolute;
                                     top: 70px;
                                     left: 40px;
                                     margin: 0;
                                     font-size: 15px;
                                     color: black;
-                                ">
-                            Instruction [31-0]
-                        </p>
-                        <p style="
+                                "
+                            >
+                                Instruction [31-0]
+                            </p>
+                            <p
+                                style="
                                     position: absolute;
                                     top: 140px;
                                     left: 8px;
@@ -372,349 +888,660 @@
                                     font-size: 15.5px;
                                     font-weight: bold;
                                     color: black;
-                                ">
-                            Instruction Memory
-                        </p>
-                    </div>
-
-                    <!-- Register Handler-->
-                    <div class="absolute top-[490px] left-[600px] register-handler center-text" id="register-handler">
-                        <div
-                            class="grid grid-rows-4 h-full w-1/2 absolute top-0 left-0 text-x font-bold text-black leading-tight">
-                            <div class="flex items-center pl-1">
-                                Read<br />Register 1
-                            </div>
-                            <div class="flex items-center pl-1">
-                                Read<br />Register 2
-                            </div>
-                            <div class="flex items-center pl-1">
-                                Write<br />Register
-                            </div>
-                            <div class="flex items-center pl-1" id="register-handler-write">
-                                Write<br />Data
-                            </div>
+                                "
+                            >
+                                Instruction Memory
+                            </p>
                         </div>
 
-                        <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
-                            <!-- Top Right -->
-                            <span class="absolute top-7 right-1 text-x text-black">Read<br />data 1</span>
-                            <!-- Top Right -->
-                            <span class="absolute top-13 right-1 text-x text-black">Read<br />data 2</span>
-                            <!-- Bottom Right -->
-                            <span class="absolute bottom-1 right-1 text-xl text-black">Register<br />handler</span>
-                        </p>
-                    </div>
-                    <!-- SIGN-EXTEND -->
-                    <div class="absolute top-[800px] left-[650px] ellipse center-text">
-                        <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
-                            <span class="block" style="color: black">Sign-</span>
-                            <span class="block" style="color: black">Extend</span>
-                        </p>
-                    </div>
-                    <!-- ALU control -->
-                    <div class="absolute top-[800px] left-[900px] ellipse center-text">
-                        <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
-                            <span class="block" style="color: black">ALU</span>
-                            <span class="block" style="color: black">Control</span>
-                        </p>
-                    </div> <!-- DATA MEMORY -->
-                    <div class="absolute top-[565px] left-[1150px] data-memory" id="memory-handler">
-                        <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
-                            <!-- Top Left -->
-                            <span class="absolute top-7 left-1" style="color: black; font-size: 16px;">Address</span>
+                        <!-- Register Handler-->
+                        <div
+                            class="absolute top-[490px] left-[600px] register-handler center-text"
+                            id="register-handler"
+                        >
+                            <div
+                                class="grid grid-rows-4 h-full w-1/2 absolute top-0 left-0 text-x font-bold text-black leading-tight"
+                            >
+                                <div class="flex items-center pl-1">
+                                    Read<br />Register 1
+                                </div>
+                                <div class="flex items-center pl-1">
+                                    Read<br />Register 2
+                                </div>
+                                <div class="flex items-center pl-1">
+                                    Write<br />Register
+                                </div>
+                                <div
+                                    class="flex items-center pl-1"
+                                    id="register-handler-write"
+                                >
+                                    Write<br />Data
+                                </div>
+                            </div>
 
-                            <!-- Top Right -->
-                            <span class="absolute top-7 right-1" style="color: black; font-size: 16px;"
-                                id="memory-handler-read">Read<br />data</span>
+                            <p
+                                class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
+                            >
+                                <!-- Top Right -->
+                                <span
+                                    class="absolute top-7 right-1 text-x text-black"
+                                    >Read<br />data 1</span
+                                >
+                                <!-- Top Right -->
+                                <span
+                                    class="absolute top-13 right-1 text-x text-black"
+                                    >Read<br />data 2</span
+                                >
+                                <!-- Bottom Right -->
+                                <span
+                                    class="absolute bottom-1 right-1 text-xl text-black"
+                                    >Register<br />handler</span
+                                >
+                            </p>
+                        </div>
+                        <!-- SIGN-EXTEND -->
+                        <div
+                            class="absolute top-[800px] left-[650px] ellipse center-text"
+                        >
+                            <p
+                                class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
+                            >
+                                <span class="block" style="color: black"
+                                    >Sign-</span
+                                >
+                                <span class="block" style="color: black"
+                                    >Extend</span
+                                >
+                            </p>
+                        </div>
+                        <!-- ALU control -->
+                        <div
+                            class="absolute top-[800px] left-[900px] ellipse center-text"
+                        >
+                            <p
+                                class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
+                            >
+                                <span class="block" style="color: black"
+                                    >ALU</span
+                                >
+                                <span class="block" style="color: black"
+                                    >Control</span
+                                >
+                            </p>
+                        </div>
+                        <!-- DATA MEMORY -->
+                        <div
+                            class="absolute top-[565px] left-[1150px] data-memory"
+                            id="memory-handler"
+                        >
+                            <p
+                                class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
+                            >
+                                <!-- Top Left -->
+                                <span
+                                    class="absolute top-7 left-1"
+                                    style="color: black; font-size: 16px"
+                                    >Address</span
+                                >
 
-                            <!-- Bottom Left -->
-                            <span class="absolute bottom-4 left-1" style="color: black; font-size: 16px;"
-                                id="memory-handler-write">Write<br />data</span>
+                                <!-- Top Right -->
+                                <span
+                                    class="absolute top-7 right-1"
+                                    style="color: black; font-size: 16px"
+                                    id="memory-handler-read"
+                                    >Read<br />data</span
+                                >
 
-                            <!-- Bottom Right -->
-                            <span class="absolute bottom-1 right-1"
-                                style="color: black; font-size: 16px;">Data<br />memory</span>
-                        </p>
-                    </div>
-                    <!-- Mux 1 -->
-                    <div id="mux-0" class="absolute top-[530px] left-[500px] mux">
-                        <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
-                            <span class="block" style="color: black" id="mux0_0">0</span>
-                            <span class="block" style="color: black">M</span>
-                            <span class="block" style="color: black">u</span>
-                            <span class="block" style="color: black">x</span>
-                            <span class="block" style="color: black" id="mux0_1">1</span>
-                        </p>
-                    </div>
-                    <!-- Mux 2 -->
-                    <div id="mux-1" class="absolute top-[610px] left-[900px] mux">
-                        <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
-                            <span class="block" style="color: black" id="mux1_0">0</span>
-                            <span class="block" style="color: black">M</span>
-                            <span class="block" style="color: black">u</span>
-                            <span class="block" style="color: black">x</span>
-                            <span class="block" style="color: black" id="mux1_1">1</span>
-                        </p>
-                    </div>
-                    <!-- Mux 3 -->
-                    <div id = "mux-3" class="absolute top-[580px] left-[1400px] mux">
-                        <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
-                            <span class="block" style="color: black" id="mux3_1">1</span>
-                            <span class="block" style="color: black">M</span>
-                        </p>
-                        <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
-                            <span class="block" style="color: black">u</span>
-                            <span class="block" style="color: black">x</span>
-                            <span class="block" style="color: black" id="mux3_0">0</span>
-                        </p>
-                    </div>
-                    <!-- Mux 4 -->
-                    <div id="mux-2" class="absolute top-[95px] left-[1400px] mux">
-                        <p class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center">
-                            <span class="block" style="color: black" id="mux2_0">0</span>
-                            <span class="block" style="color: black">M</span>
-                            <span class="block" style="color: black">u</span>
-                            <span class="block" style="color: black">x</span>
-                            <span class="block" style="color: black" id="mux2_1">1</span>
-                        </p>
-                    </div>
-                    <!-- Control Signal Values -->
-                    <div id="control-uncond-branch-value" class="absolute top-[245px] left-[1327px] control-signal-value"></div>
-                    <div id="control-flag-branch-value" class="absolute top-[428px] left-[1120px] control-signal-value"></div>
-                    <div id="control-branch-value" class="absolute top-[428px] left-[1189px] control-signal-value"></div>
-                    <div id="control-mem-read-value" class="absolute top-[730px] left-[1235px] control-signal-value"></div>
-                    <div id="control-mem-reg-value" class="absolute top-[558px] left-[1426px] control-signal-value"></div>
-                    <div id="control-mem-write-value" class="absolute top-[535px] left-[1235px] control-signal-value"></div>
-                    <div id="control-flag-write-value" class="absolute top-[441px] left-[1018px] control-signal-value"></div>
-                    <div id="control-alu-src-value" class="absolute top-[588px] left-[920px] control-signal-value"></div>
-                    <div id="control-alu-op-value" class="absolute top-[900px] left-[936px] control-signal-value"></div>
-                    <div id="control-reg-write-value" class="absolute top-[470px] left-[691px] control-signal-value"></div>
-                    <div id="control-reg-2-loc" class="absolute top-[620px] left-[513px] control-signal-value"></div>
-                </div>
-            </main>
+                                <!-- Bottom Left -->
+                                <span
+                                    class="absolute bottom-4 left-1"
+                                    style="color: black; font-size: 16px"
+                                    id="memory-handler-write"
+                                    >Write<br />data</span
+                                >
 
-            <!-- Right Panel -->
-            <section id="right-panel" class="relative bg-panel p-4 overflow-y-auto custom-scrollbar border-l border-gray-200">
-                <div id="right-panel-resize-handle" class="absolute top-0 left-0 w-2 h-full cursor-col-resize z-10"></div>
-                <div class="zoom-controls flex space-x-3 mb-3">
+                                <!-- Bottom Right -->
+                                <span
+                                    class="absolute bottom-1 right-1"
+                                    style="color: black; font-size: 16px"
+                                    >Data<br />memory</span
+                                >
+                            </p>
+                        </div>
+                        <!-- Mux 1 -->
+                        <div
+                            id="mux-0"
+                            class="absolute top-[530px] left-[500px] mux"
+                        >
+                            <p
+                                class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
+                            >
+                                <span
+                                    class="block"
+                                    style="color: black"
+                                    id="mux0_0"
+                                    >0</span
+                                >
+                                <span class="block" style="color: black"
+                                    >M</span
+                                >
+                                <span class="block" style="color: black"
+                                    >u</span
+                                >
+                                <span class="block" style="color: black"
+                                    >x</span
+                                >
+                                <span
+                                    class="block"
+                                    style="color: black"
+                                    id="mux0_1"
+                                    >1</span
+                                >
+                            </p>
+                        </div>
+                        <!-- Mux 2 -->
+                        <div
+                            id="mux-1"
+                            class="absolute top-[610px] left-[900px] mux"
+                        >
+                            <p
+                                class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
+                            >
+                                <span
+                                    class="block"
+                                    style="color: black"
+                                    id="mux1_0"
+                                    >0</span
+                                >
+                                <span class="block" style="color: black"
+                                    >M</span
+                                >
+                                <span class="block" style="color: black"
+                                    >u</span
+                                >
+                                <span class="block" style="color: black"
+                                    >x</span
+                                >
+                                <span
+                                    class="block"
+                                    style="color: black"
+                                    id="mux1_1"
+                                    >1</span
+                                >
+                            </p>
+                        </div>
+                        <!-- Mux 3 -->
+                        <div
+                            id="mux-3"
+                            class="absolute top-[580px] left-[1400px] mux"
+                        >
+                            <p
+                                class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
+                            >
+                                <span
+                                    class="block"
+                                    style="color: black"
+                                    id="mux3_1"
+                                    >1</span
+                                >
+                                <span class="block" style="color: black"
+                                    >M</span
+                                >
+                            </p>
+                            <p
+                                class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
+                            >
+                                <span class="block" style="color: black"
+                                    >u</span
+                                >
+                                <span class="block" style="color: black"
+                                    >x</span
+                                >
+                                <span
+                                    class="block"
+                                    style="color: black"
+                                    id="mux3_0"
+                                    >0</span
+                                >
+                            </p>
+                        </div>
+                        <!-- Mux 4 -->
+                        <div
+                            id="mux-2"
+                            class="absolute top-[95px] left-[1400px] mux"
+                        >
+                            <p
+                                class="font-bold text-gray-700 leading-none space-y-0 flex flex-col items-center"
+                            >
+                                <span
+                                    class="block"
+                                    style="color: black"
+                                    id="mux2_0"
+                                    >0</span
+                                >
+                                <span class="block" style="color: black"
+                                    >M</span
+                                >
+                                <span class="block" style="color: black"
+                                    >u</span
+                                >
+                                <span class="block" style="color: black"
+                                    >x</span
+                                >
+                                <span
+                                    class="block"
+                                    style="color: black"
+                                    id="mux2_1"
+                                    >1</span
+                                >
+                            </p>
+                        </div>
+                        <!-- Control Signal Values -->
+                        <div
+                            id="control-uncond-branch-value"
+                            class="absolute top-[245px] left-[1327px] control-signal-value"
+                        ></div>
+                        <div
+                            id="control-flag-branch-value"
+                            class="absolute top-[428px] left-[1120px] control-signal-value"
+                        ></div>
+                        <div
+                            id="control-branch-value"
+                            class="absolute top-[428px] left-[1189px] control-signal-value"
+                        ></div>
+                        <div
+                            id="control-mem-read-value"
+                            class="absolute top-[730px] left-[1235px] control-signal-value"
+                        ></div>
+                        <div
+                            id="control-mem-reg-value"
+                            class="absolute top-[558px] left-[1426px] control-signal-value"
+                        ></div>
+                        <div
+                            id="control-mem-write-value"
+                            class="absolute top-[535px] left-[1235px] control-signal-value"
+                        ></div>
+                        <div
+                            id="control-flag-write-value"
+                            class="absolute top-[441px] left-[1018px] control-signal-value"
+                        ></div>
+                        <div
+                            id="control-alu-src-value"
+                            class="absolute top-[588px] left-[920px] control-signal-value"
+                        ></div>
+                        <div
+                            id="control-alu-op-value"
+                            class="absolute top-[900px] left-[936px] control-signal-value"
+                        ></div>
+                        <div
+                            id="control-reg-write-value"
+                            class="absolute top-[470px] left-[691px] control-signal-value"
+                        ></div>
+                        <div
+                            id="control-reg-2-loc"
+                            class="absolute top-[620px] left-[513px] control-signal-value"
+                        ></div>
+                    </div>
+                </main>
+
+                <!-- Right Panel -->
+                <section
+                    id="right-panel"
+                    class="relative bg-panel p-4 overflow-y-auto custom-scrollbar border-l border-gray-200"
+                >
                     <div
-                        class="flex-1 bg-teal-400 hover:bg-danger-600 text-white py-1 rounded font-medium transition-colors text-center">
-                        Zoom:
+                        id="right-panel-resize-handle"
+                        class="absolute top-0 left-0 w-2 h-full cursor-col-resize z-10"
+                    ></div>
+                    <div class="zoom-controls flex space-x-3 mb-3">
+                        <div
+                            class="flex-1 bg-teal-400 hover:bg-danger-600 text-white py-1 rounded font-medium transition-colors text-center"
+                        >
+                            Zoom:
+                        </div>
+                        <button
+                            class="flex-1 bg-indigo-400 hover:bg-primary-600 text-white py-1 rounded font-medium transition-colors"
+                            onclick="zoomIn()"
+                        >
+                            +
+                        </button>
+                        <button
+                            class="flex-1 bg-rose-400 hover:bg-warning-600 text-white py-1 rounded font-medium transition-colors"
+                            onclick="zoomOut()"
+                        >
+                            -
+                        </button>
+                        <button
+                            class="flex-1 bg-sky-400 hover:bg-danger-600 text-white py-1 rounded font-medium transition-colors"
+                            onclick="resetZoom()"
+                        >
+                            Reset
+                        </button>
                     </div>
-                    <button
-                        class="flex-1 bg-indigo-400 hover:bg-primary-600 text-white py-1 rounded font-medium transition-colors"
-                        onclick="zoomIn()">
-                        +
-                    </button>
-                    <button
-                        class="flex-1 bg-rose-400 hover:bg-warning-600 text-white py-1 rounded font-medium transition-colors"
-                        onclick="zoomOut()">
-                        -
-                    </button>
-                    <button
-                        class="flex-1 bg-sky-400 hover:bg-danger-600 text-white py-1 rounded font-medium transition-colors"
-                        onclick="resetZoom()">
-                        Reset
-                    </button>
-                </div>
-                <!-- Assembly Editor -->
-                <div class="mb-6">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="font-semibold text-gray-700">
-                            Assembly Editor
+                    <!-- Assembly Editor -->
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-semibold text-gray-700">
+                                Assembly Editor
+                            </h3>
+                            <div class="flex space-x-2">
+                                <button
+                                    id="loadAssemblyBtn"
+                                    class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded text-xs font-medium transition-colors"
+                                >
+                                    Load
+                                </button>
+                                <button
+                                    id="saveAssemblyBtn"
+                                    class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded text-xs font-medium transition-colors"
+                                >
+                                    Save
+                                </button>
+                                <button
+                                    id="clearAssemblyBtn"
+                                    class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded text-xs font-medium transition-colors"
+                                >
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                        <textarea
+                            id="assemblyCode"
+                            class="w-full h-40 p-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:outline-none text-sm font-mono bg-white"
+                        >
+// --- Arithmetic Instructions ---
+// ADDI: Add immediate value
+ADDI X1, XZR, #10      // X1 = 0 + 10 = 10
+ADDI X2, XZR, #15      // X2 = 0 + 15 = 15
+
+// ADD: Add registers
+ADD X3, X1, X2         // X3 = X1 + X2 = 10 + 15 = 25
+
+// SUB: Subtract registers
+SUB X4, X2, X1         // X4 = X2 - X1 = 15 - 10 = 5
+
+// ADDS: Add and set flags
+ADDS X5, X4, XZR       // X5 = 5, Flags: N=0, Z=0
+
+// SUBS: Subtract and set flags
+SUBS XZR, X5, X5       // 5 - 5 = 0, Flags: N=0, Z=1
+
+
+// --- Logical Instructions ---
+// AND: Bitwise AND
+ADDI X6, XZR, #0b1101  // X6 = 13
+ADDI X7, XZR, #0b1011  // X7 = 11
+AND X8, X6, X7         // X8 = 13 & 11 = 9 (0b1001)
+
+// ORR: Bitwise OR
+ORR X9, X6, X7         // X9 = 13 | 11 = 15 (0b1111)
+
+
+// --- Memory Instructions ---
+// STUR: Store register to memory
+ADDI X10, XZR, #100    // Set a base address for memory operations
+STUR X9, [X10, #0]     // Store value of X9 (15) at address 100
+
+// LDUR: Load register from memory
+LDUR X11, [X10, #0]    // Load value from address 100 into X11. X11 should be 15.
+
+
+// --- Branch Instructions ---
+// CBZ: Conditional Branch if Zero
+// Since Z flag is 1 from the SUBS instruction, this branch will be taken.
+CBZ X5, IS_ZERO        // Branch to IS_ZERO if X5 is 0. (It's not, but Z flag is set)
+ADDI X12, XZR, #1      // This line should be skipped.
+IS_ZERO:
+ADDI X13, XZR, #2      // Execution continues here. X13 = 2.
+
+// CBNZ: Conditional Branch if Not Zero
+CBNZ X13, NOT_ZERO     // X13 is not zero, so branch is taken.
+ADDI X14, XZR, #3      // This line is skipped.
+NOT_ZERO:
+ADDI X15, XZR, #4      // Execution continues here. X15 = 4.
+
+// B.cond: Conditional Branch
+SUBS XZR, X2, X1             // Compare X2 (15) and X1 (10). Sets flags for B.GT
+B.GT TARGET_A          // Branch if Greater Than (15 > 10), so branch is taken.
+ADDI X16, XZR, #5      // This line is skipped.
+TARGET_A:
+ADDI X17, XZR, #6      // Execution continues here. X17 = 6.
+
+// B: Unconditional Branch
+B END_PROGRAM          // Jump directly to the end.
+ADDI X18, XZR, #99     // This instruction is skipped.
+
+END_PROGRAM:
+// Program ends here.
+                        </textarea>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="mb-6">
+                        <button
+                            id="assembleBtn"
+                            class="w-full bg-success hover:bg-success-600 text-white py-2 rounded font-medium mb-3 transition-colors"
+                        >
+                            Assemble
+                        </button>
+                        <div class="flex space-x-3 mb-3">
+                            <button
+                                id="runBtn"
+                                class="flex-1 bg-primary hover:bg-primary-600 text-white py-1 rounded font-medium transition-colors"
+                            >
+                                Run
+                            </button>
+                            <button
+                                id="stepBtn"
+                                class="flex-1 bg-warning hover:bg-warning-600 text-white py-1 rounded font-medium transition-colors"
+                            >
+                                Step
+                            </button>
+                            <button
+                                id="pauseBtn"
+                                class="flex-1 bg-danger hover:bg-danger-600 text-white py-1 rounded font-medium transition-colors"
+                            >
+                                Pause
+                            </button>
+                        </div>
+                        <button
+                            id="resetBtn"
+                            class="w-full bg-gray-300 hover:bg-gray-400 py-1 rounded font-medium transition-colors"
+                        >
+                            Reset
+                        </button>
+                    </div>
+                    <!-- Speed Slider -->
+                    <div class="mb-6">
+                        <h3 class="font-semibold text-gray-700 mb-2">
+                            Simulation Speed
                         </h3>
-                        <div class="flex space-x-2">
-                            <button
-                                id="loadAssemblyBtn"
-                                class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded text-xs font-medium transition-colors">
-                                Load
-                            </button>
-                            <button
-                                id="saveAssemblyBtn"
-                                class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded text-xs font-medium transition-colors">
-                                Save
-                            </button>
-                            <button
-                                id="clearAssemblyBtn"
-                                class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded text-xs font-medium transition-colors">
-                                Clear
-                            </button>
+                        <div class="flex items-center space-x-3">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5 text-gray-500"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                            <input
+                                id="executionSpeed"
+                                type="range"
+                                min="1"
+                                max="10"
+                                value="5"
+                                class="w-full"
+                            />
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-6 w-6 text-gray-500"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
                         </div>
                     </div>
-                    <textarea id="assemblyCode"
-                        class="w-full h-40 p-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:outline-none text-sm font-mono bg-white"></textarea>
-                </div>
 
-                <!-- Controls -->
-                <div class="mb-6">
-                    <button id="assembleBtn"
-                        class="w-full bg-success hover:bg-success-600 text-white py-2 rounded font-medium mb-3 transition-colors">
-                        Assemble
-                    </button>
-                    <div class="flex space-x-3 mb-3">
-                        <button id="runBtn"
-                            class="flex-1 bg-primary hover:bg-primary-600 text-white py-1 rounded font-medium transition-colors">
-                            Run
+                    <!-- Status -->
+                    <div>
+                        <h3 class="font-semibold text-gray-700 mb-3">Status</h3>
+                        <table class="w-full">
+                            <tbody>
+                                <tr class="border-b border-gray-200">
+                                    <td class="py-1.5 text-gray-600 text-sm">
+                                        Current State
+                                    </td>
+                                    <td
+                                        id="currentState"
+                                        class="py-1.5 text-gray-900 font-medium text-right"
+                                    >
+                                        Idle
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <td class="py-1.5 text-gray-600 text-sm">
+                                        Program Counter
+                                    </td>
+                                    <td
+                                        id="pcValue"
+                                        class="py-1.5 text-gray-900 font-medium text-right"
+                                    >
+                                        0x40000000
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1.5 text-gray-600 text-sm">
+                                        N Z C V
+                                    </td>
+                                    <td
+                                        class="py-1.5 text-gray-900 font-medium text-right flex justify-end space-x-2"
+                                    >
+                                        <span id="flag-status-n">0</span>
+                                        <span id="flag-status-z">0</span>
+                                        <span id="flag-status-c">0</span>
+                                        <span id="flag-status-v">0</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                <!-- Footer -->
+                <footer
+                    id="footer"
+                    class="border-t border-blue-200 flex flex-col bg-gradient-to-b from-white to-blue-50"
+                >
+                    <div
+                        class="footer-drag-handle bg-blue-100 h-1 hover:bg-blue-200 transition-colors cursor-row-resize"
+                    ></div>
+                    <!-- Tab Header -->
+                    <div
+                        class="flex mt-1 bg-gradient-to-r from-blue-50 to-indigo-50 p-1 rounded-t-lg mx-1"
+                    >
+                        <button
+                            id="registers-tab"
+                            class="flex-1 py-2 bg-white text-blue-700 font-medium border-r border-blue-100 hover:bg-blue-50 active transition-all duration-200 rounded-l-md shadow-sm"
+                            onclick="switchTab('registers')"
+                        >
+                            Registers
                         </button>
-                        <button id="stepBtn"
-                            class="flex-1 bg-warning hover:bg-warning-600 text-white py-1 rounded font-medium transition-colors">
-                            Step
-                        </button>
-                        <button id="pauseBtn"
-                            class="flex-1 bg-danger hover:bg-danger-600 text-white py-1 rounded font-medium transition-colors">
-                            Pause
+                        <button
+                            id="stack-tab"
+                            class="flex-1 py-2 bg-white text-blue-700 font-medium hover:bg-blue-50 transition-all duration-200 rounded-r-md shadow-sm"
+                            onclick="switchTab('stack')"
+                        >
+                            Stack
                         </button>
                     </div>
-                    <button id="resetBtn"
-                        class="w-full bg-gray-300 hover:bg-gray-400 py-1 rounded font-medium transition-colors">
-                        Reset
-                    </button>
-                </div>
-                <!-- Speed Slider -->
-                <div class="mb-6">
-                    <h3 class="font-semibold text-gray-700 mb-2">
-                        Simulation Speed
-                    </h3>
-                    <div class="flex items-center space-x-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20"
-                            fill="currentColor">
-                            <path fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        <input id="executionSpeed" type="range" min="1" max="10" value="5" class="w-full" />
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" viewBox="0 0 20 20"
-                            fill="currentColor">
-                            <path fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
 
-                <!-- Status -->
-                <div>
-                    <h3 class="font-semibold text-gray-700 mb-3">Status</h3>
-                    <table class="w-full">
-                        <tbody>
-                            <tr class="border-b border-gray-200">
-                                <td class="py-1.5 text-gray-600 text-sm">
-                                    Current State
-                                </td>
-                                <td id="currentState" class="py-1.5 text-gray-900 font-medium text-right">
-                                    Idle
-                                </td>
-                            </tr>
-                            <tr class="border-b border-gray-200">
-                                <td class="py-1.5 text-gray-600 text-sm">
-                                    Program Counter
-                                </td>
-                                <td id="pcValue" class="py-1.5 text-gray-900 font-medium text-right">
-                                    0x40000000
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="py-1.5 text-gray-600 text-sm">
-                                    N Z C V
-                                </td>
-                                <td class="py-1.5 text-gray-900 font-medium text-right flex justify-end space-x-2">
-                                    <span id="flag-status-n">0</span>
-                                    <span id="flag-status-z">0</span>
-                                    <span id="flag-status-c">0</span>
-                                    <span id="flag-status-v">0</span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-            <!-- Footer -->
-            <footer id="footer" class="border-t border-blue-200 flex flex-col bg-gradient-to-b from-white to-blue-50">
-                <div class="footer-drag-handle bg-blue-100 h-1 hover:bg-blue-200 transition-colors cursor-row-resize">
-                </div>
-                <!-- Tab Header -->
-                <div class="flex mt-1 bg-gradient-to-r from-blue-50 to-indigo-50 p-1 rounded-t-lg mx-1">
-                    <button id="registers-tab"
-                        class="flex-1 py-2 bg-white text-blue-700 font-medium border-r border-blue-100 hover:bg-blue-50 active transition-all duration-200 rounded-l-md shadow-sm"
-                        onclick="switchTab('registers')">
-                        Registers
-                    </button>   
-                    <button id="stack-tab"
-                        class="flex-1 py-2 bg-white text-blue-700 font-medium hover:bg-blue-50 transition-all duration-200 rounded-r-md shadow-sm"
-                        onclick="switchTab('stack')">
-                        Stack
-                    </button>
-                </div>
-
-                <!-- Tab Content Area -->
-                <div class="flex-1 overflow-auto custom-scrollbar bg-white mx-1 rounded-b-lg shadow-inner">
-                    <!-- Registers Grid -->
-                    <div id="registers-content" class="grid grid-cols-3 gap-2 p-3 h-full">
-                        <!-- Will be populated by JavaScript -->
-                    </div>
-
-                    <!-- Stack Grid -->
-                    <div id="stack-content" class="hidden grid grid-cols-2 gap-1 p-3 h-full">
+                    <!-- Tab Content Area -->
+                    <div
+                        class="flex-1 overflow-auto custom-scrollbar bg-white mx-1 rounded-b-lg shadow-inner"
+                    >
+                        <!-- Registers Grid -->
                         <div
-                            class="font-semibold text-center py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-tl-md text-blue-800">
-                            Address
+                            id="registers-content"
+                            class="grid grid-cols-3 gap-2 p-3 h-full"
+                        >
+                            <!-- Will be populated by JavaScript -->
                         </div>
+
+                        <!-- Stack Grid -->
                         <div
-                            class="font-semibold text-center py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-tr-md text-blue-800">
-                            Value
+                            id="stack-content"
+                            class="hidden grid grid-cols-2 gap-1 p-3 h-full"
+                        >
+                            <div
+                                class="font-semibold text-center py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-tl-md text-blue-800"
+                            >
+                                Address
+                            </div>
+                            <div
+                                class="font-semibold text-center py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-tr-md text-blue-800"
+                            >
+                                Value
+                            </div>
+                            <!-- Will be populated by JavaScript -->
                         </div>
-                        <!-- Will be populated by JavaScript -->
                     </div>
-                </div>
-            </footer>
+                </footer>
+            </div>
         </div>
-    </div>
 
-    <script src="scripts/index.js"></script>
-    <script src="scripts/RunningMechanism/async_running.js"></script>
-    <script src="scripts/Utils/utils.js"></script>
-    <script src="scripts/Utils/right-panel-resize.js"></script>
-    <script src="scripts/Utils/drag-handler.js"></script>
-    <script src="scripts/Utils/quickColorUpdater.js"></script>
+        <script src="scripts/index.js"></script>
+        <script src="scripts/RunningMechanism/async_running.js"></script>
+        <script src="scripts/Utils/utils.js"></script>
+        <script src="scripts/Utils/right-panel-resize.js"></script>
+        <script src="scripts/Utils/drag-handler.js"></script>
+        <script src="scripts/Utils/quickColorUpdater.js"></script>
 
-    <script src="scripts/UnitsDesign/ADD_ALU_RESULT.js"></script>
-    <script src="scripts/UnitsDesign/ADD_ALU_RESULT_1.js"></script>
-    <script src="scripts/UnitsDesign/ADD_4.js"></script>
-    <script src="scripts/UnitsDesign/AND.js"></script>
-    <script src="scripts/UnitsDesign/AND2.js"></script>
-    <script src="scripts/UnitsDesign/OR.js"></script>
+        <script src="scripts/UnitsDesign/ADD_ALU_RESULT.js"></script>
+        <script src="scripts/UnitsDesign/ADD_ALU_RESULT_1.js"></script>
+        <script src="scripts/UnitsDesign/ADD_4.js"></script>
+        <script src="scripts/UnitsDesign/AND.js"></script>
+        <script src="scripts/UnitsDesign/AND2.js"></script>
+        <script src="scripts/UnitsDesign/OR.js"></script>
 
-    <script src="scripts/Memory/MEM.js"></script>
-    <script src="scripts/Memory/registers.js"></script>
+        <script src="scripts/Memory/MEM.js"></script>
+        <script src="scripts/Memory/registers.js"></script>
 
-    <script src="scripts/Format/CB-Format.js"></script>
-    <script src="scripts/Format/B-Format.js"></script>
-    <script src="scripts/Format/D-Format.js"></script>
-    <script src="scripts/Format/I-Format.js"></script>
-    <script src="scripts/Format/R-Format.js"></script>
-    
-    <script src="scripts/AssemblyParser/Assembler.js"></script>
-    <script src="scripts/AssemblyParser/ControlSignals.js"></script>
-    <script src="scripts/AssemblyParser/Instruction.js"></script>
-    <script src="scripts/AssemblyParser/InstructionConfigLoader.js"></script>
-    <script src="scripts/AssemblyParser/InstructionDefinition.js"></script>
-    <script src="scripts/AssemblyParser/InstructionFactory.js"></script>
-    <script src="scripts/AssemblyParser/ProgramCounter.js"></script>
-    <script src="scripts/AssemblyParser/RFormatInstruction.js"></script>
-    <script src="scripts/AssemblyParser/RegisterStorage.js"></script>
-    <script src="scripts/AssemblyParser/IFormatInstruction.js"></script>
-    <script src="scripts/AssemblyParser/Extractor.js"></script>
-    <script src="scripts/AssemblyParser/DFormatInstruction.js"></script>
-    <script src="scripts/AssemblyParser/BFormatInstruction.js"></script>
-    <script src="scripts/AssemblyParser/CBFormatInstruction.js"></script>
-    <!-- <script src="test_programs/test.js"></script> -->
-    <script src="scripts/main.js"></script>
-    <script src="scripts/footer.js"></script>
+        <script src="scripts/Format/CB-Format.js"></script>
+        <script src="scripts/Format/B-Format.js"></script>
+        <script src="scripts/Format/D-Format.js"></script>
+        <script src="scripts/Format/I-Format.js"></script>
+        <script src="scripts/Format/R-Format.js"></script>
 
-    <!-- Text area functional-->
-    <script src="scripts/TextAreaFunction/clear.js"></script>
-    <script src="scripts/TextAreaFunction/save.js"></script>
-    <script src="scripts/TextAreaFunction/load.js"></script>
-</body>
+        <script src="scripts/AssemblyParser/Assembler.js"></script>
+        <script src="scripts/AssemblyParser/ControlSignals.js"></script>
+        <script src="scripts/AssemblyParser/Instruction.js"></script>
+        <script src="scripts/AssemblyParser/InstructionConfigLoader.js"></script>
+        <script src="scripts/AssemblyParser/InstructionDefinition.js"></script>
+        <script src="scripts/AssemblyParser/InstructionFactory.js"></script>
+        <script src="scripts/AssemblyParser/ProgramCounter.js"></script>
+        <script src="scripts/AssemblyParser/RFormatInstruction.js"></script>
+        <script src="scripts/AssemblyParser/RegisterStorage.js"></script>
+        <script src="scripts/AssemblyParser/IFormatInstruction.js"></script>
+        <script src="scripts/AssemblyParser/Extractor.js"></script>
+        <script src="scripts/AssemblyParser/DFormatInstruction.js"></script>
+        <script src="scripts/AssemblyParser/BFormatInstruction.js"></script>
+        <script src="scripts/AssemblyParser/CBFormatInstruction.js"></script>
+        <!-- <script src="test_programs/test.js"></script> -->
+        <script src="scripts/main.js"></script>
+        <script src="scripts/footer.js"></script>
 
+        <!-- Text area functional-->
+        <script src="scripts/TextAreaFunction/clear.js"></script>
+        <script src="scripts/TextAreaFunction/save.js"></script>
+        <script src="scripts/TextAreaFunction/load.js"></script>
+    </body>
 </html>
