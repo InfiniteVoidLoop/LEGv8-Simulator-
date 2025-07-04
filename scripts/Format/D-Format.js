@@ -476,8 +476,7 @@ class Store {
     }
 
     async registerWrite() {
-        PC.setAddress(PC.getCurrentAddress() + 4); // Increment PC by 4 for the next instruction
-        jumpToAddress(PC, vec, PC.getCurrentAddress()); // Update the address in the UI
+       
 
         const pathAndData = [
             { pathId: "mux-write-data", data: "0x0000" }, // 4-0 bits
@@ -491,6 +490,9 @@ class Store {
         );
         await Promise.all(allRuns);
 
+        PC.setAddress(PC.getCurrentAddress() + 4); // Increment PC by 4 for the next instruction
+        jumpToAddress(PC, vec, PC.getCurrentAddress()); // Update the address in the UI
+        
         document.getElementById("mux0_1").style.color = "black";
         document.getElementById("mux1_1").style.color = "black";
         document.getElementById("mux2_0").style.color = "black";
