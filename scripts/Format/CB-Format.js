@@ -250,23 +250,9 @@ class CBFormat {
     }
 
     async registerWrite() {
-        let backAddress;
-
-        if (cbzEqualZero) {
-            const addressShifted_bin = LEGv8Registers.valueTo64BitBinary(
-                LEGv8Registers.binaryToBigInt(
-                    LEGv8Registers.signExtend(this.address)
-                ) << BigInt(2)
-            );
-            const addressShifted_hexan =
-                LEGv8Registers.binaryToHex(addressShifted_bin); // Shift left by 2 bits
-            backAddress = addHexStrings(
-                this.address_instruction,
-                addressShifted_hexan
-            ); // 4-0 bits
-        } else {
-            backAddress = this.address_instruction;
-        }
+        const backAddress = LEGv8Registers.binaryToHex(
+            LEGv8Registers.valueTo64BitBinary(PC.getCurrentAddress())
+        );
         const pathAndData = [
             { pathId: "mux-write-data", data: "0x0" }, // 4-0 bits
             { pathId: "ALU-back-PC", data: backAddress }, // 4-0 bits
