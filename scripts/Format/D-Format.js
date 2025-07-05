@@ -6,12 +6,12 @@ class Load {
         this.Rn = toExactBinary(DFormatInstruction.rn, 5); // 5 bits
         this.Rd = toExactBinary(DFormatInstruction.rt, 5); // 5 bits
         this.address_instruction = LEGv8Registers.binaryToHex(
-            LEGv8Registers.valueTo64BitBinary(PC.getCurrentAddress())
+            LEGv8Registers.valueTo64BitBinary(PC.getCurrentAddress()),
         );
 
         this.aluControl = toExactBinary(
             DFormatInstruction.definition.controlSignals.operation,
-            4
+            4,
         ); // Placeholder for ALU control, will be set in execute method
         this.lineNumber = DFormatInstruction.lineNumber; // Line number for debugging
         this.controlSignals = getControlSignals(DFormatInstruction);
@@ -25,7 +25,7 @@ class Load {
             { pathId: "pc-ins-mem", data: instruction },
         ];
         const allRuns = pathAndData.map(({ pathId, data }) =>
-            run(data, pathId)
+            run(data, pathId),
         );
         await Promise.all(allRuns);
     }
@@ -44,7 +44,7 @@ class Load {
         ];
 
         const allRuns = pathAndData.map(({ pathId, data }) =>
-            run(data, pathId)
+            run(data, pathId),
         );
         await Promise.all(allRuns);
         // Control signals
@@ -60,15 +60,21 @@ class Load {
                 pathId: "control-ALU-op",
                 data: this.controlSignals.ALUOp1 + this.controlSignals.ALUOp0,
             },
-            { pathId: "control-flag-branch", data: this.controlSignals.FlagBranch },
+            {
+                pathId: "control-flag-branch",
+                data: this.controlSignals.FlagBranch,
+            },
             { pathId: "control-mem-write", data: this.controlSignals.MemWrite },
             { pathId: "control-ALU-src", data: this.controlSignals.ALUSrc },
             { pathId: "control-reg-write", data: this.controlSignals.RegWrite },
             { pathId: "control-branch", data: this.controlSignals.Branch },
-            { pathId: "control-flag-write", data: this.controlSignals.FlagWrite },
+            {
+                pathId: "control-flag-write",
+                data: this.controlSignals.FlagWrite,
+            },
         ];
         const allControlRuns = controlPathAndData.map(({ pathId, data }) =>
-            run(data, pathId)
+            run(data, pathId),
         );
         await Promise.all(allControlRuns);
         controlUnitDisplay(this.controlSignals, 1);
@@ -76,9 +82,12 @@ class Load {
         document.getElementById("mux0_0").style.color = "#007BFF";
         document.getElementById("mux1_1").style.color = "#007BFF";
         document.getElementById("mux3_1").style.color = "#007BFF";
-        document.getElementById('mux-0').style.background = 'linear-gradient(to bottom, red 50%, #acb1b3 50%)';
-        document.getElementById('mux-1').style.background = 'linear-gradient(to bottom,  #acb1b3 50%, red 50%)';
-        document.getElementById('mux-3').style.background = 'linear-gradient(to bottom, red 50%, #acb1b3 50%)';
+        document.getElementById("mux-0").style.background =
+            "linear-gradient(to bottom, red 50%, #acb1b3 50%)";
+        document.getElementById("mux-1").style.background =
+            "linear-gradient(to bottom,  #acb1b3 50%, red 50%)";
+        document.getElementById("mux-3").style.background =
+            "linear-gradient(to bottom, red 50%, #acb1b3 50%)";
 
         document.getElementById("register-handler").style.borderColor =
             "#007BFF";
@@ -92,21 +101,21 @@ class Load {
             { pathId: "mux-read-res-2", data: instruction20_16 }, // 20-16 bits
         ];
         await Promise.all(
-            muxToRegister.map(({ pathId, data }) => run(data, pathId))
+            muxToRegister.map(({ pathId, data }) => run(data, pathId)),
         );
     }
 
     async execute() {
         const instruction = this.opcode + this.Rn + this.address + this.Rd;
         const register1_hexan = LEGv8Registers.binaryToHex(
-            registers.readByBinary(this.Rn)
+            registers.readByBinary(this.Rn),
         ); // 9-5 bits
         const register2_hexan = LEGv8Registers.binaryToHex(
-            registers.readByBinary(getBits(instruction, 16, 20))
+            registers.readByBinary(getBits(instruction, 16, 20)),
         ); // 20-16 bits
 
         const extendAddress_hexan = LEGv8Registers.binaryToHex(
-            LEGv8Registers.signExtend(this.address)
+            LEGv8Registers.signExtend(this.address),
         );
 
         const pathAndData = [
@@ -117,14 +126,14 @@ class Load {
             { pathId: "Sign-extend-shift", data: extendAddress_hexan },
         ];
         const allRuns = pathAndData.map(({ pathId, data }) =>
-            run(data, pathId)
+            run(data, pathId),
         );
         await Promise.all(allRuns);
 
         const addressShifted_bin = LEGv8Registers.valueTo64BitBinary(
             LEGv8Registers.binaryToBigInt(
-                LEGv8Registers.signExtend(this.address)
-            ) << BigInt(2)
+                LEGv8Registers.signExtend(this.address),
+            ) << BigInt(2),
         );
         const addressShifted_hexan =
             LEGv8Registers.binaryToHex(addressShifted_bin); // Shift left by 2 bits
@@ -133,7 +142,7 @@ class Load {
             { pathId: "mux-alu", data: extendAddress_hexan }, // 20-16 bits
         ];
         const anotherRuns = anotherPathAndData.map(({ pathId, data }) =>
-            run(data, pathId)
+            run(data, pathId),
         );
         await Promise.all(anotherRuns);
     }
@@ -142,27 +151,27 @@ class Load {
         const instruction = this.opcode + this.Rn + this.address + this.Rd; // Concatenate all parts to form the instruction
         const add4Address = add4ToHexAddress(this.address_instruction);
         const register2_hexan = LEGv8Registers.binaryToHex(
-            registers.readByBinary(getBits(instruction, 16, 20))
+            registers.readByBinary(getBits(instruction, 16, 20)),
         ); // 20-16 bits
 
         const addressShifted_bin = LEGv8Registers.valueTo64BitBinary(
             LEGv8Registers.binaryToBigInt(
-                LEGv8Registers.signExtend(this.address)
-            ) << BigInt(2)
+                LEGv8Registers.signExtend(this.address),
+            ) << BigInt(2),
         );
         const addressShifted_hexan =
             LEGv8Registers.binaryToHex(addressShifted_bin); // Shift left by 2 bits
 
         const register1_decimal = LEGv8Registers.binaryToBigInt(
-            registers.readByBinary(this.Rn)
+            registers.readByBinary(this.Rn),
         );
         const address_decimal = LEGv8Registers.binaryToBigInt(
-            LEGv8Registers.signExtend(this.address)
+            LEGv8Registers.signExtend(this.address),
         );
 
         const memPos = register1_decimal + address_decimal; // ADD operation
         const memoryAddress_bin = LEGv8Registers.valueTo64BitBinary(
-            memPos || 0
+            memPos || 0,
         );
         const memoryAddress_hexan =
             LEGv8Registers.binaryToHex(memoryAddress_bin); // 4-0 bits
@@ -170,11 +179,11 @@ class Load {
         const memValue = memory.readDoubleWord(memPos);
         registers.writeByBinary(
             this.Rd,
-            LEGv8Registers.valueTo64BitBinary(memValue)
+            LEGv8Registers.valueTo64BitBinary(memValue),
         ); // Write the value to the destination register
 
         const newRegisterValue_hexan = LEGv8Registers.binaryToHex(
-            registers.readByBinary(this.Rd)
+            registers.readByBinary(this.Rd),
         ); // 4-0 bits
 
         const pathAndData = [
@@ -187,13 +196,13 @@ class Load {
                 pathId: "ALU-add-mux",
                 data: addHexStrings(
                     this.address_instruction,
-                    addressShifted_hexan
+                    addressShifted_hexan,
                 ),
             }, // 4-0 bits
             { pathId: "ALU-and-gate", data: "0" }, // 4-0 bits
         ];
         const allRuns = pathAndData.map(({ pathId, data }) =>
-            run(data, pathId)
+            run(data, pathId),
         );
         await Promise.all(allRuns);
 
@@ -204,7 +213,7 @@ class Load {
             { pathId: "and-gate-or-gate", data: "0" },
         ];
         const anotherRuns = anotherPathAndData.map(({ pathId, data }) =>
-            run(data, pathId)
+            run(data, pathId),
         );
         await Promise.all(anotherRuns);
         const orToMux = [
@@ -213,7 +222,8 @@ class Load {
         const orRuns = orToMux.map(({ pathId, data }) => run(data, pathId));
         await Promise.all(orRuns);
         document.getElementById("mux2_0").style.color = "#007BFF";
-        document.getElementById('mux-2').style.background = 'linear-gradient(to bottom, red 50%, #acb1b3 50%)';
+        document.getElementById("mux-2").style.background =
+            "linear-gradient(to bottom, red 50%, #acb1b3 50%)";
     }
 
     async registerWrite() {
@@ -221,7 +231,7 @@ class Load {
         jumpToAddress(PC, vec, PC.getCurrentAddress()); // Update the address in the UI
 
         const memoryValue_hexan = LEGv8Registers.binaryToHex(
-            registers.readByBinary(this.Rd)
+            registers.readByBinary(this.Rd),
         ); // 4-0 bits
         const pathAndData = [
             { pathId: "mux-write-data", data: memoryValue_hexan }, // 4-0 bits
@@ -231,7 +241,7 @@ class Load {
             }, // 4-0 bits
         ];
         const allRuns = pathAndData.map(({ pathId, data }) =>
-            run(data, pathId)
+            run(data, pathId),
         );
         await Promise.all(allRuns);
         // Update log
@@ -239,7 +249,8 @@ class Load {
         document
             .getElementById(`register-X${pos}`)
             .querySelector("span:last-child").textContent = memoryValue_hexan;
-        document.getElementById(`register-X${pos}`).style.background = "#87CEFA";
+        document.getElementById(`register-X${pos}`).style.background =
+            "#87CEFA";
         document.getElementById("mux0_0").style.color = "black";
         document.getElementById("mux1_1").style.color = "black";
         document.getElementById("mux2_0").style.color = "black";
@@ -267,12 +278,12 @@ class Store {
         this.Rn = toExactBinary(DFormatInstruction.rn, 5); // 5 bits
         this.Rd = toExactBinary(DFormatInstruction.rt, 5); // 5 bits
         this.address_instruction = LEGv8Registers.binaryToHex(
-            LEGv8Registers.valueTo64BitBinary(PC.getCurrentAddress())
+            LEGv8Registers.valueTo64BitBinary(PC.getCurrentAddress()),
         ); // Program Counter address
         this.lineNumber = DFormatInstruction.lineNumber; // Line number for debugging
         this.aluControl = toExactBinary(
             DFormatInstruction.definition.controlSignals.operation,
-            4
+            4,
         ); // Placeholder for ALU control, will be set in execute method
         this.controlSignals = getControlSignals(DFormatInstruction);
     }
@@ -285,7 +296,7 @@ class Store {
             { pathId: "pc-ins-mem", data: instruction },
         ];
         const allRuns = pathAndData.map(({ pathId, data }) =>
-            run(data, pathId)
+            run(data, pathId),
         );
         await Promise.all(allRuns);
     }
@@ -305,7 +316,7 @@ class Store {
         ];
 
         const allRuns = pathAndData.map(({ pathId, data }) =>
-            run(data, pathId)
+            run(data, pathId),
         );
         await Promise.all(allRuns);
         // Control signals
@@ -321,25 +332,34 @@ class Store {
                 pathId: "control-ALU-op",
                 data: this.controlSignals.ALUOp1 + this.controlSignals.ALUOp0,
             },
-            { pathId: "control-flag-branch", data: this.controlSignals.FlagBranch },
+            {
+                pathId: "control-flag-branch",
+                data: this.controlSignals.FlagBranch,
+            },
             { pathId: "control-mem-write", data: this.controlSignals.MemWrite },
             { pathId: "control-ALU-src", data: this.controlSignals.ALUSrc },
             { pathId: "control-reg-write", data: this.controlSignals.RegWrite },
             { pathId: "control-branch", data: this.controlSignals.Branch },
-            { pathId: "control-flag-write", data: this.controlSignals.FlagWrite },
+            {
+                pathId: "control-flag-write",
+                data: this.controlSignals.FlagWrite,
+            },
         ];
         const allControlRuns = controlPathAndData.map(({ pathId, data }) =>
-            run(data, pathId)
+            run(data, pathId),
         );
         await Promise.all(allControlRuns);
 
         document.getElementById("mux0_1").style.color = "#007BFF";
         document.getElementById("mux1_1").style.color = "#007BFF";
         document.getElementById("mux3_0").style.color = "#007BFF";
-        
-        document.getElementById('mux-0').style.background = 'linear-gradient(to bottom,  #acb1b3 50%, red 50%)';
-        document.getElementById('mux-1').style.background = 'linear-gradient(to bottom,  #acb1b3 50%, red 50%)';
-        document.getElementById('mux-3').style.background = 'linear-gradient(to bottom,  #acb1b3 50%, red 50%)';
+
+        document.getElementById("mux-0").style.background =
+            "linear-gradient(to bottom,  #acb1b3 50%, red 50%)";
+        document.getElementById("mux-1").style.background =
+            "linear-gradient(to bottom,  #acb1b3 50%, red 50%)";
+        document.getElementById("mux-3").style.background =
+            "linear-gradient(to bottom,  #acb1b3 50%, red 50%)";
 
         document.getElementById("memory-handler").style.borderColor = "#007BFF";
         document.getElementById("memory-handler-write").style.color = "#007BFF";
@@ -348,19 +368,19 @@ class Store {
             { pathId: "mux-read-res-2", data: this.Rd }, // 20-16 bits
         ];
         await Promise.all(
-            muxToRegister.map(({ pathId, data }) => run(data, pathId))
+            muxToRegister.map(({ pathId, data }) => run(data, pathId)),
         );
     }
 
     async execute() {
         const register1_hexan = LEGv8Registers.binaryToHex(
-            registers.readByBinary(this.Rn)
+            registers.readByBinary(this.Rn),
         ); // 9-5 bits
         const register2_hexan = LEGv8Registers.binaryToHex(
-            registers.readByBinary(this.Rd)
+            registers.readByBinary(this.Rd),
         );
         const extendAddress_hexan = LEGv8Registers.binaryToHex(
-            LEGv8Registers.signExtend(this.address)
+            LEGv8Registers.signExtend(this.address),
         );
 
         const pathAndData = [
@@ -371,13 +391,13 @@ class Store {
             { pathId: "Sign-extend-shift", data: extendAddress_hexan },
         ];
         const allRuns = pathAndData.map(({ pathId, data }) =>
-            run(data, pathId)
+            run(data, pathId),
         );
         await Promise.all(allRuns);
         const addressShifted_bin = LEGv8Registers.valueTo64BitBinary(
             LEGv8Registers.binaryToBigInt(
-                LEGv8Registers.signExtend(this.address)
-            ) << BigInt(2)
+                LEGv8Registers.signExtend(this.address),
+            ) << BigInt(2),
         );
         const addressShifted_hexan =
             LEGv8Registers.binaryToHex(addressShifted_bin); // Shift left by 2 bits
@@ -388,7 +408,7 @@ class Store {
         ];
 
         const anotherRuns = anotherPathAndData.map(({ pathId, data }) =>
-            run(data, pathId)
+            run(data, pathId),
         );
         await Promise.all(anotherRuns);
     }
@@ -398,32 +418,32 @@ class Store {
 
         const addressShifted_bin = LEGv8Registers.valueTo64BitBinary(
             LEGv8Registers.binaryToBigInt(
-                LEGv8Registers.signExtend(this.address)
-            ) << BigInt(2)
+                LEGv8Registers.signExtend(this.address),
+            ) << BigInt(2),
         );
         const addressShifted_hexan =
             LEGv8Registers.binaryToHex(addressShifted_bin); // Shift left by 2 bits
 
         const register1_decimal = LEGv8Registers.binaryToBigInt(
-            registers.readByBinary(this.Rn)
+            registers.readByBinary(this.Rn),
         );
         const address_decimal = LEGv8Registers.binaryToBigInt(
-            LEGv8Registers.signExtend(this.address)
+            LEGv8Registers.signExtend(this.address),
         );
         // load value Rd to memory
 
         const memPos = register1_decimal + address_decimal; // ADD operation
         const memoryAddress_bin = LEGv8Registers.valueTo64BitBinary(
-            memPos || 0
+            memPos || 0,
         );
         const memoryAddress_hexan =
             LEGv8Registers.binaryToHex(memoryAddress_bin); // 4-0 bits
 
         const registerSource_decimal = LEGv8Registers.binaryToBigInt(
-            registers.readByBinary(this.Rd)
+            registers.readByBinary(this.Rd),
         ); // Read the value from the source register
         const registerSource_hexan = LEGv8Registers.binaryToHex(
-            registers.readByBinary(this.Rd)
+            registers.readByBinary(this.Rd),
         ); // 4-0 bits
 
         memory.writeDoubleWord(memPos, registerSource_decimal);
@@ -438,13 +458,13 @@ class Store {
                 pathId: "ALU-add-mux",
                 data: addHexStrings(
                     this.address_instruction,
-                    addressShifted_hexan
+                    addressShifted_hexan,
                 ),
             }, // 4-0 bits
             { pathId: "ALU-and-gate", data: "0" }, // 4-0 bits
         ];
         const allRuns = pathAndData.map(({ pathId, data }) =>
-            run(data, pathId)
+            run(data, pathId),
         );
         await Promise.all(allRuns);
         const memPoss = Number(memPos);
@@ -452,10 +472,11 @@ class Store {
             document.getElementById(`stack-${memPoss + i}`).textContent =
                 LEGv8Registers.binaryToHex(
                     LEGv8Registers.valueTo64BitBinary(
-                        memory.readByte(memPoss + i)
-                    )
+                        memory.readByte(memPoss + i),
+                    ),
                 );
-            document.getElementById(`stack-${memPoss + i}`).style.background = "#87CEFA";
+            document.getElementById(`stack-${memPoss + i}`).style.background =
+                "#87CEFA";
         }
         // This is the part where read address register in memory
         const anotherPathAndData = [
@@ -464,7 +485,7 @@ class Store {
             { pathId: "add-2-or-gate", data: "0" }, // 4-0 bits
         ];
         const anotherRuns = anotherPathAndData.map(({ pathId, data }) =>
-            run(data, pathId)
+            run(data, pathId),
         );
         await Promise.all(anotherRuns);
         const orToMux = [
@@ -474,12 +495,9 @@ class Store {
         await Promise.all(orRuns);
 
         document.getElementById("mux2_0").style.color = "#007BFF";
-
     }
 
     async registerWrite() {
-       
-
         const pathAndData = [
             { pathId: "mux-write-data", data: "0x0000" }, // 4-0 bits
             {
@@ -488,13 +506,13 @@ class Store {
             }, // 4-0 bits
         ];
         const allRuns = pathAndData.map(({ pathId, data }) =>
-            run(data, pathId)
+            run(data, pathId),
         );
         await Promise.all(allRuns);
 
         PC.setAddress(PC.getCurrentAddress() + 4); // Increment PC by 4 for the next instruction
         jumpToAddress(PC, vec, PC.getCurrentAddress()); // Update the address in the UI
-        
+
         document.getElementById("mux0_1").style.color = "black";
         document.getElementById("mux1_1").style.color = "black";
         document.getElementById("mux2_0").style.color = "black";
@@ -504,16 +522,15 @@ class Store {
         document.getElementById("memory-handler-write").style.color = "black";
         controlUnitDisplay(this.controlSignals, 0); // Reset control signals display
     }
-    async clearInstruction(){
-          const pathAndData = [
-            { pathId: "hidden_path", data: 0 },
-        ];
+    async clearInstruction() {
+        const pathAndData = [{ pathId: "hidden_path", data: 0 }];
         const allRuns = pathAndData.map(({ pathId, data }) =>
-            run(data, pathId)
+            run(data, pathId),
         );
         await Promise.all(allRuns);
     }
     async run() {
+        markLines("assemblyCode", this.lineNumber);
         await this.instructionFetch();
         await this.instructionDecode();
         await this.execute();

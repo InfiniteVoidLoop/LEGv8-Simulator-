@@ -101,6 +101,9 @@ async function run(text, pathId) {
     let lastStartTime = null;
 
     while (elapsedTime < duration) {
+        if (isBack) {
+            return;
+        }
         if (!running) {
             const resumeTimestamp = await waitForGlobalResume();
             lastStartTime = resumeTimestamp;
@@ -148,7 +151,7 @@ async function run(text, pathId) {
 
     // Wait for 1 second at the end of the path before removing the div
     if (!isStep) {
-        await new Promise((resolve) => setTimeout(resolve, 600));
+        await new Promise((resolve) => setTimeout(resolve, isNext ? 0 : 600));
     }
     // Remove the div element after the effect is complete
     if (divElement.parentNode && !isStep) {
@@ -160,7 +163,12 @@ async function run(text, pathId) {
     // pathElement.setAttribute("stroke-width", originalStrokeWidth);
 
     if (isStep) {
-        await waitForGlobalResume();
+        if (isBack) {
+            return;
+        }
+        if (!isNext) {
+            await waitForGlobalResume();
+        }
     }
 
     console.log(`✅ DIV animation completed on path ${pathId}`);
@@ -272,7 +280,6 @@ stepBtn.onclick = async () => {
                 .toString(16)
                 .padStart(8, "0")
                 .toUpperCase()}`;
-            markLines("assemblyCode", vec[i].lineNumber);
             await vec[i].run();
             resetInstruction(vec, i);
             // Remove the animated divs after each step
@@ -282,6 +289,14 @@ stepBtn.onclick = async () => {
                 }
             });
             remove_after_step = [];
+            if (isBack) {
+                i--;
+                isBack = false;
+            }
+            if (isNext) {
+                isNext = false;
+                duration = 10000 / executionSpeed; // Reset duration to normal speed
+            }
             pcValue.textContent = `0x${PC.getCurrentAddress()
                 .toString(16)
                 .padStart(8, "0")
@@ -289,13 +304,15 @@ stepBtn.onclick = async () => {
         }
     } else {
         // If already running, speed so fast that it to the next step
-        duration = 1 / executionSpeed; // Set duration to 1ms for fast
+        duration = 0; // Set duration to 1ms for fast
         // delay 1ms to allow the UI to update
         await new Promise((resolve) => setTimeout(resolve, 1));
+
         isStep = true;
         stepCallbacks.forEach((resolve) => resolve());
         const timestamp = performance.now();
         resumeCallbacks.forEach((resolve) => resolve(timestamp));
+
         duration = 10000 / executionSpeed; // Reset duration to normal speed
     }
 };

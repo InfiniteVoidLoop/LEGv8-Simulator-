@@ -134,7 +134,14 @@
                                     ></path>
                                 </marker>
                             </defs>
-                            <path id="hidden_path" stroke="black" stroke-width="2" fill="none" d="M 1500, 1500 L 1500, 1500" marker-end="url(#arrowhead)"></path>
+                            <path
+                                id="hidden_path"
+                                stroke="black"
+                                stroke-width="2"
+                                fill="none"
+                                d="M 1500, 1500 L 1500, 1500"
+                                marker-end="url(#arrowhead)"
+                            ></path>
                             <path
                                 id="pc-ins-mem"
                                 stroke="black"
@@ -1246,10 +1253,18 @@
                                 </button>
                             </div>
                         </div>
-                        <textarea
-                            id="assemblyCode"
-                            class="w-full h-40 p-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:outline-none text-sm font-mono bg-white"
-                        >
+                        <!-- sround this textarea in a div so i can have a colum for row number onf the left of the text area-->
+<div class="flex">
+    <div class="bg-gray-100 text-right pr-2 text-sm font-mono select-none">
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <!-- Add more lines as needed or use JS to generate -->
+    </div>
+    <textarea
+        id="assemblyCode"
+        class="w-full h-40 p-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:outline-none text-sm font-mono bg-white"
+    >
 // --- Arithmetic Instructions ---
 // ADDI: Add immediate value
 ADDI X1, XZR, #10      // X1 = 0 + 10 = 10
@@ -1314,6 +1329,9 @@ ADDI X18, XZR, #99     // This instruction is skipped.
 
 END_PROGRAM:
 // Program ends here.
+
+                            </textarea>
+</div>
                         </textarea>
                     </div>
 
@@ -1345,12 +1363,28 @@ END_PROGRAM:
                                 Pause
                             </button>
                         </div>
-                        <button
-                            id="resetBtn"
-                            class="w-full bg-gray-300 hover:bg-gray-400 py-1 rounded font-medium transition-colors"
-                        >
-                            Reset
-                        </button>
+
+                        <div class="flex space-x-3 mb-3">
+                            <!-- button next-->
+                            <button
+                                id="nextBtn"
+                                class="flex-1 bg-black text-white py-1 rounded font-medium transition-colors"
+                            >
+                                Next
+                            </button>
+                            <button
+                                id="backBtn"
+                                class="flex-1 bg-yellow-300 hover:bg-yellow-600 text-white py-1 rounded font-medium transition-colors"
+                            >
+                                Back
+                            </button>
+                            <button
+                                id="resetBtn"
+                                class="flex-1 bg-gray-300 hover:bg-gray-400 py-1 rounded font-medium transition-colors"
+                            >
+                                Reset
+                            </button>
+                        </div>
                     </div>
                     <!-- Speed Slider -->
                     <div class="mb-6">
