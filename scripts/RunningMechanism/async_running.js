@@ -288,9 +288,14 @@ stepBtn.onclick = async () => {
                 .toUpperCase()}`;
         }
     } else {
+        // If already running, speed so fast that it to the next step
+        duration = 1 / executionSpeed; // Set duration to 1ms for fast
+        // delay 1ms to allow the UI to update
+        await new Promise((resolve) => setTimeout(resolve, 1));
         isStep = true;
         stepCallbacks.forEach((resolve) => resolve());
         const timestamp = performance.now();
         resumeCallbacks.forEach((resolve) => resolve(timestamp));
+        duration = 10000 / executionSpeed; // Reset duration to normal speed
     }
 };
