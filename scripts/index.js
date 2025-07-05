@@ -69,7 +69,7 @@ function generateRegisters() {
     for (let i = 0; i <= 31; i++) {
         const regName = `X${i}`; // Use special name if exists, otherwise X[i]
         const NAME = registerMap[i] || `X${i}`;
-        const value = `0x${Math.floor(0)
+        const value = `0x${Math.floor(0)    
             .toString(16)
             .padStart(16, "0")
             .toUpperCase()}`; // Changed to padStart(16) for 64-bit

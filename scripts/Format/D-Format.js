@@ -239,6 +239,7 @@ class Load {
         document
             .getElementById(`register-X${pos}`)
             .querySelector("span:last-child").textContent = memoryValue_hexan;
+        document.getElementById(`register-X${pos}`).style.background = "#87CEFA";
         document.getElementById("mux0_0").style.color = "black";
         document.getElementById("mux1_1").style.color = "black";
         document.getElementById("mux2_0").style.color = "black";
@@ -454,6 +455,7 @@ class Store {
                         memory.readByte(memPoss + i)
                     )
                 );
+            document.getElementById(`stack-${memPoss + i}`).style.background = "#87CEFA";
         }
         // This is the part where read address register in memory
         const anotherPathAndData = [
@@ -502,11 +504,21 @@ class Store {
         document.getElementById("memory-handler-write").style.color = "black";
         controlUnitDisplay(this.controlSignals, 0); // Reset control signals display
     }
+    async clearInstruction(){
+          const pathAndData = [
+            { pathId: "hidden_path", data: 0 },
+        ];
+        const allRuns = pathAndData.map(({ pathId, data }) =>
+            run(data, pathId)
+        );
+        await Promise.all(allRuns);
+    }
     async run() {
         await this.instructionFetch();
         await this.instructionDecode();
         await this.execute();
         await this.memoryAccess();
         await this.registerWrite();
+        await this.clearInstruction();
     }
 }

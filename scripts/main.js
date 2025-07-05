@@ -97,6 +97,12 @@ const resetInstruction = (vec, i) => {
         }
     });
     restore_path = [];
+    for (let i = 0; i < 32; i++){
+        document.getElementById(`register-X${i}`).style.background = "white";
+    }
+    for (let i = 0; i < 1000; i++){
+        document.getElementById(`stack-${i}`).style.background = "white";
+    }
 };
 
 startBtn.onclick = async () => {
