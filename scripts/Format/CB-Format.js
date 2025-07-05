@@ -210,7 +210,7 @@ class CBFormat {
             { pathId: "read-data-2-write-data", data: register2_hexan },
             { pathId: "ALU-mux", data: "0x0" }, // 4-0 bits
             { pathId: "ALU-address", data: "0x0" }, // 4-0 bits !!!!
-            { pathId: "alu-to-nzcv", data: "0000" },
+            { pathId: "alu-to-nzcv", data: BFlag },
             { pathId: "alu-add-4-mux", data: add4Address }, // 4-0 bits  !!!
             {
                 pathId: "ALU-add-mux",
@@ -225,7 +225,14 @@ class CBFormat {
             run(data, pathId)
         );
         await Promise.all(allRuns);
+        
         // This is the part where read address register in memory
+        const PathAndData = [
+            { pathId: "nzcv-and-gate", data: BFlag },
+        ];
+        const runs = PathAndData.map(({ pathId, data }) => run(data, pathId));
+        await Promise.all(runs);
+        
         const anotherPathAndData = [
             { pathId: "read-data-mux", data: "0x0" }, // 4-0 bits  !!!!!
             { pathId: "and-gate-or-gate", data: CBFlag },
