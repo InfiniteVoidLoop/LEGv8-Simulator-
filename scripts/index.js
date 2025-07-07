@@ -90,7 +90,6 @@ window.onload = function () {
     generateRegisters();
     generateStack();
     zoomLevel = 0.8;
-    applyZoom();
     // Set default active tab
 
     document.getElementById("registers-tab").classList.add("bg-gray-100");
