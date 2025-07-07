@@ -3,7 +3,7 @@ class ProgramCounter {
 
     constructor() {
         this.currentAddress = ProgramCounter.BASE_ADDRESS;
-
+        this.backUpAddress = this.currentAddress; 
         // Map lưu thông tin: address (number) -> object
         this.addressMap = new Map();
         console.log(
@@ -12,11 +12,14 @@ class ProgramCounter {
             )}`
         );
     }
-
+    
     getCurrentAddress() {
         return this.currentAddress;
     }
 
+    reverseAddress(){
+        this.currentAddress = this.backUpAddress;
+    }
     setAddress(newAddress) {
         if (newAddress < 0) {
             throw new InvalidPCException(
@@ -41,9 +44,10 @@ class ProgramCounter {
                 16
             )} -> 0x${newAddress.toString(16)}`
         );
+        this.backUpAddress = this.currentAddress;
         this.currentAddress = newAddress;
     }
-
+    
     reset() {
         this.setAddress(ProgramCounter.BASE_ADDRESS);
     }

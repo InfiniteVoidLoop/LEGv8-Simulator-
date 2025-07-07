@@ -2,7 +2,9 @@ class LEGv8Registers {
     constructor() {
         // Initialize all 32 registers with a 64-bit binary string representing 0
         this.registers = new Array(32).fill("0".repeat(64));
-
+        this.backUpRegisters = new Array(32).fill("0".repeat(64));
+        this.getFlags = "0".repeat(4); // 4 bits for N, Z, C, V flags
+        this.backUpFlags = this.getFlags;
         // Map from register index to register name
         this.registerMap = {
             0: "X0",
@@ -48,6 +50,16 @@ class LEGv8Registers {
 
     // === Base methods ===
 
+    syncRegisters() {
+        for (let i = 0; i < 32; i++) {
+            document.getElementById(`register-X${i}`).querySelector("span:last-child").textContent = LEGv8Registers.binaryToHex(this.registers[i]);
+        }
+    }
+    backUpData() {
+        for (let i = 0; i < 32; i++) {
+            this.registers[i] = this.backUpRegisters[i];
+        }
+    }
     /**
      * Writes a value to a specified register index.
      * XZR (register 31) cannot be written to.
@@ -57,13 +69,12 @@ class LEGv8Registers {
     write(index, value) {
         this.validateIndex(index);
         if (index === 31) {
-            // XZR (Zero Register)
-            console.warn(
-                "Warning: Cannot write to XZR (X31), it always holds 0."
-            );
+            console.warn("❌ Cannot write to XZR (X31)");
             return;
         }
-        this.registers[index] = LEGv8Registers.valueTo64BitBinary(value); // Ensure the value is stored as a 64-bit binary string
+        this.backUpRegisters[index] = this.registers[index];
+        const binStr = LEGv8Registers.valueTo64BitBinary(value);
+        this.registers[index] = binStr;
     }
 
     /**
@@ -365,37 +376,37 @@ class LEGv8Registers {
         const resultValue = BigInt('0b' + result);
         const op1Value = BigInt('0b' + operand1);
         const op2Value = BigInt('0b' + operand2);
-        
+
         // Calculate Negative and Zero flags
         const isNegative = result[0] === '1';
         const isZero = resultValue === 0n;
-        
+
         // Initialize Carry and Overflow
         let isCarry = false;
         let isOverflow = false;
-        
+
         if (operation === 'ADD') {
             // Carry: Set if unsigned addition produces a carry
             const maxUnsigned = BigInt('0b' + '1'.repeat(64));
             isCarry = (op1Value + op2Value) > maxUnsigned;
-            
+
             // Overflow: Set if signed addition produces a wrong sign
             const op1Negative = operand1[0] === '1';
             const op2Negative = operand2[0] === '1';
             const resultNegative = result[0] === '1';
             isOverflow = (op1Negative === op2Negative) && (op1Negative !== resultNegative);
-        } 
+        }
         else if (operation === 'SUB') {
             // For subtraction, carry is set if there's no borrow
             isCarry = op1Value >= op2Value;
-            
+
             // Overflow: Set if signed subtraction produces a wrong sign
             const op1Negative = operand1[0] === '1';
             const op2Negative = operand2[0] === '1';
             const resultNegative = result[0] === '1';
             isOverflow = (op1Negative !== op2Negative) && (op1Negative !== resultNegative);
         }
-        
+
         // Return flags as strings "0" or "1"
         return {
             N: isNegative ? "1" : "0",  // Negative
@@ -403,5 +414,54 @@ class LEGv8Registers {
             C: isCarry ? "1" : "0",     // Carry
             V: isOverflow ? "1" : "0"   // Overflow
         };
+    }
+    backUpFlagState() {
+        this.getFlags = this.backUpFlags;
+    }
+    updateFlags(result, operand1, operand2, operation) {
+        const flags = this.getStatusFlags(result, operand1, operand2, operation);
+        this.backUpFlags = this.getFlags;
+        this.getFlags = flags.N + flags.Z + flags.C + flags.V; // 4-0 bits
+        return this.getFlags;
+    }
+    getCurrentFlags() {
+        return this.getFlags;
+    }
+    syncFlags() {
+        document.getElementById("flag-status-n").textContent = this.getFlags[0];
+        document.getElementById("flag-status-z").textContent = this.getFlags[1];
+        document.getElementById("flag-status-c").textContent = this.getFlags[2];
+        document.getElementById("flag-status-v").textContent = this.getFlags[3];
+        pstate.N = this.getFlags[0] - "0";
+        pstate.Z = this.getFlags[1] - "0";
+        pstate.C = this.getFlags[2] - "0";
+        pstate.V = this.getFlags[3] - "0";
+        if (pstate.N == 1) {
+            document.getElementById("flag-n").style.color = "#007BFF";
+            document.getElementById("flag-n").style.background = "red";
+        } else {
+            document.getElementById("flag-n").style.color = "black";
+        }
+
+        if (pstate.Z == 1) {
+            document.getElementById("flag-z").style.color = "#007BFF";
+            document.getElementById("flag-z").style.background = "red";
+        } else {
+            document.getElementById("flag-z").style.color = "black";
+        }
+
+        if (pstate.C == 1) {
+            document.getElementById("flag-c").style.color = "#007BFF";
+            document.getElementById("flag-c").style.background = "red";
+        } else {
+            document.getElementById("flag-c").style.color = "black";
+        }
+
+        if (pstate.V == 1) {
+            document.getElementById("flag-v").style.color = "#007BFF";
+            document.getElementById("flag-v").style.background = "red";
+        } else {
+            document.getElementById("flag-v").style.color = "black";
+        }
     }
 }

@@ -8,7 +8,9 @@ let registers = new LEGv8Registers();
 let isStart = false;
 let isBack = false;
 let isNext = false;
+var jumpError = false;
 vec = [];
+
 const assemble = () => {
     if (running) {
         alert("Please reset the current execution before compiling new code.");
@@ -168,6 +170,17 @@ startBtn.onclick = async () => {
         });
         remove_after_step = [];
         if (isBack) {
+            if (jumpError == false){
+                vec.pop();
+            }
+            jumpError = false;
+            registers.backUpData();
+            memory.restoreFromBackup();
+            registers.syncRegisters();
+            memory.syncMemory();
+            PC.reverseAddress();
+            registers.backUpFlagState();
+            registers.syncFlags();
             i--;
             isBack = false;
         }
@@ -195,6 +208,7 @@ const nextBtn = document.getElementById("nextBtn");
 nextBtn.onclick = async () => {
     // turn the current instruction into a step and click 10 times to skip the whole instruction
     // check for compiled instructions
+    stepBtn.click();
     if (vec.length === 0) {
         alert("There are no compiled instructions.");
         return;

@@ -1,5 +1,3 @@
-var getFlags = "0000"; // Initialize getFlags to a default value
-var flags;
 class RFormat {
     constructor(RFormatInstruction, PC) {
         this.opcode = toExactBinary(RFormatInstruction.definition.opcode, 11);
@@ -139,14 +137,12 @@ class RFormat {
         } else if (this.aluControl === "0110") {
             operation = "SUB";
         }
-
-        flags = registers.getStatusFlags(
+        registers.updateFlags(
             newRegister_bin,
             registers.readByBinary(this.Rn),
             registers.readByBinary(this.Rm),
             operation,
         );
-        getFlags = flags.N + flags.Z + flags.C + flags.V; // 4-0 bits
 
         const pathAndData = [
             { pathId: "read-1-alu", data: register1_hexan },
@@ -184,7 +180,7 @@ class RFormat {
             { pathId: "read-data-2-write-data", data: register2_hexan }, // 20-16 bits
             { pathId: "ALU-mux", data: newRegister_hexan }, // 4-0 bits
             { pathId: "ALU-address", data: newRegister_hexan }, // 4-0 bits !!!!
-            { pathId: "alu-to-nzcv", data: getFlags }, // 4-0 bits
+            { pathId: "alu-to-nzcv", data: registers.getCurrentFlags}, // 4-0 bits
             { pathId: "alu-add-4-mux", data: add4Address }, // 4-0 bits  !!!
             { pathId: "ALU-add-mux", data: this.address }, // 4-0 bits
             { pathId: "ALU-and-gate", data: 0 }, // 4-0 bits
@@ -195,14 +191,14 @@ class RFormat {
         await Promise.all(allRuns);
 
         if (this.controlSignals.FlagWrite == 1) {
-            document.getElementById("flag-status-n").textContent = flags.N;
-            document.getElementById("flag-status-z").textContent = flags.Z;
-            document.getElementById("flag-status-c").textContent = flags.C;
-            document.getElementById("flag-status-v").textContent = flags.V;
-            pstate.N = flags.N - "0";
-            pstate.Z = flags.Z - "0";
-            pstate.C = flags.C - "0";
-            pstate.V = flags.V - "0";
+            document.getElementById("flag-status-n").textContent = registers.getCurrentFlags()[0];
+            document.getElementById("flag-status-z").textContent = registers.getCurrentFlags()[1];
+            document.getElementById("flag-status-c").textContent = registers.getCurrentFlags()[2];
+            document.getElementById("flag-status-v").textContent = registers.getCurrentFlags()[3];
+            pstate.N = registers.getCurrentFlags()[0] - "0";
+            pstate.Z = registers.getCurrentFlags()[1] - "0";
+            pstate.C = registers.getCurrentFlags()[2] - "0";
+            pstate.V = registers.getCurrentFlags()[3] - "0";
             if (pstate.N == 1) {
                 document.getElementById("flag-n").style.color = "#007BFF";
                 document.getElementById("flag-n").style.background = "red";

@@ -87,6 +87,7 @@ function getBits(bitStr, startBit, endBit) {
 function jumpToAddress(PC, lst, address) {
     const obj = PC.getObjectAtAddress(address);
     if (!obj) {
+        jumpError = true;
         return;
     }
     if (obj.definition.format == "R") {

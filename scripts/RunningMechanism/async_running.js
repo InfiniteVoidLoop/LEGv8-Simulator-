@@ -290,6 +290,17 @@ stepBtn.onclick = async () => {
             });
             remove_after_step = [];
             if (isBack) {
+                if (jumpError == false) {
+                    vec.pop();
+                }
+                jumpError = false;
+                registers.backUpData();
+                memory.restoreFromBackup();
+                registers.syncRegisters();
+                memory.syncMemory();
+                PC.reverseAddress();
+                registers.backUpFlagState();
+                registers.syncFlags();
                 i--;
                 isBack = false;
             }

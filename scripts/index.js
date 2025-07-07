@@ -90,10 +90,7 @@ function generateStack() {
     // Add header row
     for (let i = 0; i < 1000; i++) {
         const address = `0x${i.toString(16).padStart(8, "0").toUpperCase()}`;
-        const value = `0x${Math.floor(Math.random() * 256) // Random từ 0-255 (1 byte)
-            .toString(16)
-            .padStart(1, "0") // Luôn hiển thị 2 ký tự hex
-            .toUpperCase()}`;
+        const value = "0x00"; // Default value for stack
 
         const addressElement = document.createElement("div");
         addressElement.className =
@@ -104,7 +101,7 @@ function generateStack() {
         valueElement.className =
             "p-1 text-xs font-mono border-b border-gray-100";
         valueElement.textContent = value;
-        valueElement.id = `stack-${i}`;
+        valueElement.id = `stack-${i}`; 
 
         container.appendChild(addressElement);
         container.appendChild(valueElement);

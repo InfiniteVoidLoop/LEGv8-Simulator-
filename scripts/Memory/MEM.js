@@ -3,14 +3,35 @@ class MemoryStorage {
     static MIN_ADDRESS = 0x000000n; // Minimum address for memory access
     static VALUE_MASK = 0xffffffffffffffffn;
     static ENDIANNESS = true; // little-endian for DataView
-
+    
     constructor(initialMemory) {
         this.memory =
             initialMemory instanceof MemoryStorage
                 ? new Map(initialMemory.memory)
                 : new Map();
+        this.backUpMemory = new Map(this.memory); // Backup for reset   
+        console.log(this.backUpMemory); 
+    }
+    
+    /**
+     * Restores the main memory from the backup.
+     * This is analogous to the backUpData function in registers.js
+     */
+    restoreFromBackup() {
+        this.memory = new Map(this.backUpMemory);
     }
 
+    syncMemory(){
+        for (let i = 0; i < 1000;  i++){
+              document.getElementById(`stack-${i}`).textContent =
+                LEGv8Registers.binaryToHex(
+                    LEGv8Registers.valueTo64BitBinary(
+                        memory.readByte(i),
+                    ),
+                );
+        }
+    }
+    
     _checkAddress(addr) {
         addr = typeof addr === "bigint" ? addr : BigInt(addr);
         if (addr < MemoryStorage.MIN_ADDRESS) {
@@ -47,13 +68,27 @@ class MemoryStorage {
         this._checkAddress(addr + BigInt(len - 1));
 
         for (let i = 0; i < len; i++) {
-            const a = addr + BigInt(i),
-                b = byteArray[i] & 0xff;
-            if (b === 0) this.memory.delete(a);
-            else this.memory.set(a, b);
+            const a = addr + BigInt(i);
+            const b = byteArray[i] & 0xff;
+
+            // Replicating the backup logic from registers.js:
+            // Before writing to a location, save its current value to the backup.
+            const currentValue = this.memory.get(a);
+            if (currentValue !== undefined) {
+                this.backUpMemory.set(a, currentValue);
+            } else {
+                this.backUpMemory.delete(a);
+            }
+
+            // Now, write the new value to the main memory.
+            if (b === 0){
+                this.memory.delete(a);
+            }
+            else{
+                this.memory.set(a, b);
+            }
         }
     }
-
     readByte(addr) {
         return this.readBytes(addr, 1)[0];
     }
