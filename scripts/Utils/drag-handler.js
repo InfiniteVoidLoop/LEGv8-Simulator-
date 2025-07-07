@@ -42,8 +42,8 @@ document.addEventListener("DOMContentLoaded", function () {
         document.body.style.cursor = "grabbing"; // Set cursor for entire page while dragging
         mainDisplay.style.transition = "none"; // Disable transition while dragging
 
-        initialX = e.clientX - position.left;
-        initialY = e.clientY - position.top;
+        initialX = e.clientX - position.left * zoomLevel;
+        initialY = e.clientY - position.top * zoomLevel;
 
         // Capture pointer to improve dragging
         mainDisplay.setPointerCapture?.(e.pointerId);
