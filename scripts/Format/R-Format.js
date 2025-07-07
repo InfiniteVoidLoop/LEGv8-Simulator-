@@ -180,7 +180,7 @@ class RFormat {
             { pathId: "read-data-2-write-data", data: register2_hexan }, // 20-16 bits
             { pathId: "ALU-mux", data: newRegister_hexan }, // 4-0 bits
             { pathId: "ALU-address", data: newRegister_hexan }, // 4-0 bits !!!!
-            { pathId: "alu-to-nzcv", data: registers.getCurrentFlags}, // 4-0 bits
+            { pathId: "alu-to-nzcv", data: registers.getCurrentFlags()}, // 4-0 bits
             { pathId: "alu-add-4-mux", data: add4Address }, // 4-0 bits  !!!
             { pathId: "ALU-add-mux", data: this.address }, // 4-0 bits
             { pathId: "ALU-and-gate", data: 0 }, // 4-0 bits
@@ -266,7 +266,6 @@ class RFormat {
         );
         await Promise.all(allRuns);
         const pos = binaryToUnsignedDecimal(this.Rd);
-        console.log("Position of Rd:", pos);
         document
             .getElementById(`register-X${pos}`)
             .querySelector("span:last-child").textContent =
@@ -298,5 +297,8 @@ class RFormat {
         await this.memoryAccess();
         await this.registerWrite();
         await this.clearInstruction();
+        if (isBack == true){
+            registers.backUpDataByBinary(this.Rd);
+        }
     }
 }

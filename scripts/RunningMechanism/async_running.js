@@ -294,8 +294,8 @@ stepBtn.onclick = async () => {
                     vec.pop();
                 }
                 jumpError = false;
-                registers.backUpData();
-                memory.restoreFromBackup();
+                // registers.backUpData();
+                // memory.restoreFromBackup();
                 registers.syncRegisters();
                 memory.syncMemory();
                 PC.reverseAddress();

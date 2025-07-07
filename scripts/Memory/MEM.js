@@ -145,6 +145,17 @@ class MemoryStorage {
         this.writeBytes(addr, new Uint8Array(buf));
     }
 
+    backUpDoubleWord(addr){
+        addr = BigInt(addr);
+        this._checkAddress(addr);
+        const currentValue = this.backUpMemory.get(addr);
+        if (currentValue !== undefined) {
+            this.memory.set(addr, currentValue);
+        } else {
+            this.memory.delete(addr);
+        }
+    }
+
     getMemoryBytes() {
         return new Map(this.memory);
     }

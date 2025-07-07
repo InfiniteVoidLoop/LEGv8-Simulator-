@@ -258,5 +258,8 @@ class IFormat {
         await this.memoryAccess();
         await this.registerWrite();
         await this.clearInstruction();
+        if (isBack == true){
+            registers.backUpDataByBinary(this.Rd);
+        }
     }
 }

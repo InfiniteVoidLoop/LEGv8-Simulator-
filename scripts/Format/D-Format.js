@@ -248,9 +248,10 @@ class Load {
         const pos = Number(LEGv8Registers.binaryToBigInt(this.Rd));
         document
             .getElementById(`register-X${pos}`)
-            .querySelector("span:last-child").textContent = memoryValue_hexan;
-        document.getElementById(`register-X${pos}`).style.background =
-            "#87CEFA";
+            .querySelector("span:last-child").textContent = 
+            memoryValue_hexan;
+        document.getElementById(`register-X${pos}`).style.background = "#87CEFA";
+        
         document.getElementById("mux0_0").style.color = "black";
         document.getElementById("mux1_1").style.color = "black";
         document.getElementById("mux2_0").style.color = "black";
@@ -261,6 +262,13 @@ class Load {
         document.getElementById("memory-handler").style.borderColor = "black";
         document.getElementById("memory-handler-read").style.color = "black";
     }
+    async clearInstruction() {
+        const pathAndData = [{ pathId: "hidden_path", data: 0 }];
+        const allRuns = pathAndData.map(({ pathId, data }) =>
+            run(data, pathId),
+        );
+        await Promise.all(allRuns);
+    }
     async run() {
         markLines("assemblyCode", this.lineNumber);
         await this.instructionFetch();
@@ -268,6 +276,10 @@ class Load {
         await this.execute();
         await this.memoryAccess();
         await this.registerWrite();
+        await this.clearInstruction();
+        if (this.isBack == true){
+            registers.backUpDataByBinary(this.Rd);
+        }
     }
 }
 
@@ -538,5 +550,17 @@ class Store {
         await this.memoryAccess();
         await this.registerWrite();
         await this.clearInstruction();
+        if (isBack == true){
+             const register1_decimal = LEGv8Registers.binaryToBigInt(
+            registers.readByBinary(this.Rn),
+        );
+        const address_decimal = LEGv8Registers.binaryToBigInt(
+            LEGv8Registers.signExtend(this.address),
+        );
+        // load value Rd to memory
+
+        const memPos = register1_decimal + address_decimal; // ADD operation
+            memory.backUpDoubleWord(memPos);
+        }
     }
 }

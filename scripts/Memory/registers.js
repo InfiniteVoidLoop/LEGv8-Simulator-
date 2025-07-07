@@ -138,7 +138,13 @@ class LEGv8Registers {
         }
         this.write(index, valueToStore);
     }
-
+    
+    backUpDataByBinary(binStrIndex) {
+        // Renamed parameter from binStr to binStrIndex for clarity
+        const index = parseInt(binStrIndex, 2);
+        this.validateIndex(index);
+        this.registers[index] = this.backUpRegisters[index];
+    }
     /**
      * Reads the 64-bit binary string value from a register whose index is given as a binary string.
      * @param {string} binStr - The binary string representing the register index.
