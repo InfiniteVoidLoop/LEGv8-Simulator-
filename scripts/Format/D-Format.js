@@ -262,6 +262,7 @@ class Load {
         document.getElementById("memory-handler-read").style.color = "black";
     }
     async run() {
+        markLines("assemblyCode", this.lineNumber);
         await this.instructionFetch();
         await this.instructionDecode();
         await this.execute();
