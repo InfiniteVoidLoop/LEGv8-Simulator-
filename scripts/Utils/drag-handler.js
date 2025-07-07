@@ -1,24 +1,41 @@
-document.addEventListener("DOMContentLoaded", function () {
+// Merged Zoom and Drag System
+document.addEventListener("DOMContentLoaded", () => {
     const mainDisplay = document.getElementById("main-display");
     const svg = document.getElementById("svg");
-    let isDragging = false;
-    let currentX;
-    let currentY;
-    let initialX;
-    let initialY;
+    const resetButton = document.getElementById("resetZoomButton");
+
+    if (!mainDisplay || !svg) {
+        console.error("Main display or SVG element not found!");
+        return;
+    }
 
     // Set initial styles
     mainDisplay.style.cursor = "grab";
     mainDisplay.style.userSelect = "none";
     mainDisplay.style.transition = "transform 0.1s ease-out";
-    mainDisplay.style.touchAction = "none"; // Disable browser touch actions
+    mainDisplay.style.touchAction = "none";
 
-    // Initial position and constraints
-    const position = {
-        left: 0,
-        top: 0,
-    };
+    // Initial values for reset
+    const initialScale = 1;
+    const initialOffsetX = 0;
+    const initialOffsetY = 0;
 
+    let scale = initialScale;
+    let offsetX = initialOffsetX;
+    let offsetY = initialOffsetY;
+
+    // Zoom settings
+    const minScale = 0.1;
+    const maxScale = 5;
+    const zoomIntensity = 0.1;
+    const zoomStep = 0.1;
+
+    // Drag settings
+    let isDragging = false;
+    let startX, startY;
+    let initialOffsetXDrag, initialOffsetYDrag;
+
+    // Constraints
     const constraints = {
         minX: -500,
         maxX: 500,
@@ -26,82 +43,151 @@ document.addEventListener("DOMContentLoaded", function () {
         maxY: 300,
     };
 
-    // Mouse event handlers
-    function startDragging(e) {
+    function applyTransform() {
+        // Apply constraints
+        offsetX = Math.min(
+            Math.max(offsetX, constraints.minX),
+            constraints.maxX,
+        );
+        offsetY = Math.min(
+            Math.max(offsetY, constraints.minY),
+            constraints.maxY,
+        );
+
+        mainDisplay.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+    }
+
+    // Reset function
+    function resetZoom() {
+        scale = initialScale;
+        offsetX = initialOffsetX;
+        offsetY = initialOffsetY;
+        applyTransform();
+    }
+
+    // Zoom functions for external use
+    function zoomIn() {
+        const newScale = scale + zoomStep;
+        scale = Math.max(minScale, Math.min(maxScale, newScale));
+        applyTransform();
+    }
+
+    function zoomOut() {
+        const newScale = scale - zoomStep;
+        scale = Math.max(minScale, Math.min(maxScale, newScale));
+        applyTransform();
+    }
+
+    // Make functions globally accessible
+    window.zoomIn = zoomIn;
+    window.zoomOut = zoomOut;
+    window.resetZoom = resetZoom;
+
+    // Wheel zoom with mouse position
+    function handleWheel(event) {
+        event.preventDefault();
+
+        const rect = mainDisplay.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+
+        const mouseXOnContent = (mouseX - offsetX) / scale;
+        const mouseYOnContent = (mouseY - offsetY) / scale;
+
+        const delta = event.deltaY < 0 ? 1 : -1;
+        const newScale = scale * (1 + delta * zoomIntensity);
+        scale = Math.max(minScale, Math.min(maxScale, newScale));
+
+        offsetX = mouseX - mouseXOnContent * scale;
+        offsetY = mouseY - mouseYOnContent * scale;
+
+        applyTransform();
+    }
+
+    // Mouse drag handlers
+    function startDragging(event) {
+        if (event.button !== 0) return;
+
         // Allow dragging when clicking on main-display or svg
         if (
-            e.target !== mainDisplay &&
-            e.target !== svg &&
-            !svg.contains(e.target)
+            event.target !== mainDisplay &&
+            event.target !== svg &&
+            !svg.contains(event.target)
         )
             return;
 
-        e.preventDefault();
-        isDragging = true;
-        mainDisplay.style.cursor = "grabbing";
-        document.body.style.cursor = "grabbing"; // Set cursor for entire page while dragging
-        mainDisplay.style.transition = "none"; // Disable transition while dragging
+        // Skip if clicking on buttons
+        if (
+            resetButton &&
+            (event.target === resetButton ||
+                event.target.closest("#resetZoomButton"))
+        ) {
+            return;
+        }
 
-        initialX = e.clientX - position.left * zoomLevel;
-        initialY = e.clientY - position.top * zoomLevel;
+        event.preventDefault();
+        isDragging = true;
+        startX = event.clientX;
+        startY = event.clientY;
+        initialOffsetXDrag = offsetX;
+        initialOffsetYDrag = offsetY;
+
+        mainDisplay.style.cursor = "grabbing";
+        document.body.style.cursor = "grabbing";
+        mainDisplay.style.transition = "none";
+        mainDisplay.classList.add("dragging");
 
         // Capture pointer to improve dragging
-        mainDisplay.setPointerCapture?.(e.pointerId);
+        mainDisplay.setPointerCapture?.(event.pointerId);
     }
 
-    function drag(e) {
+    function drag(event) {
         if (!isDragging) return;
-        e.preventDefault();
+        event.preventDefault();
 
-        // Calculate new position with constraints
-        currentX = Math.min(
-            Math.max(e.clientX - initialX, constraints.minX),
-            constraints.maxX
-        );
-        currentY = Math.min(
-            Math.max(e.clientY - initialY, constraints.minY),
-            constraints.maxY
-        );
+        const dx = event.clientX - startX;
+        const dy = event.clientY - startY;
 
-        position.left = currentX;
-        position.top = currentY;
+        offsetX = initialOffsetXDrag + dx;
+        offsetY = initialOffsetYDrag + dy;
 
-        updatePosition();
+        applyTransform();
     }
-    function stopDragging(e) {
+
+    function stopDragging(event) {
         if (!isDragging) return;
         isDragging = false;
+
         mainDisplay.style.cursor = "grab";
-        document.body.style.cursor = "default"; // Reset cursor for entire page
-        mainDisplay.style.transition = "transform 0.1s ease-out"; // Re-enable transition
-        if (e && e.pointerId !== undefined) {
-            mainDisplay.releasePointerCapture?.(e.pointerId);
+        document.body.style.cursor = "default";
+        mainDisplay.style.transition = "transform 0.1s ease-out";
+        mainDisplay.classList.remove("dragging");
+
+        if (event && event.pointerId !== undefined) {
+            mainDisplay.releasePointerCapture?.(event.pointerId);
         }
     }
 
-    function updatePosition() {
-        mainDisplay.style.transform = `translate(${position.left}px, ${position.top}px) scale(${zoomLevel})`;
-    }
-
-    // Touch event handlers
-    function handleTouchStart(e) {
-        if (e.touches.length === 1) {
-            e.preventDefault();
-            const touch = e.touches[0];
+    // Touch handlers
+    function handleTouchStart(event) {
+        if (event.touches.length === 1) {
+            event.preventDefault();
+            const touch = event.touches[0];
             startDragging({
                 target: mainDisplay,
                 clientX: touch.clientX,
                 clientY: touch.clientY,
                 pointerId: touch.identifier,
                 preventDefault: () => {},
+                button: 0,
             });
         }
     }
 
-    function handleTouchMove(e) {
-        if (isDragging && e.touches.length === 1) {
-            e.preventDefault();
-            const touch = e.touches[0];
+    function handleTouchMove(event) {
+        if (isDragging && event.touches.length === 1) {
+            event.preventDefault();
+            const touch = event.touches[0];
             drag({
                 clientX: touch.clientX,
                 clientY: touch.clientY,
@@ -110,27 +196,16 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    function handleTouchEnd(e) {
+    function handleTouchEnd(event) {
         if (isDragging) {
-            e.preventDefault();
+            event.preventDefault();
             stopDragging({
-                pointerId: e.changedTouches[0].identifier,
+                pointerId: event.changedTouches[0].identifier,
             });
         }
     }
 
-    // Zoom handler with improved constraints
-    function handleWheel(e) {
-        if (e.ctrlKey) {
-            e.preventDefault();
-            const delta = e.deltaY > 0 ? 0.9 : 1.1;
-            // zoomLevel = Math.max(zoomLevel * delta, 0.5);
-            updatePosition();
-        }
-    }
-
     // Event listeners
-    mainDisplay.style.cursor = "grab";
     mainDisplay.addEventListener("pointerdown", startDragging);
     document.addEventListener("pointermove", drag);
     document.addEventListener("pointerup", stopDragging);
@@ -144,6 +219,36 @@ document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener("touchend", handleTouchEnd);
     document.addEventListener("touchcancel", handleTouchEnd);
 
-    // Zoom
+    // Wheel zoom
     mainDisplay.addEventListener("wheel", handleWheel, { passive: false });
+
+    // Mouse events (fallback)
+    mainDisplay.addEventListener("mousedown", startDragging);
+    document.addEventListener("mousemove", drag);
+    document.addEventListener("mouseup", stopDragging);
+
+    // Handle mouse leaving window while dragging
+    document.addEventListener("mouseleave", (event) => {
+        if (isDragging && !event.relatedTarget) {
+            stopDragging();
+        }
+    });
+
+    // Reset button listener
+    if (resetButton) {
+        resetButton.addEventListener("click", resetZoom);
+    }
+
+    // Keyboard shortcut for reset
+    document.addEventListener("keydown", (event) => {
+        if (
+            (event.key === "r" || event.key === "R") &&
+            event.target.tagName !== "TEXTAREA"
+        ) {
+            resetZoom();
+        }
+    });
+
+    // Initial transform apply
+    applyTransform();
 });

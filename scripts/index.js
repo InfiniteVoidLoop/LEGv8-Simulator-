@@ -5,29 +5,6 @@ const flagN = document.getElementById("flag-status-n");
 const flagZ = document.getElementById("flag-status-z");
 const flagV = document.getElementById("flag-status-v");
 const flagC = document.getElementById("flag-status-c");
-// Zoom
-let zoomLevel = 1;
-const zoomStep = 0.1;
-const zoomWrapper = document.getElementById("main-display");
-
-function zoomIn() {
-    zoomLevel += zoomStep;
-    applyZoom();
-}
-
-function zoomOut() {
-    zoomLevel = Math.max(zoomStep, zoomLevel - zoomStep);
-    applyZoom();
-}
-
-function resetZoom() {
-    zoomLevel = 1;
-    applyZoom();
-}
-
-function applyZoom() {
-    zoomWrapper.style.transform = `scale(${zoomLevel})`;
-}
 
 // Tab switching functionality
 function switchTab(tabName) {
@@ -69,7 +46,7 @@ function generateRegisters() {
     for (let i = 0; i <= 31; i++) {
         const regName = `X${i}`; // Use special name if exists, otherwise X[i]
         const NAME = registerMap[i] || `X${i}`;
-        const value = `0x${Math.floor(0)    
+        const value = `0x${Math.floor(0)
             .toString(16)
             .padStart(16, "0")
             .toUpperCase()}`; // Changed to padStart(16) for 64-bit
@@ -101,7 +78,7 @@ function generateStack() {
         valueElement.className =
             "p-1 text-xs font-mono border-b border-gray-100";
         valueElement.textContent = value;
-        valueElement.id = `stack-${i}`; 
+        valueElement.id = `stack-${i}`;
 
         container.appendChild(addressElement);
         container.appendChild(valueElement);
