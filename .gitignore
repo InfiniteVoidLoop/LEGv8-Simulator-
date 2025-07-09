@@ -2,6 +2,7 @@
 node_modules/
 package-lock.json
 package.json
+main_electron.js
 # Build files
 dist/
 build/
